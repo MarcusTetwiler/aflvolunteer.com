@@ -96,7 +96,7 @@ export default function CtaSection() {
               {status === 'submitting' ? 'Granting access\u2026' : 'Enter Redline'}
             </button>
             <p className="cta-section__fine-print">
-              You\u2019ll be granted access immediately. No newsletter, no spam — just dispatches from the front.
+              You&rsquo;ll be granted access immediately. No newsletter, no spam — just dispatches from the front.
             </p>
           </form>
         </div>

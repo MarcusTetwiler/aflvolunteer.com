@@ -93,3 +93,38 @@ hover/click tooltips, no toggleable layers (Drone Activity, Known/Unknown
 Signals, etc.). The data model (`LOCATIONS` array in `FrontMap.jsx`) is
 already shaped so layers could be added later by tagging each location and
 filtering, without a rebuild.
+
+## The map itself
+
+Elena's view of the Front Map sits on a **real geographic basemap** —
+actual Poland/Ukraine/Belarus/western-Russia country borders, rivers, and
+reference cities, sourced from Natural Earth's public-domain data and
+pre-processed into `src/data/theaterMap.json` (see
+`geodata-pipeline/README.md` for how to regenerate it). The front line,
+territory control fill, and all story locations (Camp Tadeusz, Lublin,
+Rzeszów, Lviv, Zalissia, Kyiv, Odesa, Moscow) are fictional and hand-placed
+on top of that real geography, using the same lat/lon → SVG projection the
+basemap was built with — so they land at geographically honest positions,
+not just plausible-looking ones. London falls genuinely off-canvas at true
+scale (it's ~1,450km west of this map's frame), so it's shown as an edge
+tab rather than compressed onto the map at a fake position.
+
+**If you move a pin or change the map's bounding box**, re-check it against
+the front line — `FrontMap.jsx` has a comment documenting which side of the
+line every pin needs to stay on, but the curve only protects pins at the
+coordinates it was actually verified against.
+
+## Elena / Andrew toggle
+
+The map has two POVs, switched via the toggle above the frame:
+
+- **Elena** — the operational map described above.
+- **Andrew** — a completely different visual system: a dark, numerous
+  field of ~54 procedurally generated drone-contract markers (sector codes
+  like `NX-847`, classified Talon/broadcast or Private, status
+  Closed/Interrupted), reflecting that Andrew's pre-deployment world is a
+  contract ledger, not a place. Generated in `andrewContracts.js` with a
+  fixed random seed, so positions/codes are stable across reloads rather
+  than reshuffling. Deliberately contains no character names or references
+  to Elena — the two POVs don't leak into each other.
+

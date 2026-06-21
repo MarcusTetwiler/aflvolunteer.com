@@ -8,7 +8,7 @@
 .intro-context__art {
   position: relative;
   width: 100%;
-  max-height: 86vh;
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   border-bottom: 1px solid rgba(231, 214, 188, 0.16);
 }
@@ -17,9 +17,8 @@
   display: block;
   width: 100%;
   height: 100%;
-  max-height: 86vh;
   object-fit: cover;
-  object-position: 50% 18%;
+  object-position: 50% 30%;
   filter: sepia(0.12) contrast(1.02);
 }
 
@@ -79,11 +78,10 @@
 
 @media (max-width: 640px) {
   .intro-context__art {
-    max-height: 64vh;
+    aspect-ratio: 4 / 5;
   }
   .intro-context__art img {
-    max-height: 64vh;
-    object-position: 50% 10%;
+    object-position: 50% 22%;
   }
   .intro-context__art-caption {
     left: 16px;
