@@ -1,20 +1,17 @@
 import theaterMap from '../data/theaterMap.json';
 
-// Cities we explicitly label on the map (avoids clutter — ISW's own maps
-// only label what's relevant to the story being told). Matched by name
-// against the populated-places dataset; a few story-relevant towns (Lublin,
-// Rzeszów, Medyka) aren't in that dataset at this population threshold, so
-// they're projected separately and passed in as `extraPlaces`.
+// At continental zoom we only label a curated set of major cities — enough
+// to orient the reader (this is Europe, here's Moscow's distance from
+// Poland) without turning the map into a gazetteer.
 const LABELED_CITIES = new Set([
-  'Warsaw', 'Kyiv', 'Lviv', 'Moscow', 'Odessa', 'Minsk', 'Kharkiv',
-  'Dnipro', 'Donetsk', 'Vilnius', 'Riga', 'Bucharest', 'Chisinau',
-  'Budapest', 'Krakow', 'Kraków',
+  'Paris', 'Berlin', 'Rome', 'Madrid', 'Warsaw', 'Vienna', 'Bucharest',
+  'Minsk', 'St. Petersburg', 'Kharkiv', 'Athens', 'Istanbul', 'Budapest',
 ]);
 
 // Cities that are also rendered as the story's own interactive pins
 // (FrontMap.jsx LOCATIONS) — suppressed here so we don't double-label the
 // same real place with two overlapping dot+text pairs.
-const SUPPRESSED_DUPLICATES = new Set(['Kyiv', 'Lviv', 'Moscow', 'Odessa']);
+const SUPPRESSED_DUPLICATES = new Set(['Kyiv', 'Moscow', 'London']);
 
 export default function TheaterBasemap({ extraPlaces = [] }) {
   const { countries, rivers, places } = theaterMap;
@@ -48,14 +45,14 @@ export default function TheaterBasemap({ extraPlaces = [] }) {
           .filter((p) => LABELED_CITIES.has(p.name) && !SUPPRESSED_DUPLICATES.has(p.name))
           .map((p) => (
             <g key={p.name} transform={`translate(${p.x}, ${p.y})`}>
-              <circle r="2.2" className="theater-basemap__place-dot" />
-              <text x="6" y="3" className="theater-basemap__place-label">{p.name}</text>
+              <circle r="2" className="theater-basemap__place-dot" />
+              <text x="5" y="3" className="theater-basemap__place-label">{p.name}</text>
             </g>
           ))}
         {extraPlaces.map((p) => (
           <g key={p.name} transform={`translate(${p.x}, ${p.y})`}>
-            <circle r="2.2" className="theater-basemap__place-dot" />
-            <text x="6" y="3" className="theater-basemap__place-label">{p.name}</text>
+            <circle r="2" className="theater-basemap__place-dot" />
+            <text x="5" y="3" className="theater-basemap__place-label">{p.name}</text>
           </g>
         ))}
       </g>

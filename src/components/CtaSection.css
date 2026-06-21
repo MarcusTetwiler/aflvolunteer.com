@@ -8,11 +8,14 @@
 .cta-section__art {
   position: relative;
   width: 100%;
+  min-height: 240px;
+  background-color: var(--ink);
 }
 
 .cta-section__art img {
   display: block;
   width: 100%;
+  height: auto;
   max-height: 56vh;
   object-fit: cover;
   object-position: 50% 30%;

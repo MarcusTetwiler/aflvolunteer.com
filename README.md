@@ -96,23 +96,34 @@ filtering, without a rebuild.
 
 ## The map itself
 
-Elena's view of the Front Map sits on a **real geographic basemap** —
-actual Poland/Ukraine/Belarus/western-Russia country borders, rivers, and
-reference cities, sourced from Natural Earth's public-domain data and
-pre-processed into `src/data/theaterMap.json` (see
-`geodata-pipeline/README.md` for how to regenerate it). The front line,
-territory control fill, and all story locations (Camp Tadeusz, Lublin,
-Rzeszów, Lviv, Zalissia, Kyiv, Odesa, Moscow) are fictional and hand-placed
-on top of that real geography, using the same lat/lon → SVG projection the
-basemap was built with — so they land at geographically honest positions,
-not just plausible-looking ones. London falls genuinely off-canvas at true
-scale (it's ~1,450km west of this map's frame), so it's shown as an edge
-tab rather than compressed onto the map at a fake position.
+Elena's view of the Front Map sits on a **real geographic basemap** — a
+continental view of Europe and western Russia (Atlantic coast to Moscow,
+Scandinavia to the Mediterranean), sourced from Natural Earth's
+public-domain data and pre-processed into `src/data/theaterMap.json` (see
+`geodata-pipeline/README.md` for how to regenerate it). The Poland/Ukraine
+theater is a hot zone inside that much larger map, not the entire frame —
+the war is one churning piece of something bigger, which is also why
+London is a real on-canvas pin now instead of an off-map edge tab.
+
+The front itself isn't a single clean line. It's a main boundary curve
+plus several hand-authored organic "salient" and "pocket" blobs that bulge
+across it in both directions — a held pocket stranded inside occupied
+territory, an occupied salient pushing west — meant to read as fluid and
+contested rather than a tidy coastline. All story locations (Camp Tadeusz,
+Lublin, Rzeszów, Lviv, Zalissia, Kyiv, Odesa, Moscow, London) are fictional
+and hand-placed on top of that real geography, using the same lat/lon →
+SVG projection the basemap was built with, so they land at geographically
+honest positions. Lublin/Rzeszów/Medyka/Lviv sit close enough together in
+reality (~45px apart at this zoom) that they're shown as a single focus
+ring with one external callout rather than four crowded individual labels
+— each pin is still its own hoverable/clickable target underneath.
 
 **If you move a pin or change the map's bounding box**, re-check it against
-the front line — `FrontMap.jsx` has a comment documenting which side of the
-line every pin needs to stay on, but the curve only protects pins at the
-coordinates it was actually verified against.
+the front boundary and every salient blob — `FrontMap.jsx` has comments
+documenting which side of the line every pin needs to stay on, but none of
+that geometry self-corrects; it only protects pins at the coordinates it
+was actually verified against (see `geodata-pipeline/README.md` for the
+verification approach).
 
 ## Elena / Andrew toggle
 

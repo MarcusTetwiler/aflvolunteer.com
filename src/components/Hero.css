@@ -1,5 +1,5 @@
 .hero {
-  padding: 28px 0 56px;
+  padding: 20px 0 40px;
   background:
     radial-gradient(ellipse 1200px 600px at 50% -10%, rgba(189, 100, 51, 0.14), transparent),
     var(--paper);
@@ -45,28 +45,13 @@
   border-color: var(--ink);
 }
 
-.hero__intro {
-  max-width: 760px;
-  margin-bottom: 40px;
-}
-
-.hero__title {
-  font-size: clamp(56px, 10vw, 116px);
-  line-height: 0.92;
-  margin: 14px 0 22px;
-  letter-spacing: -0.01em;
-}
-
-.hero__dek {
-  font-size: clamp(16px, 1.6vw, 19px);
-  line-height: 1.6;
-  color: var(--ink-soft);
-  max-width: 620px;
+.hero__map-wrap {
+  margin-top: 4px;
 }
 
 @media (max-width: 640px) {
   .hero__top {
-    margin-bottom: 36px;
+    margin-bottom: 28px;
   }
   .hero__brand {
     font-size: 15px;

@@ -28,13 +28,35 @@ they're not already present).
 ## Projection
 
 Equirectangular with a cosine latitude correction at the bbox's center
-latitude (`BBOX = (14.5, 43.5, 40.0, 57.0)` — roughly Germany's eastern
-edge to Moscow, the Baltic to the Black Sea). This is the same projection
-math `FrontMap.jsx`'s hardcoded pin coordinates were computed against — if
-you change `BBOX` or the canvas size, every hardcoded `x`/`y` in
-`LOCATIONS` (and the `FRONT_LINE_BODY` path) in `FrontMap.jsx` needs to be
-recomputed to match, or pins will drift relative to the basemap underneath
-them.
+latitude (`BBOX = (-11.0, 35.0, 48.0, 64.0)` — Atlantic-adjacent western
+Europe through to western Russia, Scandinavia down to the Mediterranean).
+This is a continental view: the Poland/Ukraine theater is a hot zone inside
+a much larger visible map, not the entire frame. This is the same
+projection math `FrontMap.jsx`'s hardcoded pin coordinates were computed
+against — if you change `BBOX` or the canvas size, every hardcoded `x`/`y`
+in `LOCATIONS` (and `FRONT_BOUNDARY_BODY`, and every salient blob's `d`
+path) in `FrontMap.jsx` needs to be recomputed to match, or pins and the
+front will drift relative to the basemap underneath them.
+
+At this zoom, simplification tolerance is set high (`0.05`) and rivers are
+filtered to `scalerank <= 4` (major rivers only) to keep the file size
+reasonable — fine detail isn't visible at continental scale anyway.
+
+## The front itself
+
+The front isn't a single line — it's a main boundary curve
+(`FRONT_BOUNDARY_BODY` in `FrontMap.jsx`) plus several hand-authored organic
+"salient" and "pocket" blobs (`SALIENTS`) that bulge across it in both
+directions, meant to read as fluid and contested rather than a clean
+coastline. Every pin and every blob was checked against the boundary curve
+with a Python verification script before being committed (sample the curve
+at each pin's y-coordinate, confirm which side its x-coordinate falls on) —
+if you move a pin, regenerate the boundary, or add a blob, re-run that kind
+of check rather than eyeballing it. The tightest constraint is the
+Lublin/Rzeszów/Medyka/Lviv cluster, which sits within ~45px of itself at
+this zoom (they're genuinely that close in reality) and is handled with a
+single focus ring + external callout rather than four individually labeled
+pins.
 
 ## Why some places aren't in the data
 

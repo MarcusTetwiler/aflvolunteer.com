@@ -12,18 +12,7 @@ export default function Hero() {
         <a href="#volunteer" className="hero__nav-cta">Volunteer</a>
       </div>
 
-      <div className="container hero__intro">
-        <p className="eyebrow">Recovered Operations Document — Eastern Theater</p>
-        <h1 className="hero__title">The Front</h1>
-        <p className="hero__dek">
-          The front is a fluid and brutal battleground pushed deep into eastern Poland,
-          where soldiers face off against massive, unyielding swarms of enemy drones.
-          A scarred landscape of salted earth, rusted tank traps, and hidden trenches
-          where the war shifts by inches every day.
-        </p>
-      </div>
-
-      <div className="container">
+      <div className="container hero__map-wrap">
         <FrontMap />
       </div>
     </header>
