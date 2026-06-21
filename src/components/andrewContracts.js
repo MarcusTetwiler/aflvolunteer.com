@@ -6,6 +6,14 @@
 // cities, this generates a dense field of abstracted contract markers —
 // sector/grid tags, not place names — deliberately withholding anything
 // that would tie a specific contract to Elena or to this theater.
+//
+// Positions are sampled from landPoints.json — a precomputed grid of points
+// that fall on actual land in the same projected geography TheaterBasemap
+// renders (see geodata-pipeline/). This keeps Andrew's contracts visibly on
+// the same continent as Elena's map, just themed dark, rather than floating
+// in an abstract void disconnected from the world underneath.
+
+import landPoints from '../data/landPoints.json';
 
 const SEED = 86421;
 
@@ -28,12 +36,24 @@ const CLASSIFICATIONS = ['talon', 'private']; // public/broadcast vs. unbroadcas
 const STATUSES = ['complete', 'complete', 'complete', 'partial']; // weighted toward complete
 
 const COUNT = 130;
-const MIN_SEPARATION = 16; // px in the 1000x880 canvas; keeps pins independently clickable
+const MIN_SEPARATION = 14; // px in the 1000x880 canvas; keeps pins independently clickable
+const JITTER = 5; // px of random offset off the land-grid point, so dots don't look snapped to a grid
 
 function generateContracts() {
   const contracts = [];
   const usedCodes = new Set();
   const placed = [];
+
+  // Shuffle a copy of the land points (Fisher-Yates with the seeded RNG) so
+  // we draw a different, deterministic subset each run without bias toward
+  // the start of the array.
+  const pool = landPoints.slice();
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+
+  let poolIndex = 0;
 
   for (let i = 0; i < COUNT; i++) {
     const classification = CLASSIFICATIONS[rand() < 0.62 ? 0 : 1]; // talon-majority, matching "four public contracts in a night"
@@ -49,22 +69,31 @@ function generateContracts() {
     } while (usedCodes.has(code));
     usedCodes.add(code);
 
-    // Rejection-sample a position so no two pins land close enough to be
-    // hard to click independently. Falls back to "best of 40 tries" so a
-    // dense canvas can never spin forever.
-    let x, y, attempts = 0;
-    let best = null, bestMinDist = -1;
-    do {
-      x = 40 + rand() * 920;
-      y = 40 + rand() * 800;
+    // Walk the shuffled land-point pool, taking the next point that clears
+    // the minimum separation from everything already placed. The pool is
+    // large relative to COUNT, so this always finds something without
+    // needing rejection sampling against open ocean.
+    let x, y;
+    while (poolIndex < pool.length) {
+      const [px, py] = pool[poolIndex];
+      poolIndex++;
+      const jx = px + (rand() - 0.5) * JITTER * 2;
+      const jy = py + (rand() - 0.5) * JITTER * 2;
       const minDist = placed.reduce(
-        (min, p) => Math.min(min, Math.hypot(p.x - x, p.y - y)),
+        (min, p) => Math.min(min, Math.hypot(p.x - jx, p.y - jy)),
         Infinity
       );
-      if (minDist > bestMinDist) { bestMinDist = minDist; best = { x, y }; }
-      attempts++;
-    } while (bestMinDist < MIN_SEPARATION && attempts < 40);
-    ({ x, y } = best);
+      if (minDist >= MIN_SEPARATION) {
+        x = jx; y = jy;
+        break;
+      }
+    }
+    if (x === undefined) {
+      // Pool exhausted (shouldn't happen at COUNT=130 against ~3200 points) —
+      // fall back to the next pool point unfiltered rather than crash.
+      const [px, py] = pool[i % pool.length];
+      x = px; y = py;
+    }
     placed.push({ x, y });
 
     const payout = classification === 'talon'

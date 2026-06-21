@@ -45,13 +45,7 @@ export default function CtaSection() {
 
   return (
     <section className="cta-section grain" id="volunteer">
-      <div className="cta-section__art">
-        <img
-          src="/images/cta-watercolor.jpg"
-          alt="An FPV drone pilot wearing goggles points toward a swarm of drones against a smoke-and-fire sky, with a pine forest below."
-          loading="lazy"
-        />
-      </div>
+      <div className="cta-section__bg" role="img" aria-label="An FPV drone pilot wearing goggles points toward a swarm of drones against a smoke-and-fire sky, with a pine forest below." />
 
       <div className="container cta-section__inner">
         <div className="cta-section__copy">

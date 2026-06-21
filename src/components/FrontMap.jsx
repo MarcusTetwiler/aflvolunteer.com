@@ -238,7 +238,7 @@ export default function FrontMap() {
                   </clipPath>
                 </defs>
 
-                <TheaterBasemap />
+                <TheaterBasemap variant="light" />
 
                 {/* territory tint: held = bare basemap, occupied = warm rust wash */}
                 <rect x="0" y="0" width="1000" height="880" className="front-map__occupied-fill" clipPath="url(#occupiedClip)" />
@@ -373,35 +373,44 @@ export default function FrontMap() {
           </>
         ) : (
           <>
+            <div className="front-map__header front-map__header--andrew">
+              <div className="front-map__header-text">
+                <h2>Contract Ledger — Pre-Deployment Record</h2>
+                <p>Talon Broadcast &amp; Private Engagements — Andrew</p>
+              </div>
+              <div className="front-map__header-logo">
+                <span className="front-map__header-logo-mark front-map__header-logo-mark--andrew">⬡</span>
+                <div>
+                  <strong>RIG</strong>
+                  <span>Performance Interface</span>
+                </div>
+              </div>
+            </div>
+
             <div className="front-map__body">
               <svg
                 className="front-map__svg front-map__svg--andrew"
                 viewBox="0 0 1000 880"
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="Andrew's contract ledger: a dense field of public and private drone contracts, shown as abstract grid markers rather than named places."
+                aria-label="The same map as Elena's view, rendered as a dark interface, with Andrew's contract ledger marked across it instead of named locations."
               >
                 <defs>
-                  <radialGradient id="andrewGlow" cx="50%" cy="38%" r="75%">
-                    <stop offset="0%" stopColor="#332A1F" stopOpacity="0.95" />
-                    <stop offset="60%" stopColor="#1A1611" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#0A0807" stopOpacity="1" />
+                  <radialGradient id="andrewGlow" cx="50%" cy="38%" r="85%">
+                    <stop offset="0%" stopColor="#241D15" stopOpacity="0.9" />
+                    <stop offset="65%" stopColor="#14110D" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#080705" stopOpacity="1" />
                   </radialGradient>
-                  <pattern id="gridPatternFine" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(216, 168, 120, 0.06)" strokeWidth="0.5" />
-                  </pattern>
-                  <pattern id="gridPattern" width="100" height="100" patternUnits="userSpaceOnUse">
-                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(216, 168, 120, 0.16)" strokeWidth="1" />
-                  </pattern>
                   <pattern id="scanlines" width="3" height="3" patternUnits="userSpaceOnUse">
-                    <path d="M 0 0 L 3 0" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
+                    <path d="M 0 0 L 3 0" stroke="rgba(0,0,0,0.2)" strokeWidth="1" />
                   </pattern>
                 </defs>
 
                 <rect x="0" y="0" width="1000" height="880" fill="url(#andrewGlow)" />
-                <rect x="0" y="0" width="1000" height="880" fill="url(#gridPatternFine)" />
-                <rect x="0" y="0" width="1000" height="880" fill="url(#gridPattern)" />
-                <rect x="0" y="0" width="1000" height="880" fill="url(#scanlines)" opacity="0.4" />
+
+                <TheaterBasemap variant="dark" />
+
+                <rect x="0" y="0" width="1000" height="880" fill="url(#scanlines)" opacity="0.35" />
 
                 {ANDREW_CONTRACTS.map((c) => (
                   <g

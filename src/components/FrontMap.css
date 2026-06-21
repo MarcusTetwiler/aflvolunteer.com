@@ -61,6 +61,25 @@
   flex-wrap: wrap;
 }
 
+.front-map__header--andrew {
+  background: #0E0B08;
+  border-bottom: 1px solid rgba(216, 168, 120, 0.18);
+}
+
+.front-map__header--andrew .front-map__header-text h2,
+.front-map__header--andrew .front-map__header-logo strong {
+  color: #F2EBDD;
+}
+
+.front-map__header--andrew .front-map__header-text p,
+.front-map__header--andrew .front-map__header-logo span {
+  color: rgba(216, 168, 120, 0.55);
+}
+
+.front-map__header-logo-mark--andrew {
+  color: rgba(216, 168, 120, 0.85) !important;
+}
+
 .front-map__header-text h2 {
   font-family: var(--font-display);
   font-size: clamp(16px, 2vw, 20px);
@@ -124,26 +143,52 @@
 }
 
 /* ---- real basemap (TheaterBasemap.jsx) ---- */
-.theater-basemap__country path {
+.theater-basemap--light .theater-basemap__country path {
   fill: #EDE4D3;
   stroke: #A89B7E;
   stroke-width: 0.6;
 }
 
-.theater-basemap__rivers path {
+.theater-basemap--light .theater-basemap__rivers path {
   fill: none;
   stroke: #9DBFCB;
   stroke-width: 0.9;
 }
 
-.theater-basemap__place-dot {
+.theater-basemap--light .theater-basemap__place-dot {
   fill: #6B6354;
 }
 
-.theater-basemap__place-label {
+.theater-basemap--light .theater-basemap__place-label {
   font-family: var(--font-body);
   font-size: 10px;
   fill: #534C40;
+}
+
+/* dark variant: same geography, Andrew's Rig-interface palette. Countries
+   read as faint land masses against the black field rather than disappearing
+   entirely — the point is the viewer recognizes this as the same map as
+   Elena's, just inverted, with contract points standing in for places. */
+.theater-basemap--dark .theater-basemap__country path {
+  fill: rgba(216, 168, 120, 0.05);
+  stroke: rgba(216, 168, 120, 0.32);
+  stroke-width: 0.7;
+}
+
+.theater-basemap--dark .theater-basemap__rivers path {
+  fill: none;
+  stroke: rgba(157, 191, 203, 0.22);
+  stroke-width: 0.9;
+}
+
+.theater-basemap--dark .theater-basemap__place-dot {
+  fill: rgba(216, 168, 120, 0.4);
+}
+
+.theater-basemap--dark .theater-basemap__place-label {
+  font-family: var(--font-body);
+  font-size: 10px;
+  fill: rgba(216, 168, 120, 0.45);
 }
 
 /* ---- territory fill + dynamic front ---- */
@@ -452,9 +497,17 @@
   transform-origin: center;
 }
 
-.andrew-pin--talon .andrew-pin-dot { fill: rgba(210, 121, 63, 0.75); }
-.andrew-pin--private .andrew-pin-dot { fill: rgba(216, 168, 120, 0.45); }
-.andrew-pin--partial .andrew-pin-dot { fill: rgba(122, 46, 27, 0.85); }
+/* color encodes classification (talon vs. private) */
+.andrew-pin--talon .andrew-pin-dot { fill: rgba(210, 121, 63, 0.8); }
+.andrew-pin--private .andrew-pin-dot { fill: rgba(216, 168, 120, 0.5); }
+
+/* partial/interrupted status shown as a ring around the dot, independent of
+   classification color, since a contract is always BOTH a classification
+   AND a status — these are two separate axes, not one. */
+.andrew-pin--partial .andrew-pin-dot {
+  stroke: #B91F1F;
+  stroke-width: 1.2;
+}
 
 .andrew-pin:hover .andrew-pin-halo,
 .andrew-pin:focus-visible .andrew-pin-halo,

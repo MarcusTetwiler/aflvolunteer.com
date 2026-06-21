@@ -2,17 +2,11 @@ import './IntroContext.css';
 
 export default function IntroContext() {
   return (
-    <section className="intro-context grain">
-      <div className="intro-context__art">
-        <img
-          src="/images/hero-watercolor.jpg"
-          alt="A drone operator silhouetted against a smoke-streaked orange sky thick with a swarm of military drones, watching over volunteers gathered on a ridge above a distant city, while in the foreground an FPV pilot wearing goggles points toward the swarm."
-          loading="lazy"
-        />
-        <div className="intro-context__art-caption">
-          <span className="intro-context__art-dot" aria-hidden="true" />
-          Field sketch — Eastern Theater, exact location withheld
-        </div>
+    <section className="intro-context grain" aria-label="Field sketch — Eastern Theater, exact location withheld">
+      <div className="intro-context__bg" role="img" aria-label="A drone operator silhouetted against a smoke-streaked orange sky thick with a swarm of military drones, watching over volunteers gathered on a ridge above a distant city, while in the foreground an FPV pilot wearing goggles points toward the swarm." />
+      <div className="intro-context__art-caption">
+        <span className="intro-context__art-dot" aria-hidden="true" />
+        Field sketch — Eastern Theater, exact location withheld
       </div>
 
       <div className="container intro-context__copy-wrap">

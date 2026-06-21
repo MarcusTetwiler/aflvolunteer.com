@@ -13,11 +13,11 @@ const LABELED_CITIES = new Set([
 // same real place with two overlapping dot+text pairs.
 const SUPPRESSED_DUPLICATES = new Set(['Kyiv', 'Moscow', 'London']);
 
-export default function TheaterBasemap({ extraPlaces = [] }) {
+export default function TheaterBasemap({ extraPlaces = [], variant = 'light' }) {
   const { countries, rivers, places } = theaterMap;
 
   return (
-    <g className="theater-basemap">
+    <g className={`theater-basemap theater-basemap--${variant}`}>
       {/* country fills + borders */}
       {countries.map((c) => (
         <g key={c.name} className="theater-basemap__country">

@@ -127,15 +127,26 @@ verification approach).
 
 ## Elena / Andrew toggle
 
-The map has two POVs, switched via the toggle above the frame:
+The map has two POVs, switched via the toggle above the frame, and both
+render the **same underlying geography** — `TheaterBasemap` is one
+component used by both, themed via a `variant` prop (`"light"` for Elena,
+`"dark"` for Andrew). This matters: toggling should read as one world seen
+two ways, not two unrelated screens.
 
 - **Elena** — the operational map described above.
-- **Andrew** — a completely different visual system: a dark, numerous
-  field of ~54 procedurally generated drone-contract markers (sector codes
-  like `NX-847`, classified Talon/broadcast or Private, status
-  Closed/Interrupted), reflecting that Andrew's pre-deployment world is a
-  contract ledger, not a place. Generated in `andrewContracts.js` with a
-  fixed random seed, so positions/codes are stable across reloads rather
-  than reshuffling. Deliberately contains no character names or references
-  to Elena — the two POVs don't leak into each other.
+- **Andrew** — the same countries, rivers, and projection, recolored dark
+  (faint amber land fills, muted river glow) instead of replaced with an
+  abstract background. Layered on top: ~130 procedurally generated
+  drone-contract markers (sector codes like `NX-847`, classified
+  Talon/broadcast or Private — shown via dot color — and
+  Closed/Interrupted status — shown via a ring around the dot, since
+  classification and status are independent axes on the same contract and
+  both need to be visible at once). Generated in `andrewContracts.js` with
+  a fixed random seed, so positions/codes are stable across reloads. Every
+  contract sits on actual land, sampled from `src/data/landPoints.json` (a
+  precomputed grid of points inside the real country polygons — see
+  `geodata-pipeline/README.md` for how it's built), not scattered freely
+  across the canvas including open ocean. Deliberately contains no
+  character names or references to Elena — the two POVs don't leak into
+  each other, only the geography is shared.
 
