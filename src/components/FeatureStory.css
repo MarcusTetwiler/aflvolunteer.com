@@ -1,0 +1,155 @@
+.feature-story {
+  background: var(--paper);
+  padding: 96px 0;
+}
+
+.feature-story__inner {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.feature-story__title {
+  font-size: clamp(34px, 4vw, 50px);
+  margin: 14px 0 18px;
+  line-height: 1.05;
+}
+
+.feature-story__sub {
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--umber);
+  max-width: 440px;
+  margin-bottom: 36px;
+}
+
+.feature-story__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.feature-story__list li {
+  padding-left: 22px;
+  border-left: 2px solid var(--line-strong);
+}
+
+.feature-story__list h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.feature-story__list p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--umber);
+  max-width: 380px;
+}
+
+/* --- Redline mock panel --- */
+.feature-story__panel {
+  position: relative;
+}
+
+.redline-mock {
+  background: #15171C;
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 4px;
+  box-shadow: 0 30px 70px -30px rgba(28, 25, 22, 0.55), 0 0 0 10px var(--paper-deep);
+  overflow: hidden;
+  font-family: var(--font-body);
+  transform: rotate(0.6deg);
+}
+
+.redline-mock__topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.redline-mock__mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--burnt-bright);
+  flex-shrink: 0;
+}
+
+.redline-mock__title {
+  color: #F2EBDD;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.redline-mock__meta {
+  margin-left: auto;
+  color: rgba(242, 235, 221, 0.4);
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+
+.redline-mock__body {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  min-height: 320px;
+}
+
+.redline-mock__sidebar {
+  border-right: 1px solid rgba(255,255,255,0.07);
+  padding: 14px 0;
+}
+
+.redline-mock__chapter {
+  padding: 9px 18px;
+  font-size: 12.5px;
+  color: rgba(242, 235, 221, 0.45);
+}
+
+.redline-mock__chapter.is-active {
+  color: #F2EBDD;
+  background: rgba(189, 100, 51, 0.16);
+  border-left: 2px solid var(--burnt-bright);
+}
+
+.redline-mock__text {
+  padding: 24px 28px;
+}
+
+.redline-mock__heading {
+  font-family: var(--font-display);
+  color: #F2EBDD;
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+
+.redline-mock__line {
+  height: 9px;
+  border-radius: 2px;
+  background: rgba(242, 235, 221, 0.14);
+  margin-bottom: 11px;
+}
+
+.redline-mock__line--marked {
+  background: rgba(189, 100, 51, 0.4);
+}
+
+@media (max-width: 880px) {
+  .feature-story__inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .redline-mock {
+    transform: none;
+  }
+  .redline-mock__body {
+    grid-template-columns: 100px 1fr;
+  }
+}
