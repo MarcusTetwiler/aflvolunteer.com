@@ -382,17 +382,26 @@ export default function FrontMap() {
                 aria-label="Andrew's contract ledger: a dense field of public and private drone contracts, shown as abstract grid markers rather than named places."
               >
                 <defs>
-                  <radialGradient id="andrewGlow" cx="50%" cy="38%" r="70%">
-                    <stop offset="0%" stopColor="#2A2118" stopOpacity="0.9" />
-                    <stop offset="100%" stopColor="#0E0C0A" stopOpacity="1" />
+                  <radialGradient id="andrewGlow" cx="50%" cy="38%" r="75%">
+                    <stop offset="0%" stopColor="#332A1F" stopOpacity="0.95" />
+                    <stop offset="60%" stopColor="#1A1611" stopOpacity="1" />
+                    <stop offset="100%" stopColor="#0A0807" stopOpacity="1" />
                   </radialGradient>
-                  <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(216, 168, 120, 0.08)" strokeWidth="1" />
+                  <pattern id="gridPatternFine" width="20" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(216, 168, 120, 0.06)" strokeWidth="0.5" />
+                  </pattern>
+                  <pattern id="gridPattern" width="100" height="100" patternUnits="userSpaceOnUse">
+                    <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(216, 168, 120, 0.16)" strokeWidth="1" />
+                  </pattern>
+                  <pattern id="scanlines" width="3" height="3" patternUnits="userSpaceOnUse">
+                    <path d="M 0 0 L 3 0" stroke="rgba(0,0,0,0.25)" strokeWidth="1" />
                   </pattern>
                 </defs>
 
                 <rect x="0" y="0" width="1000" height="880" fill="url(#andrewGlow)" />
+                <rect x="0" y="0" width="1000" height="880" fill="url(#gridPatternFine)" />
                 <rect x="0" y="0" width="1000" height="880" fill="url(#gridPattern)" />
+                <rect x="0" y="0" width="1000" height="880" fill="url(#scanlines)" opacity="0.4" />
 
                 {ANDREW_CONTRACTS.map((c) => (
                   <g
@@ -409,8 +418,8 @@ export default function FrontMap() {
                     onBlur={handleLeave}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(c.id); } }}
                   >
-                    <circle r="9" className="andrew-pin-halo" />
-                    <circle r="2.6" className="andrew-pin-dot" />
+                    <circle r="7" className="andrew-pin-halo" />
+                    <circle r="2.2" className="andrew-pin-dot" />
                   </g>
                 ))}
               </svg>

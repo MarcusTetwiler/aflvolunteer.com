@@ -8,23 +8,22 @@
 .intro-context__art {
   position: relative;
   width: 100%;
-  max-width: 100%;
-  aspect-ratio: 16 / 10;
-  min-height: 320px;
+  height: 78vh;
+  min-height: 420px;
+  max-height: 820px;
   overflow: hidden;
-  background-color: var(--ink-soft);
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(216, 168, 120, 0.05), transparent),
+    var(--ink);
   border-bottom: 1px solid rgba(231, 214, 188, 0.16);
 }
 
 .intro-context__art img {
   display: block;
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
-  max-width: none;
-  object-fit: cover;
-  object-position: 50% 30%;
+  object-fit: contain;
+  object-position: 50% 50%;
   filter: sepia(0.12) contrast(1.02);
 }
 
@@ -62,17 +61,20 @@
 
 .intro-context__lead {
   font-family: var(--font-display);
-  font-size: clamp(22px, 2.6vw, 30px);
-  line-height: 1.4;
+  font-size: clamp(18px, 1.8vw, 21px);
+  font-weight: 400;
+  line-height: 1.65;
   margin-top: 16px;
   color: var(--paper);
 }
 
 .intro-context__body {
-  font-size: 16px;
-  line-height: 1.7;
+  font-family: var(--font-display);
+  font-size: clamp(18px, 1.8vw, 21px);
+  font-weight: 400;
+  line-height: 1.65;
   margin-top: 18px;
-  color: rgba(231, 214, 188, 0.72);
+  color: var(--paper);
 }
 
 .intro-context .eyebrow {
@@ -84,11 +86,10 @@
 
 @media (max-width: 640px) {
   .intro-context__art {
-    aspect-ratio: 4 / 5;
-    min-height: 420px;
-  }
-  .intro-context__art img {
-    object-position: 50% 22%;
+    height: auto;
+    aspect-ratio: 1036 / 1536;
+    min-height: 0;
+    max-height: none;
   }
   .intro-context__art-caption {
     left: 16px;

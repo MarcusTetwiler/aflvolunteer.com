@@ -27,8 +27,8 @@ const CLASSIFICATIONS = ['talon', 'private']; // public/broadcast vs. unbroadcas
 // Contract status uses the canon contract-system vocabulary, not narrative language.
 const STATUSES = ['complete', 'complete', 'complete', 'partial']; // weighted toward complete
 
-const COUNT = 54;
-const MIN_SEPARATION = 26; // px in the 1000x880 canvas; keeps pins independently clickable
+const COUNT = 130;
+const MIN_SEPARATION = 16; // px in the 1000x880 canvas; keeps pins independently clickable
 
 function generateContracts() {
   const contracts = [];

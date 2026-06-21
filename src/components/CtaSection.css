@@ -8,17 +8,18 @@
 .cta-section__art {
   position: relative;
   width: 100%;
-  min-height: 240px;
+  aspect-ratio: 1036 / 636;
+  max-height: 56vh;
   background-color: var(--ink);
+  overflow: hidden;
 }
 
 .cta-section__art img {
   display: block;
   width: 100%;
-  height: auto;
-  max-height: 56vh;
-  object-fit: cover;
-  object-position: 50% 30%;
+  height: 100%;
+  object-fit: contain;
+  object-position: 50% 50%;
   filter: brightness(0.78) sepia(0.1);
 }
 
