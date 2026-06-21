@@ -87,7 +87,7 @@ export default function CtaSection() {
             </div>
 
             <button type="submit" className="cta-section__submit" disabled={status === 'submitting'}>
-              {status === 'submitting' ? 'Granting access\u2026' : 'Enter Redline'}
+              {status === 'submitting' ? 'Granting access\u2026' : 'Volunteer'}
             </button>
             <p className="cta-section__fine-print">
               You&rsquo;ll be granted access immediately. No newsletter, no spam — just dispatches from the front.

@@ -33,31 +33,6 @@
   z-index: 1;
 }
 
-.intro-context__art-caption {
-  position: absolute;
-  bottom: 18px;
-  left: 28px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  color: var(--paper);
-  background: rgba(28, 25, 22, 0.55);
-  padding: 6px 12px;
-  backdrop-filter: blur(2px);
-}
-
-.intro-context__art-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--burnt-bright);
-  flex-shrink: 0;
-}
-
 .intro-context__copy-wrap {
   position: relative;
   z-index: 2;
@@ -66,6 +41,10 @@
 
 .intro-context__copy {
   max-width: 680px;
+  background: rgba(15, 13, 11, 0.72);
+  border: 1px solid rgba(216, 168, 120, 0.22);
+  padding: 32px 36px;
+  backdrop-filter: blur(3px);
 }
 
 .intro-context__lead {
@@ -100,9 +79,7 @@
   .intro-context__bg {
     background-position: 50% 18%;
   }
-  .intro-context__art-caption {
-    left: 16px;
-    bottom: 12px;
-    font-size: 10px;
+  .intro-context__copy {
+    padding: 22px 20px;
   }
 }

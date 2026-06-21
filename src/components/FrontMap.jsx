@@ -381,7 +381,7 @@ export default function FrontMap() {
               <div className="front-map__header-logo">
                 <span className="front-map__header-logo-mark front-map__header-logo-mark--andrew">⬡</span>
                 <div>
-                  <strong>RIG</strong>
+                  <strong>TALON</strong>
                   <span>Performance Interface</span>
                 </div>
               </div>
@@ -464,8 +464,22 @@ export default function FrontMap() {
 
             <div className="front-map__footer-content">
               <div className="andrew-ledger-summary">
-                <span className="andrew-ledger-summary__count">{ANDREW_CONTRACTS.length}</span>
-                <span className="andrew-ledger-summary__label">Contracts logged. The system doesn&rsquo;t ask why, only whether the kill was confirmed.</span>
+                <div className="andrew-ledger-summary__stat">
+                  <span className="andrew-ledger-summary__value">$840,650,000</span>
+                  <span className="andrew-ledger-summary__label">Lifetime contract earnings</span>
+                </div>
+                <div className="andrew-ledger-summary__stat">
+                  <span className="andrew-ledger-summary__value">3×</span>
+                  <span className="andrew-ledger-summary__label">Nations Series champion</span>
+                </div>
+                <div className="andrew-ledger-summary__stat">
+                  <span className="andrew-ledger-summary__value">{ANDREW_CONTRACTS.length}</span>
+                  <span className="andrew-ledger-summary__label">Contracts logged</span>
+                </div>
+                <div className="andrew-ledger-summary__stat">
+                  <span className="andrew-ledger-summary__value">TBD</span>
+                  <span className="andrew-ledger-summary__label">Anticipated flag bearer, Drone Olympic Team</span>
+                </div>
               </div>
             </div>
           </>
