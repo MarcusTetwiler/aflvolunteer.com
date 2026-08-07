@@ -60,11 +60,15 @@ export default function BuySection() {
               </>
             ) : (
               <>
-                <span className="buy__primary buy__primary--pending">
+                <a
+                  className="buy__primary buy__primary--pending"
+                  href="#read"
+                  onClick={() => trackBuyClicked('notify-me')}
+                >
                   {BOOK.comingSoonLabel}
-                </span>
+                </a>
                 <a className="buy__secondary" href="#read">
-                  Read the opening now
+                  Read the opening
                 </a>
               </>
             )}

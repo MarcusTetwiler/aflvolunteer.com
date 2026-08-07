@@ -9,14 +9,13 @@ export default function IntroContext() {
         <div className="intro-context__copy">
           <p className="eyebrow">Article 5</p>
           <p className="intro-context__lead">
-            Following the occupation of Ukraine, Russian forces advanced westward
-            across the pre-war border, initiating a multi-pronged offensive into
-            eastern Poland. This incursion constituted a breach of territory under
-            Article 5 of the NATO Treaty.
+            Following the occupation of Ukraine, Russian forces advanced westward across
+            the pre-war border into eastern Poland, breaching NATO territory under
+            Article 5.
           </p>
           <p className="intro-context__body">
-            Despite the legal activation of the mutual defense clause, the United
-            States of America declared neutrality. The front remains fluid.
+            The mutual defense clause activated. The United States declared neutrality.
+            The front remains fluid.
           </p>
         </div>
       </div>

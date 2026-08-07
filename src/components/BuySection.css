@@ -228,10 +228,19 @@
   }
 }
 
-/* Pre-launch: same footprint as the buy button, visibly inert. */
+/* Pre-launch: distinct from the live buy button, but clickable — the label
+   promises an action, so it scrolls to the email capture. */
 .buy__primary--pending {
   background: transparent;
   color: var(--highlight);
   border: 1px dashed rgba(216, 168, 120, 0.55);
-  cursor: default;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.buy__primary--pending:hover {
+  background: rgba(216, 168, 120, 0.12);
+  border-style: solid;
+  border-color: var(--highlight);
+  color: var(--paper);
 }

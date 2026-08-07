@@ -5,14 +5,14 @@
 
 export const BOOK = {
   title: 'The American Foreign Legion',
-  // Flip to true once the Amazon listing is live. While false, every buy
-  // button renders as non-clickable "Coming soon" text instead of a dead link,
-  // and the nav button points at the free sample instead.
+  // Flip to true once the Amazon listing is live. While false, no Amazon link
+  // renders anywhere: the buy button becomes `comingSoonLabel` and scrolls to
+  // the email capture instead, and the nav button points at the free sample.
   available: false,
   // TODO: paste the real Amazon product URL (or https://www.amazon.com/dp/<ASIN>)
   amazonUrl: 'https://www.amazon.com/dp/REPLACE_WITH_ASIN',
   // Shown in place of the buy buttons while `available` is false.
-  comingSoonLabel: 'Coming soon',
+  comingSoonLabel: 'Notify me at launch',
   // Optional secondary retailers. Delete any you don't use — the row hides itself
   // when the array is empty.
   otherRetailers: [
@@ -25,9 +25,10 @@ export const BOOK = {
   formats: 'Paperback · Kindle',
   pageCount: null, // e.g. 312 — set to null to hide
   blurb:
-    'Russia crossed into Poland and America stayed home. What crossed the ' +
-    'border instead was a volunteer army with no flag, no legal standing, and ' +
-    'nothing to fall back on but each other.',
+    'Russia crossed into Poland and America stayed home. Americans ' +
+      'went anyway, entering a war where drones have become weather ' +
+      'and institutions capable of measuring everyone are no longer ' +
+      'capable of protecting anyone.',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,11 +39,10 @@ export const BOOK = {
 export const SAMPLE = {
   headline: 'Read the opening',
   sub:
-    'The prologue and the first chapter, free, in your browser. No download, ' +
-    'no newsletter, no drip sequence. Leave an email and the sample opens ' +
-    'below.',
+    'Read the prologue and Chapter One free in your browser. Enter ' +
+      'your email and the sample opens immediately below.',
   // Text of the unlock button.
-  cta: 'Read the prologue and chapter one',
+  cta: 'Read the prologue and Chapter One',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -53,15 +53,17 @@ export const SAMPLE = {
 
 export const WALL = {
   eyebrow: 'The Build Wall',
-  headline: 'Real builds, real benches.',
+  headline: 'Built on real benches.',
   sub:
-    'The novel opens on a girl assembling a drone at her kitchen table from ' +
-    'resin, regrind, and salvaged cells. People actually do this. These are ' +
-    'their builds, featured with permission and credited to them.',
+    'The novel opens with a girl building a drone at her kitchen ' +
+      'table from resin, regrind, salvaged cells, and parts that ' +
+      'refuse to fit the first time. Makers are already doing ' +
+      'versions of this in the real world. These are their builds, ' +
+      'shared with permission and credited to them.',
   emptyCopy:
-    'The wall is just getting started. If you build your own, we would like to ' +
-    'put it here \u2014 full credit, link back to you, and you keep every right ' +
-    'you had before.',
+    'The wall is just getting started. Built something worth ' +
+      'showing? Send it in. You keep the rights; the site gives you ' +
+      'full credit and a link back.',
   submitCta: 'Submit a build',
   submitEmail: 'wall@theamericanforeignlegion.com',
   submitSubject: 'Build Wall submission',
@@ -78,15 +80,15 @@ export const WALL = {
 
 export const GLOSSARY_INTRO = {
   eyebrow: 'Glossary',
-  headline: 'Which parts of this are real?',
+  headline: 'How much of this world already exists?',
   sub:
-    'Fifty terms from the novel, defined without spoilers \u2014 and marked so ' +
-    'you can tell what already exists from what was built for the book. Most ' +
-    'of it is real. That is the uncomfortable part.',
+    'Fifty spoiler-free terms from the novel, marked so you can ' +
+      'separate real technology, history, and geography from what the' +
+      ' book invents. Most of it is real. That is the uncomfortable ' +
+      'part.',
   footnote:
-    'Definitions are deliberately spoiler-free; nothing here gives away plot. ' +
-    'Every term is directly linkable \u2014 append #g- and the term\u2019s slug to ' +
-    'the site URL.',
+    'Every definition is spoiler-free. Each term can also be linked' +
+      ' directly using its glossary URL.',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -103,13 +105,12 @@ export const AUTHOR = {
   photo: null,
   // Occurrences of BOOK.title in these paragraphs render in italics automatically.
   bio: [
-    'Marcus Tetwiler is a first-time novelist and lives in the San Francisco ' +
-      'Bay Area with his wife, Molly, and their black Labrador, Frances. A ' +
-      'Kansas native, Marcus studied history and English at the University of ' +
-      'Kansas before beginning a career in technology, where he has spent the ' +
-      'past decade working with innovative software companies.',
-    'He looks forward to hearing from readers and continuing the story in ' +
-      'future books.',
+    'Marcus Tetwiler is a first-time novelist from Kansas who lives' +
+      ' in the San Francisco Bay Area with his wife, Molly, and their' +
+      ' black Labrador, Frances. He studied history and English at ' +
+      'the University of Kansas and has spent the past decade working' +
+      ' in technology startups.',
+    'The American Foreign Legion is his first novel.',
   ],
   // Set to null to hide the contact line.
   contactEmail: 'support@theamericanforeignlegion.com',
@@ -126,10 +127,10 @@ export const CAUSES_INTRO = {
   eyebrow: 'Contribute',
   headline: 'The war in this book is invented. The one it borrows from is not.',
   sub:
-    'These five organizations work the ground the novel only imagines \u2014 ' +
-    'frontline medicine, demining, evacuation, and the local groups who were ' +
-    'there first. Links go directly to them. Nothing is collected here, and no ' +
-    'part of any donation passes through this site.',
+    'The war in this book is fictional. These organizations work in' +
+      ' the real one, supporting medicine, demining, evacuation, ' +
+      'logistics, and local Ukrainian capacity. Links go directly to ' +
+      'them; this site does not collect or process donations.',
 };
 
 export const CAUSES = [

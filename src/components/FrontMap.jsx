@@ -154,8 +154,8 @@ export default function FrontMap() {
           <>
             <div className="front-map__header">
               <div className="front-map__header-text">
-                <h2>The World of The American Foreign Legion</h2>
-                <p>Control of Terrain &amp; Infrastructure Assessment — Current Operational Period</p>
+                <h2>The Eastern Front</h2>
+                <p>Terrain, control, infrastructure, and the routes that still function.</p>
               </div>
               <div className="front-map__header-logo">
                 <span className="front-map__header-logo-mark">⚑</span>
@@ -351,7 +351,7 @@ export default function FrontMap() {
                     )}
                     <p className="front-map__brief-summary">{active.summary}</p>
                     {active.origin === 'fictional' && (
-                      <p className="front-map__brief-origin">Does not exist. Created for the novel.</p>
+                      <p className="front-map__brief-origin">Fictional feature created for the novel.</p>
                     )}
                   </div>
                 </div>
@@ -371,14 +371,15 @@ export default function FrontMap() {
                 <div className="front-map__legend-item">
                   <span className="front-map__legend-swatch front-map__legend-swatch--active" /> Active
                   <span className="front-map__legend-swatch front-map__legend-swatch--fortified" /> Fortified
-                  <span className="front-map__legend-swatch front-map__legend-swatch--unknown" /> Unknown
+                  <span className="front-map__legend-swatch front-map__legend-swatch--unknown" /> Occupied
                   <span className="front-map__legend-swatch front-map__legend-swatch--hostile" /> Hostile
                 </div>
               </div>
 
               <p className="front-map__credit">
-                Cartography: AFL Operations Desk. Base geography derived from public domain sources;
-                front line, territory assessments, and all locations are fictional.
+Cartography: AFL Operations Desk. Base geography reflects real places.
+                Front lines, control assessments, operational overlays, and
+                novel-specific sites are fictional.
               </p>
             </div>
           </>

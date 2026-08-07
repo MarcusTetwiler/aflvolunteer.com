@@ -39,10 +39,10 @@ export default function ContributeSection() {
         </ul>
 
         <p className="contribute__disclaimer">
-          These organizations are listed because their work bears on the subject
-          of this novel. Listing is not endorsement by them of the book, and no
-          affiliation or sponsorship is implied in either direction. Donations
-          are made directly on each organization&rsquo;s own site.
+          These organizations are listed because their work bears directly on the
+          subject of the novel. No affiliation, sponsorship, or endorsement is
+          implied. Donations are made directly through each organization&rsquo;s own
+          site.
         </p>
       </div>
     </section>

@@ -37,7 +37,7 @@ export const MAP_LAYERS = [
   {
     "id": "military",
     "label": "Military Geography",
-    "note": "Corridors, sectors, and overlays"
+    "note": "Corridors, sectors, and control"
   },
   {
     "id": "infrastructure",
@@ -57,7 +57,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 1,
     "origin": "real",
-    "summary": "Western departure point for the eastern theater. Heathrow carries the outbound traffic toward Poland and the frontier.",
+    "summary": "Departure point for the novel’s eastbound volunteers. Heathrow routes passengers and freight toward Rzeszów and the Polish frontier.",
     "labelDx": 0,
     "labelDy": -14,
     "labelAnchor": "middle"
@@ -87,7 +87,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 2,
     "origin": "real",
-    "summary": "Heavily militarized Polish city well behind the frontier: watchtowers, rail-fed artillery, and autonomous air defense. Supports Allied command and communications.",
+    "summary": "Polish city behind the frontier that supports Allied command, communications, rail movement, and air defense.",
     "labelDx": 0,
     "labelDy": 0,
     "labelAnchor": "middle"
@@ -102,7 +102,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 2,
     "origin": "real",
-    "summary": "Polish transportation gateway on the S19 corridor, moving people and freight toward the Ukrainian frontier.",
+    "summary": "Southeastern Polish transport hub and the principal gateway for people and freight moving toward the Ukrainian frontier.",
     "labelDx": 0,
     "labelDy": 0,
     "labelAnchor": "middle"
@@ -117,7 +117,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 2,
     "origin": "fictional",
-    "summary": "NATO-aligned volunteer training and staging camp on the Polish side of the frontier, beside the former border crossing at Medyka.",
+    "summary": "NATO-aligned volunteer training and staging camp near the former border crossing at Medyka.",
     "labelDx": 0,
     "labelDy": 0,
     "labelAnchor": "middle"
@@ -162,7 +162,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 1,
     "origin": "real",
-    "summary": "Ukrainian capital astride the Dnipro and a central anchor of the Eastern Front. Independence Square sits at its civic center. Occupied; conditions unreported.",
+    "summary": "Ukraine’s capital on the Dnipro and a central geographic anchor of the eastern theater. Independence Square sits at its civic center. Occupied; conditions unreported.",
     "labelDx": 10,
     "labelDy": 5,
     "labelAnchor": "start"
@@ -177,7 +177,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 1,
     "origin": "real",
-    "summary": "Black Sea port city of broad streets and arcades, backed by docks, container yards, and rail. Occupied; conditions unreported.",
+    "summary": "Black Sea port city of broad streets, arcades, docks, container yards, and rail infrastructure. Occupied; conditions unreported.",
     "labelDx": -10,
     "labelDy": 3,
     "labelAnchor": "end"
@@ -192,7 +192,7 @@ export const MAP_PINS = [
     "layer": "places",
     "tier": 1,
     "origin": "real",
-    "summary": "Russian capital and the western terminus of the reconstructed east-west rail network. Ringed by depots, transfer stations, and checkpoints.",
+    "summary": "Russian capital and a major node on the reconstructed east-west rail system, ringed by depots, transfer stations, and checkpoints.",
     "labelDx": 0,
     "labelDy": -14,
     "labelAnchor": "middle"
@@ -251,7 +251,7 @@ export const MAP_LINES = [
     "layer": "infrastructure",
     "origin": "fictional",
     "kind": "rail",
-    "summary": "Transcontinental high-speed rail under Chinese-administered reconstruction, advertised as Construction Phase IV of XII. Its eastern terminus lies beyond the edge of this sheet; the corridor is identified there by Chinese signage and is not named.",
+    "summary": "High-speed reconstruction corridor advertised in Mandarin as Construction Phase IV of XII. The novel depicts Chinese-marked infrastructure along the route; the corridor itself is fictional.",
     "d": "M 1000.0,283.4 L 932.2,262.5 L 871.2,267.7 L 824.1,276.6 L 729.7,302.1 L 653.6,325.1 L 588.1,372.1",
     "labelAt": [
       824.1,
@@ -264,7 +264,7 @@ export const MAP_LINES = [
     "layer": "infrastructure",
     "origin": "fictional",
     "kind": "rail-planned",
-    "summary": "Projected continuation toward Warsaw and western Europe, as depicted in the corridor's own advertising. No track exists west of the front.",
+    "summary": "Advertised continuation toward Warsaw and western Europe. The map treats the extension as projected rather than confirmed infrastructure.",
     "d": "M 588.1,372.1 L 542.5,368.7",
     "labelAt": [
       542.5,
@@ -277,7 +277,7 @@ export const MAP_LINES = [
     "layer": "infrastructure",
     "origin": "real",
     "kind": "air",
-    "summary": "Scheduled westbound-to-frontier air link, the standard approach for personnel and freight entering the theater.",
+    "summary": "Commercial air route from Heathrow to Rzeszów used by volunteers and other passengers entering the eastern theater.",
     "d": "M 184.3,387.6 L 322.0,377.3 L 440.7,385.2 L 559.3,425.8",
     "labelAt": [
       440.7,
@@ -306,7 +306,7 @@ export const MAP_AREAS = [
     "shortLabel": "DEPOPULATED BELT",
     "layer": "infrastructure",
     "origin": "fictional",
-    "summary": "Former population centers remain marked on official maps despite large-scale depopulation.",
+    "summary": "Former population centers remain on official maps even where civilian life has largely withdrawn from the landscape.",
     "d": "M 840.7,207.7 L 1000.0,202.4 L 1000.0,359.1 L 850.8,364.3 L 811.9,306.8 L 806.8,239.0 Z",
     "labelAt": [
       906.8,
@@ -320,7 +320,7 @@ export const MAP_AREAS = [
     "shortLabel": "RECONSTRUCTION ZONE",
     "layer": "infrastructure",
     "origin": "fictional",
-    "summary": "Repaired roads, transfer stations, water towers, construction yards, prefab housing, and customs infrastructure tracking the rail axis. Signage is largely in Mandarin.",
+    "summary": "Repaired roads, transfer stations, water towers, construction yards, prefab housing, and customs infrastructure follow the rail axis. Much of the signage is in Mandarin.",
     "d": "M 847.5,246.8 L 728.8,254.6 L 644.1,296.4 L 574.6,343.4 L 542.4,395.6 L 586.4,400.8 L 659.3,359.1 L 735.6,332.9 L 850.8,312.1 Z",
     "labelAt": [
       620.3,
@@ -334,7 +334,7 @@ export const MAP_AREAS = [
     "shortLabel": "STILL EARTH",
     "layer": "military",
     "origin": "fictional",
-    "summary": "Farmland deliberately rendered unusable. Officially recorded as arable; nothing has been grown here for years.",
+    "summary": "Farmland deliberately rendered unusable and still recorded on official maps as agricultural land.",
     "d": "M 630.5,411.3 L 688.1,421.7 L 693.2,468.7 L 650.8,489.6 L 616.9,463.5 Z",
     "labelAt": [
       654.2,
@@ -348,7 +348,7 @@ export const MAP_AREAS = [
     "shortLabel": "",
     "layer": "military",
     "origin": "fictional",
-    "summary": "Localized military district around the former border crossing: covered roads, ruined rail, defensive belts, and layered drone defenses.",
+    "summary": "Military district around the former border crossing: covered roads, ruined rail, defensive belts, and layered drone defenses.",
     "d": "M 564.4,420.4 L 586.4,423.0 L 588.1,441.3 L 566.1,442.6 Z",
     "labelAt": [
       575.4,

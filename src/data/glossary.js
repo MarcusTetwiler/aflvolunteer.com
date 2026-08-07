@@ -45,7 +45,7 @@ export const GLOSSARY = [
     "term": "American Foreign Legion",
     "group": "world",
     "origin": "invented",
-    "definition": "A network of American volunteers serving alongside NATO-aligned forces overseas."
+    "definition": "The name used in the novel for Americans who volunteer into NATO-aligned formations after the United States stays out of the war."
   },
   {
     "id": "anti-drone-netting",
@@ -59,14 +59,14 @@ export const GLOSSARY = [
     "term": "Artificial Intelligence in Warfare",
     "group": "tech",
     "origin": "real",
-    "definition": "The use of AI systems to assist detection, prediction, targeting, logistics, and battlefield decision-making."
+    "definition": "The use of artificial intelligence to assist detection, prediction, targeting, logistics, and battlefield decision-making."
   },
   {
     "id": "autonomous-warfare",
     "term": "Autonomous Warfare",
     "group": "tech",
     "origin": "real",
-    "definition": "Warfare in which machines increasingly perform navigation, identification, coordination, or combat functions with reduced human intervention."
+    "definition": "Warfare in which machines perform more navigation, identification, coordination, and combat functions with less direct human control."
   },
   {
     "id": "battlefield-3d-printing",
@@ -87,14 +87,14 @@ export const GLOSSARY = [
     "term": "Camp Tadeusz",
     "group": "world",
     "origin": "invented",
-    "definition": "A NATO-aligned training and staging location near Medyka used by volunteers and allied forces."
+    "definition": "A fictional NATO-aligned volunteer training and staging camp near Medyka, Poland."
   },
   {
     "id": "carrier-drone",
     "term": "Carrier Drone",
     "group": "tech",
     "origin": "real",
-    "definition": "A larger drone capable of transporting or supporting smaller unmanned systems."
+    "definition": "A larger drone that transports, deploys, refuels, or otherwise supports smaller unmanned systems."
   },
   {
     "id": "command-and-control",
@@ -143,14 +143,14 @@ export const GLOSSARY = [
     "term": "Drone Swarm",
     "group": "tech",
     "origin": "real",
-    "definition": "A group of drones coordinated to operate together across a shared mission or battlespace."
+    "definition": "Multiple drones coordinated to operate together across a shared mission or battlespace."
   },
   {
     "id": "drone-warfare",
     "term": "Drone Warfare",
     "group": "tech",
     "origin": "real",
-    "definition": "The military use of remotely operated or autonomous aerial and ground systems for reconnaissance, logistics, and combat."
+    "definition": "The military use of remotely operated or autonomous unmanned systems for reconnaissance, logistics, targeting, and combat."
   },
   {
     "id": "electronic-warfare",
@@ -171,7 +171,7 @@ export const GLOSSARY = [
     "term": "Fiber-Optic Drone",
     "group": "tech",
     "origin": "real",
-    "definition": "A drone controlled through a physical fiber-optic connection rather than relying entirely on radio signals."
+    "definition": "A drone controlled through a physical fiber-optic link, making the control connection resistant to conventional radio jamming."
   },
   {
     "id": "fpv-drone",
@@ -192,7 +192,7 @@ export const GLOSSARY = [
     "term": "Hardwired Drone",
     "group": "tech",
     "origin": "real",
-    "definition": "A drone whose control or communications link includes a physical cable rather than depending entirely on wireless transmission."
+    "definition": "A drone whose control or communications link uses a physical cable instead of relying entirely on wireless transmission."
   },
   {
     "id": "interceptor-missile",
@@ -227,7 +227,7 @@ export const GLOSSARY = [
     "term": "Kyiv",
     "group": "place",
     "origin": "real",
-    "definition": "The capital of Ukraine and one of the central geographic reference points in AFL’s European conflict."
+    "definition": "Ukraine’s capital and one of the central geographic anchors of The American Foreign Legion."
   },
   {
     "id": "loitering-munition",
@@ -255,21 +255,21 @@ export const GLOSSARY = [
     "term": "Medyka",
     "group": "place",
     "origin": "real",
-    "definition": "A Polish town near the Ukrainian border and an important geographic gateway in the novel."
+    "definition": "A Polish border town and gateway between southeastern Poland and western Ukraine."
   },
   {
     "id": "micro-kit-fabricator",
     "term": "Micro-Kit Fabricator",
     "group": "world",
     "origin": "invented",
-    "definition": "A portable fabrication system used to produce replacement polymer components in the field."
+    "definition": "A fictional portable fabrication system used to produce replacement polymer components in the field."
   },
   {
     "id": "nations-series",
     "term": "Nations Series",
     "group": "world",
     "origin": "invented",
-    "definition": "A major international drone-racing competition featuring elite pilots, national identities, sponsors, and global audiences."
+    "definition": "A fictional international drone-racing competition built around elite pilots, national identities, sponsors, betting, and global audiences."
   },
   {
     "id": "nato",
@@ -283,7 +283,7 @@ export const GLOSSARY = [
     "term": "NATO Volunteer",
     "group": "world",
     "origin": "invented",
-    "definition": "A civilian or former service member who joins forces operating alongside NATO-aligned units without being part of a conventional American deployment."
+    "definition": "A volunteer who joins NATO-aligned forces without serving as part of a conventional American deployment."
   },
   {
     "id": "neural-interface",
@@ -297,7 +297,7 @@ export const GLOSSARY = [
     "term": "Neural Sync",
     "group": "world",
     "origin": "invented",
-    "definition": "A human-machine interface used to create a more direct connection between an operator and advanced control systems."
+    "definition": "A fictional human-machine interface used to create a more direct connection between an operator and advanced control systems."
   },
   {
     "id": "radio-frequency-signature",
@@ -332,7 +332,7 @@ export const GLOSSARY = [
     "term": "Screamer Drone",
     "group": "world",
     "origin": "invented",
-    "definition": "A small drone designed to use powerful acoustic output as a battlefield weapon or disruption system."
+    "definition": "A fictional small drone that uses intense acoustic output as a battlefield weapon or disruption system."
   },
   {
     "id": "solid-state-battery",
@@ -346,14 +346,14 @@ export const GLOSSARY = [
     "term": "Spider Drone",
     "group": "world",
     "origin": "invented",
-    "definition": "A large multi-legged ground combat drone designed to move across terrain and structures."
+    "definition": "A fictional multi-legged ground combat drone designed to move across damaged terrain and structures."
   },
   {
     "id": "still-earth",
     "term": "Still Earth",
     "group": "world",
     "origin": "invented",
-    "definition": "A wartime policy associated with deliberately damaged or sterilized agricultural land."
+    "definition": "A fictional wartime policy of deliberately sterilizing agricultural land so that it can no longer support ordinary use."
   },
   {
     "id": "strait-of-hormuz",
@@ -374,13 +374,13 @@ export const GLOSSARY = [
     "term": "Talon",
     "group": "world",
     "origin": "invented",
-    "definition": "The professional callsign associated with a globally recognized American drone pilot."
+    "definition": "The callsign of a globally recognized American drone pilot in the novel."
   },
   {
     "id": "whisper-pin",
     "term": "Whisper Pin",
     "group": "world",
     "origin": "invented",
-    "definition": "A small wearable communications device capable of translating spoken language and supporting digital communication."
+    "definition": "A fictional wearable communications device used for translation and digital communication."
   }
 ];

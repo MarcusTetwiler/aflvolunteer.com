@@ -122,7 +122,7 @@ export default function ReadSection() {
             </div>
 
             <form className="read__form" onSubmit={handleSubmit} noValidate>
-              <p className="read__form-label">Unlock the sample</p>
+              <p className="read__form-label">Open the sample</p>
 
               <div className="read__field">
                 <label htmlFor="read-name">Name</label>
@@ -161,10 +161,9 @@ export default function ReadSection() {
               </button>
 
               <p className="read__fine-print">
-                Opens immediately, right here on the page. By submitting you
-                agree to occasional email about the book &mdash; no drip
-                sequence, and every message carries a one-click unsubscribe.
-                Your address is never sold or shared.
+                The sample opens immediately on this page. By submitting, you agree to
+                occasional email about the book. Every message includes a one-click
+                unsubscribe, and your address is never sold or shared.
               </p>
             </form>
           </div>
@@ -213,7 +212,7 @@ export default function ReadSection() {
               {BOOK.available ? (
                 <>
                   <p className="read__end-copy">
-                    That&rsquo;s the sample. The rest of the book is on Amazon.
+                    That&rsquo;s the opening. Continue with the full book on Amazon.
                   </p>
                   <a
                     className="read__end-cta"
@@ -227,8 +226,7 @@ export default function ReadSection() {
                 </>
               ) : (
                 <p className="read__end-copy">
-                  That&rsquo;s the sample. The full book is on the way &mdash;
-                  we&rsquo;ll email you when it lands.
+                  That&rsquo;s the opening. We&rsquo;ll email you when the full book is available.
                 </p>
               )}
             </div>
