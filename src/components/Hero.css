@@ -47,6 +47,8 @@
 
 .hero__map-wrap {
   margin-top: 4px;
+  padding-top: 30px;
+  scroll-margin-top: 70px;
 }
 
 @media (max-width: 640px) {

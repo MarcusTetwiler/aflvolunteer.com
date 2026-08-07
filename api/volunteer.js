@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email } = req.body || {};
+  const { name, email, list } = req.body || {};
 
   if (!name || typeof name !== 'string' || !name.trim()) {
     return res.status(400).json({ error: 'Name is required.' });
@@ -27,10 +27,13 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true, persisted: false });
   }
 
+  // `list` distinguishes which funnel the signup came from, so the sample-chapter
+  // audience stays separable from the retired early-reader list already in Redis.
   const record = {
     name: name.trim(),
     email: email.trim().toLowerCase(),
-    source: 'afl-volunteer-site',
+    source: 'afl-site',
+    list: typeof list === 'string' && list.trim() ? list.trim() : 'general',
     createdAt: new Date().toISOString(),
   };
 
@@ -40,8 +43,9 @@ export default async function handler(req, res) {
     const hashKey = `volunteer:${record.email}`;
 
     const pipeline = [
-      ['HSET', hashKey, 'name', record.name, 'email', record.email, 'source', record.source, 'createdAt', record.createdAt],
+      ['HSET', hashKey, 'name', record.name, 'email', record.email, 'source', record.source, 'list', record.list, 'createdAt', record.createdAt],
       ['LPUSH', 'volunteers:all', JSON.stringify(record)],
+      ['LPUSH', `volunteers:${record.list}`, JSON.stringify(record)],
     ];
 
     const upstashRes = await fetch(`${restUrl}/pipeline`, {

@@ -1,14 +1,35 @@
-# AFL Volunteer Site
+# AFL Site
 
-Email-gated front door for *The American Foreign Legion*. Visitors explore
-The Front, see the manuscript is real and active, and volunteer with their
-name + email — which immediately opens **Redline**
-(`https://redline-afl.vercel.app/`) in a new tab. No waiting screen, no
-newsletter framing.
+Front door for *The American Foreign Legion*. The book is published: visitors
+explore The Front, read the first two chapters free behind a light email gate,
+buy on Amazon, and can click through to a set of philanthropic organizations.
+
+> The early-reader / Redline program is **retired**. The `CtaSection` and
+> `FeatureStory` components that drove it have been removed. Existing signups
+> are still in Redis under `volunteers:all`.
+
+## Before launch: `BOOK.available`
+
+The Amazon listing isn't live yet, so `BOOK.available` is set to `false` in
+`src/site.config.js`. While it's false, no Amazon link renders anywhere — the
+buy button becomes inert "Coming soon" text, the nav button and sticky mobile
+bar point at the free sample instead, and the end-of-sample CTA becomes a
+promise to email rather than a link.
+
+**When the listing goes live:** paste the URL into `BOOK.amazonUrl` and flip
+`available` to `true`. That's the whole launch checklist — every CTA turns on
+at once.
+
+## Editing content
+
+**Almost everything you'll want to change lives in `src/site.config.js`** —
+the Amazon link, cover image path, book blurb, nav labels, contact emails, and
+the philanthropy organizations. Chapter text lives in `src/data/chapters.js`.
+You shouldn't need to open a component to update copy.
 
 ## Stack
 
-- Vite + React (no router needed — single page)
+- Vite + React (single page, anchor-scroll tabs — no router)
 - Vercel serverless function at `/api/volunteer` for email capture
 - Upstash Redis (via Vercel Marketplace) for storage
 
@@ -16,63 +37,59 @@ newsletter framing.
 
 ```
 src/
+  site.config.js         ← EDIT THIS: links, book details, orgs, nav
+  data/
+    chapters.js          ← EDIT THIS: free sample chapter text
   components/
-    Hero.jsx            The Front — map, headline, dek
-    FrontMap.jsx         interactive briefing map (static MVP: pins + tooltips)
+    Nav.jsx              sticky tab bar with scroll-spy
+    Hero.jsx             The Front — the map
+    FrontMap.jsx         interactive briefing map (Elena/Andrew POV toggle)
     IntroContext.jsx     Article 5 / occupation copy + field art
-    FeatureStory.jsx     "what you get" + Redline preview panel
-    CtaSection.jsx       volunteer form -> Upstash -> redirect to Redline
+    ReadSection.jsx      email gate -> in-browser sample reader
+    BuySection.jsx       cover, blurb, Amazon CTA
+    AuthorSection.jsx    bio + optional portrait
+    ContributeSection.jsx  philanthropy click-throughs
     Footer.jsx
 api/
   volunteer.js           POST handler, writes to Upstash via REST API
 public/images/
   hero-watercolor.jpg    full art (Intro/Context section)
-  cta-watercolor.jpg     cropped art (CTA section)
+  cta-watercolor.jpg     cropped art
+  cover.jpg              ← ADD THIS: book cover (2:3 ratio)
+  author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
+
+## The email gate is not protection
+
+The sample chapters ship inside the public JS bundle. Anyone who wants the text
+without giving an email can read it out of the bundle. This is deliberate — for
+a two-chapter sample the gate is a courtesy prompt, not DRM. If you ever need a
+real gate, move the text to an `/api/chapters` route that checks for a signup
+token before returning anything.
+
+Note also that Amazon KDP Select exclusivity caps how much of the book you may
+post on your own site (roughly 10%). Check two chapters against that limit.
+
+## Signup storage
+
+Every submission writes three things to Redis:
+
+- `volunteer:<email>` — a hash (idempotent, re-signups overwrite cleanly)
+- `volunteers:all` — chronological list of every signup
+- `volunteers:<list>` — per-funnel list, e.g. `volunteers:sample-chapters`
+
+The `list` field is what keeps the sample-chapter audience separable from the
+retired early-reader list already sitting in the same database.
+
+Storage failures are **soft** — `api/volunteer.js` returns 200 and the reader
+still gets the sample. A config problem should never cost you the read.
 
 ## Deploying
 
-### 1. Push to GitHub
-
-Create a new repo and upload this whole folder (GitHub web UI drag-and-drop
-works fine, same as the Redline deploy) — or via git:
-
-```bash
-git init
-git add .
-git commit -m "AFL volunteer site"
-git branch -M main
-git remote add origin <your-repo-url>
-git push -u origin main
-```
-
-### 2. Import into Vercel
-
-Vercel → Add New → Project → import the GitHub repo. Framework preset
-should auto-detect as Vite. No build settings need to change.
-
-### 3. Connect Upstash Redis
-
-Same as Redline's setup:
-
-1. In the Vercel project → **Storage** tab → **Marketplace Database** → add
-   an **Upstash** Redis database (or connect your existing one if you want
-   both sites sharing storage — recommended if you'd rather keep one
-   volunteer list).
-2. Use the `KV` env var prefix so it produces `KV_REST_API_URL` and
-   `KV_REST_API_TOKEN` — `api/volunteer.js` reads those directly.
-3. **Redeploy** after connecting storage — env vars only inject into new
-   builds, not the one that already ran.
-
-### 4. Verify
-
-Submit the form once. Two things should happen:
-- A new browser tab opens to `redline-afl.vercel.app`
-- In Upstash's data browser, you should see a `volunteer:<email>` hash and
-  an entry pushed onto the `volunteers:all` list
-
-If Upstash isn't wired yet, the form still works and still opens Redline —
-`api/volunteer.js` fails soft so a storage hiccup never blocks the reward.
+Same as before: upload the folder to GitHub (web UI drag-and-drop is fine),
+Vercel auto-detects the Vite preset, and `KV_REST_API_URL` / `KV_REST_API_TOKEN`
+inject from the Upstash integration. **Redeploy after connecting storage** —
+env vars only reach new builds.
 
 ## Migrating to Beehiiv later
 

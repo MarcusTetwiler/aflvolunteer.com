@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
+import Nav from './components/Nav';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
-import FeatureStory from './components/FeatureStory';
-import CtaSection from './components/CtaSection';
+import ReadSection from './components/ReadSection';
+import BuySection from './components/BuySection';
+import AuthorSection from './components/AuthorSection';
+import ContributeSection from './components/ContributeSection';
 import Footer from './components/Footer';
+import { BOOK } from './site.config';
 import './App.css';
 
 function StickyMobileCta() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const target = document.getElementById('volunteer');
+    const target = document.getElementById(BOOK.available ? 'buy' : 'read');
     if (!target || !('IntersectionObserver' in window)) return;
     const obs = new IntersectionObserver(
       ([entry]) => setVisible(!entry.isIntersecting),
@@ -24,7 +28,13 @@ function StickyMobileCta() {
 
   return (
     <div className="sticky-cta">
-      <a href="#volunteer">Volunteer — Enter Redline</a>
+      {BOOK.available ? (
+        <a href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer">
+          Buy the book
+        </a>
+      ) : (
+        <a href="#read">Read the opening</a>
+      )}
     </div>
   );
 }
@@ -32,10 +42,13 @@ function StickyMobileCta() {
 export default function App() {
   return (
     <>
+      <Nav />
       <Hero />
       <IntroContext />
-      <FeatureStory />
-      <CtaSection />
+      <ReadSection />
+      <BuySection />
+      <AuthorSection />
+      <ContributeSection />
       <Footer />
       <StickyMobileCta />
     </>
