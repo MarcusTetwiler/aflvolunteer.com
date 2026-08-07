@@ -93,24 +93,6 @@ const FOCUS_CLUSTER = {
   labelX: 460, labelY: 360,
 };
 
-const OFF_MAP = [
-  {
-    id: 'ngh',
-    name: 'Northrop Grumman Housing Community',
-    summary: 'A sterilized, corporate-issued suburban neighborhood where every mailbox bears the company logo and teenagers secretly hone their skills on drone simulators.',
-  },
-  {
-    id: 'classroom',
-    name: 'The Assessment Classroom',
-    summary: 'A local school facility draped in recruitment banners where students\u2019 pattern-anticipation skills are covertly evaluated to draft military drone pilots.',
-  },
-  {
-    id: 'heathrow',
-    name: 'Heathrow Airport',
-    summary: 'A bustling international transit hub where AFL volunteers first assemble at a lounge bar broadcasting drone races.',
-  },
-];
-
 // The main front: a single irregular boundary running the length of the
 // visible Baltic-to-Black-Sea border, verified against every story pin's
 // real-world projected position (see geodata-pipeline/ for the projection
@@ -357,18 +339,6 @@ export default function FrontMap() {
                 Cartography: AFL Operations Desk. Base geography derived from public domain sources;
                 front line, territory assessments, and all locations are fictional.
               </p>
-
-              <div className="front-map__off-map">
-                <p className="eyebrow">Off Map</p>
-                <ul>
-                  {OFF_MAP.map((loc) => (
-                    <li key={loc.id}>
-                      <span className="front-map__off-map-name">{loc.name}</span>
-                      <span className="front-map__off-map-summary">{loc.summary}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
             </div>
           </>
         ) : (
@@ -460,27 +430,6 @@ export default function FrontMap() {
                   </div>
                 </div>
               )}
-            </div>
-
-            <div className="front-map__footer-content">
-              <div className="andrew-ledger-summary">
-                <div className="andrew-ledger-summary__stat">
-                  <span className="andrew-ledger-summary__value">$840,650,000</span>
-                  <span className="andrew-ledger-summary__label">Lifetime contract earnings</span>
-                </div>
-                <div className="andrew-ledger-summary__stat">
-                  <span className="andrew-ledger-summary__value">3×</span>
-                  <span className="andrew-ledger-summary__label">Nations Series champion</span>
-                </div>
-                <div className="andrew-ledger-summary__stat">
-                  <span className="andrew-ledger-summary__value">{ANDREW_CONTRACTS.length}</span>
-                  <span className="andrew-ledger-summary__label">Contracts logged</span>
-                </div>
-                <div className="andrew-ledger-summary__stat">
-                  <span className="andrew-ledger-summary__value">TBD</span>
-                  <span className="andrew-ledger-summary__label">Anticipated flag bearer, Drone Olympic Team</span>
-                </div>
-              </div>
             </div>
           </>
         )}

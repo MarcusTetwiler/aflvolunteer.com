@@ -389,7 +389,7 @@
   color: var(--ink-soft);
 }
 
-/* ---- legend, credit, off-map ---- */
+/* ---- legend and credit ---- */
 .front-map__legend {
   display: flex;
   flex-wrap: wrap;
@@ -438,39 +438,6 @@
   color: var(--khaki);
   margin-top: 12px;
   line-height: 1.5;
-}
-
-.front-map__off-map {
-  margin-top: 36px;
-  padding-top: 24px;
-  border-top: 1px dashed var(--line-strong);
-}
-
-.front-map__off-map ul {
-  list-style: none;
-  margin: 14px 0 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.front-map__off-map li {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.front-map__off-map-name {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.front-map__off-map-summary {
-  font-size: 13px;
-  line-height: 1.55;
-  color: var(--umber);
 }
 
 /* ---- Andrew POV: contract ledger, dark mode ---- */
@@ -577,44 +544,7 @@
 }
 .andrew-brief-status--partial { color: #C2603A !important; }
 
-.andrew-ledger-summary {
-  margin-top: 24px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  font-family: var(--font-mono);
-}
-
-.andrew-ledger-summary__stat {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding-left: 16px;
-  border-left: 2px solid var(--line-strong);
-}
-
-.andrew-ledger-summary__value {
-  font-family: var(--font-display);
-  font-size: clamp(22px, 2.4vw, 30px);
-  font-weight: 600;
-  color: var(--ink);
-  line-height: 1.1;
-}
-
-.andrew-ledger-summary__label {
-  font-size: 12px;
-  color: var(--umber);
-  line-height: 1.4;
-}
-
 @media (max-width: 720px) {
-  .andrew-ledger-summary {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 20px;
-  }
-  .front-map__off-map ul {
-    grid-template-columns: 1fr;
-  }
   .front-map__brief {
     width: 190px;
   }
