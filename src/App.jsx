@@ -4,6 +4,7 @@ import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
 import BuildWall from './components/BuildWall';
+import Glossary from './components/Glossary';
 import BuySection from './components/BuySection';
 import AuthorSection from './components/AuthorSection';
 import ContributeSection from './components/ContributeSection';
@@ -56,6 +57,7 @@ export default function App() {
       <IntroContext />
       <ReadSection />
       <BuildWall />
+      <Glossary />
       <BuySection />
       <AuthorSection />
       <ContributeSection />

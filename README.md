@@ -41,6 +41,7 @@ src/
   data/
     chapters.js          ← EDIT THIS: free sample chapter text
     buildWall.js         ← EDIT THIS: featured builds + permission records
+    glossary.js          ← EDIT THIS: 50 spoiler-free term definitions
   components/
     Nav.jsx              sticky tab bar with scroll-spy
     Hero.jsx             The Front — the map
@@ -48,6 +49,7 @@ src/
     IntroContext.jsx     Article 5 / occupation copy + field art
     ReadSection.jsx      email gate -> in-browser sample reader
     BuildWall.jsx        homemade-drone builds, permission-gated
+    Glossary.jsx         50 terms, live search + Real/invented filters
     BuySection.jsx       cover, blurb, Amazon CTA
     AuthorSection.jsx    bio + optional portrait
     ContributeSection.jsx  philanthropy click-throughs
@@ -59,6 +61,7 @@ api/
   export.js              key-protected CSV export
 scripts/
   generate-images.py     regenerates responsive derivatives + og.jpg
+  inject-schema.mjs      postbuild: JSON-LD into dist/index.html
 design-assets/           full-res masters (NOT deployed)
 public/images/
   hero-watercolor-*.{avif,webp,jpg}   Intro/Context background, 3 widths
@@ -67,6 +70,37 @@ public/images/
   cover.jpg              ← ADD THIS: book cover (2:3 ratio)
   author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
+
+## Glossary
+
+Fifty spoiler-free definitions in `src/data/glossary.js`, rendered as one
+section with live search and filters. Each term carries an `origin` of `real`
+or `invented` and shows a badge, so readers can tell what already exists from
+what was built for the book.
+
+Every term has an anchor: `/#g-screamer-drone` links straight to it. Useful for
+social posts without needing a page per definition.
+
+**Why one section and not 50 pages.** Fifty pages each carrying a two-sentence
+definition is the thin, scaled-content pattern Google's spam policies target,
+and the penalty risk is sitewide rather than limited to those pages. Separate
+pages only make sense with 400+ words of original substance each.
+
+**Realistic SEO expectations.** Head terms here ("what is NATO", "drone
+warfare", "electronic warfare") are owned by Wikipedia, Britannica, and defense
+institutions; a new domain will not outrank them. The invented terms
+("Screamer Drone", "Camp Tadeusz") have no competition but no search volume
+either — until people read the book, at which point they search the terms and
+you own those results. The winnable middle is niche-but-real: fiber-optic drone,
+anti-drone netting, Kotwica, Mazepynka.
+
+`scripts/inject-schema.mjs` runs after `vite build` and injects `Book` and
+`DefinedTermSet` JSON-LD into `dist/index.html`, generated from the glossary
+data so it can't drift. Build-time rather than client-side, so crawlers get it
+without executing JS.
+
+**For SEM:** point paid traffic at the free sample, not at the glossary.
+Definition pages convert badly.
 
 ## The Build Wall
 

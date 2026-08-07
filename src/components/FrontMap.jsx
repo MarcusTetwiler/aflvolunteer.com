@@ -3,11 +3,27 @@ import { ANDREW_CONTRACTS, ANDREW_STATUS_LABEL, ANDREW_CLASS_LABEL } from './and
 import TheaterBasemap from './TheaterBasemap';
 import './FrontMap.css';
 
-// Coordinates are real-world projections (equirectangular, latitude-corrected,
-// bbox -11.0–48.0E / 35.0–64.0N — most of Europe and western Russia — onto a
-// 1000x880 canvas). See src/data/theaterMap.json and geodata-pipeline/.
+// Coordinates are real-world equirectangular projections onto a 1000x880
+// canvas. See src/data/theaterMap.json and geodata-pipeline/.
+//
+// To place a new pin, use exactly this (solved against all eight real-place
+// pins below; max error 0.19px):
+//
+//   x = (lon + 11.0) / 59.0 * 1000        // lon bbox -11.0E .. 48.0E
+//   y = -26.1028 * lat + 1732.06          // lat bbox 66.36N (y=0) .. 32.64N (y=880)
+//
+// The latitude bounds are NOT 35-64N. An earlier version of this comment said
+// they were, which puts a new pin ~65px out — about 2.5 degrees, enough to land
+// Lublin in Slovakia. Longitude is a plain linear fit; only latitude differs.
+//
 // At this zoom the theater is a hot zone inside a much larger visible map,
 // not the entire frame — the war is one churning piece of something bigger.
+//
+// SPOILER RULE FOR THIS ARRAY: these are cartographic entries, not scene notes.
+// A pin describes what a mapmaker inside this world could legitimately draw —
+// geography, infrastructure, and civic function. It must not describe what
+// happens at a location, what is hidden there, or what a character finds. If a
+// summary would only make sense to someone who has read the book, rewrite it.
 const LOCATIONS = [
   {
     id: 'medyka',
@@ -15,7 +31,7 @@ const LOCATIONS = [
     country: 'Medyka, Poland',
     x: 575.8, y: 431.8,
     status: 'active',
-    summary: 'A gritty volunteer intake camp pushed deep by the Russian advance, centered around an old statue of a Polish statesman.',
+    summary: 'NATO-aligned volunteer training and staging camp on the Polish side of the frontier, beside the former border crossing at Medyka.',
   },
   {
     id: 'lublin',
@@ -23,7 +39,7 @@ const LOCATIONS = [
     country: 'Poland',
     x: 569.0, y: 394.4,
     status: 'fortified',
-    summary: 'An impenetrable, militarized fortress city — watchtowers, rail-fed artillery, autonomous turrets, and a secure underground NATO command bunker.',
+    summary: 'Heavily militarized Polish city well behind the frontier: watchtowers, rail-fed artillery, and autonomous air defense. Supports Allied command and communications.',
   },
   {
     id: 'rzeszow',
@@ -31,7 +47,7 @@ const LOCATIONS = [
     country: 'Poland',
     x: 559.4, y: 425.9,
     status: 'active',
-    summary: 'A city along the S19 highway, near the front.',
+    summary: 'Polish transportation gateway on the S19 corridor, moving people and freight toward the Ukrainian frontier.',
   },
   {
     id: 'lviv',
@@ -39,23 +55,23 @@ const LOCATIONS = [
     country: 'Ukraine',
     x: 593.7, y: 431.1,
     status: 'unknown',
-    summary: 'Status unknown. Under enemy occupation.',
+    summary: 'Western Ukrainian rail and road hub, the historic first stop east of the Polish border. Occupied; conditions unreported.',
   },
   {
     id: 'zalissia',
-    name: 'Zalissia & the Soviet Tunnels',
+    name: 'Zalissia',
     country: 'Ukraine',
     x: 640, y: 370,
     status: 'unknown',
-    summary: 'National park and Soviet-era tunnel network. Status unknown. Under enemy occupation.',
+    summary: 'National parkland and long-abandoned settlements northwest of Kyiv, threaded with Soviet-era infrastructure. Occupied; conditions unreported.',
   },
   {
     id: 'kyiv',
-    name: 'The Maidan',
-    country: 'Kyiv, Ukraine',
+    name: 'Kyiv',
+    country: 'Ukraine',
     x: 703.8, y: 415.2,
     status: 'unknown',
-    summary: 'Status unknown. Under enemy occupation.',
+    summary: 'Ukrainian capital astride the Dnipro and a central anchor of the Eastern Front. Independence Square sits at its civic center. Occupied; conditions unreported.',
   },
   {
     id: 'odesa',
@@ -63,7 +79,7 @@ const LOCATIONS = [
     country: 'Ukraine',
     x: 707.2, y: 518.8,
     status: 'unknown',
-    summary: 'Status unknown. Under enemy occupation.',
+    summary: 'Black Sea port city of broad streets and arcades, backed by docks, container yards, and rail. Occupied; conditions unreported.',
   },
   {
     id: 'moscow',
@@ -71,15 +87,15 @@ const LOCATIONS = [
     country: 'Russia',
     x: 824.0, y: 276.7,
     status: 'hostile',
-    summary: 'The enemy capital.',
+    summary: 'Russian capital and the western terminus of the reconstructed east-west rail network. Ringed by depots, transfer stations, and checkpoints.',
   },
   {
     id: 'london',
-    name: 'London Command Center',
+    name: 'London',
     country: 'United Kingdom',
     x: 184.3, y: 387.6,
     status: 'active',
-    summary: 'A secretly retrofitted auditorium converted into a massive drone hangar.',
+    summary: 'Western departure point for the eastern theater. Heathrow carries the outbound traffic toward Poland and the frontier.',
   },
 ];
 

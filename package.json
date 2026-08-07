@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && node scripts/inject-schema.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "images": "python3 scripts/generate-images.py"

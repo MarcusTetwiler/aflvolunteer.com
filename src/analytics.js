@@ -41,3 +41,7 @@ export const trackBuildClicked = (buildId) => safeTrack('build_clicked', { build
 /** Someone opened the submit-a-build mailto. Inbound interest from the target audience. */
 export const trackBuildSubmitIntent = (location) =>
   safeTrack('build_submit_intent', { location });
+
+/** Which glossary filter people reach for. Tells you what readers came to look up. */
+export const trackGlossaryFilter = (filterId) =>
+  safeTrack('glossary_filter', { filter: filterId });

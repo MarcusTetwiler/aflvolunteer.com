@@ -72,6 +72,24 @@ export const WALL = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  GLOSSARY
+//  Terms live in src/data/glossary.js.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const GLOSSARY_INTRO = {
+  eyebrow: 'Glossary',
+  headline: 'Which parts of this are real?',
+  sub:
+    'Fifty terms from the novel, defined without spoilers \u2014 and marked so ' +
+    'you can tell what already exists from what was built for the book. Most ' +
+    'of it is real. That is the uncomfortable part.',
+  footnote:
+    'Definitions are deliberately spoiler-free; nothing here gives away plot. ' +
+    'Every term is directly linkable \u2014 append #g- and the term\u2019s slug to ' +
+    'the site URL.',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  AUTHOR
 //  Photo is optional. Leave `photo` as null and the section renders text-only
 //  rather than showing an empty frame.
@@ -184,8 +202,8 @@ export const NAV_LINKS = [
   { href: '#front', label: 'The Front' },
   { href: '#read', label: 'Read' },
   { href: '#wall', label: 'Builds' },
+  { href: '#glossary', label: 'Glossary' },
   { href: '#buy', label: 'Buy' },
-  { href: '#author', label: 'Author' },
   { href: '#contribute', label: 'Contribute' },
 ];
 
