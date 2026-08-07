@@ -1,0 +1,197 @@
+.glossary {
+  background: var(--paper-deep);
+  padding: 96px 0;
+  border-top: 1px solid var(--line);
+}
+
+.glossary__head {
+  max-width: 660px;
+  margin-bottom: 40px;
+}
+
+.glossary__title {
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 14px 0 18px;
+}
+
+.glossary__sub {
+  font-size: 16.5px;
+  line-height: 1.62;
+  color: var(--umber);
+}
+
+/* ── Controls ───────────────────────────────────────────────────────────── */
+
+.glossary__controls {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.glossary__search {
+  display: flex;
+  flex-direction: column;
+  min-width: 260px;
+  flex: 1 1 260px;
+}
+
+.glossary__search-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--umber);
+  margin-bottom: 7px;
+}
+
+.glossary__search input {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  padding: 11px 13px;
+  transition: border-color 0.16s ease;
+}
+
+.glossary__search input:focus {
+  border-color: var(--burnt);
+  outline: none;
+}
+
+.glossary__filters {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.glossary__filter {
+  background: none;
+  border: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--umber);
+  padding: 8px 13px;
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+}
+
+.glossary__filter:hover {
+  color: var(--ink);
+}
+
+.glossary__filter.is-active {
+  color: var(--ink);
+  background: var(--paper);
+  border-color: var(--line-strong);
+}
+
+.glossary__count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--khaki);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.glossary__no-results {
+  padding: 40px 0;
+  font-size: 16px;
+  color: var(--umber);
+}
+
+/* ── List ───────────────────────────────────────────────────────────────── */
+
+.glossary__list {
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 56px;
+}
+
+.glossary__entry {
+  break-inside: avoid;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--line);
+  /* Clears the sticky nav when someone lands on a #g-<slug> deep link. */
+  scroll-margin-top: 80px;
+}
+
+.glossary__term {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 7px;
+}
+
+.glossary__term-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.glossary__badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border: 1px solid;
+  white-space: nowrap;
+  cursor: help;
+}
+
+.glossary__badge--real {
+  color: var(--umber);
+  border-color: var(--line-strong);
+}
+
+.glossary__badge--invented {
+  color: var(--burnt);
+  border-color: rgba(189, 100, 51, 0.45);
+}
+
+.glossary__definition {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--umber);
+}
+
+.glossary__footnote {
+  max-width: 660px;
+  margin-top: 32px;
+  font-size: 12.5px;
+  line-height: 1.62;
+  color: var(--khaki);
+}
+
+@media (max-width: 860px) {
+  .glossary__list {
+    columns: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .glossary {
+    padding: 66px 0;
+  }
+  .glossary__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .glossary__filters {
+    gap: 4px;
+  }
+}

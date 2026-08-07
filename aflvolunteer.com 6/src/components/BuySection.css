@@ -1,0 +1,246 @@
+.buy {
+  position: relative;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 100px 0;
+  overflow: hidden;
+}
+
+/* Reuses the field art already in the repo, held far back so the cover and the
+   type stay dominant. */
+.buy__bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/cta-watercolor-1036.jpg');
+  background-image: image-set(
+    url('/images/cta-watercolor-1036.avif') type('image/avif'),
+    url('/images/cta-watercolor-1036.webp') type('image/webp'),
+    url('/images/cta-watercolor-1036.jpg') type('image/jpeg')
+  );
+  background-size: cover;
+  background-position: 50% 42%;
+  background-repeat: no-repeat;
+  opacity: 0.2;
+  filter: grayscale(0.35) contrast(1.05);
+  z-index: 0;
+}
+
+.buy::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(28, 25, 22, 0.94) 0%,
+    rgba(28, 25, 22, 0.72) 55%,
+    rgba(28, 25, 22, 0.86) 100%
+  );
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .buy__bg {
+    background-image: url('/images/cta-watercolor-768.jpg');
+    background-image: image-set(
+      url('/images/cta-watercolor-768.avif') type('image/avif'),
+      url('/images/cta-watercolor-768.webp') type('image/webp'),
+      url('/images/cta-watercolor-768.jpg') type('image/jpeg')
+    );
+  }
+}
+
+@media (max-width: 480px) {
+  .buy__bg {
+    background-image: url('/images/cta-watercolor-480.jpg');
+    background-image: image-set(
+      url('/images/cta-watercolor-480.avif') type('image/avif'),
+      url('/images/cta-watercolor-480.webp') type('image/webp'),
+      url('/images/cta-watercolor-480.jpg') type('image/jpeg')
+    );
+  }
+}
+
+.buy__inner {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 72px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.buy__cover-wrap {
+  perspective: 1200px;
+}
+
+.buy__cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(231, 214, 188, 0.1);
+}
+
+.buy__cover--fallback {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(160deg, #2B2620 0%, #433D31 100%);
+  border: 1px solid rgba(231, 214, 188, 0.16);
+  padding: 34px 28px;
+}
+
+.buy__cover-mark {
+  font-size: 26px;
+  color: var(--burnt);
+}
+
+.buy__cover-title {
+  font-family: var(--font-display);
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.14;
+  color: var(--paper);
+}
+
+.buy__copy .eyebrow {
+  color: var(--highlight);
+}
+
+.buy__copy .eyebrow::before {
+  background: var(--burnt-bright);
+}
+
+.buy__title {
+  font-size: clamp(34px, 5vw, 54px);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  color: var(--paper);
+  margin: 16px 0 22px;
+}
+
+.buy__blurb {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: rgba(231, 214, 188, 0.86);
+  max-width: 560px;
+}
+
+.buy__meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--khaki);
+  margin-top: 22px;
+}
+
+.buy__actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 34px;
+  flex-wrap: wrap;
+}
+
+.buy__primary {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--paper);
+  background: var(--burnt);
+  border: 1px solid var(--burnt);
+  padding: 15px 30px;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.buy__primary:hover {
+  background: var(--burnt-bright);
+  border-color: var(--burnt-bright);
+}
+
+.buy__secondary {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(231, 214, 188, 0.7);
+  border-bottom: 1px solid rgba(231, 214, 188, 0.3);
+  padding-bottom: 3px;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.buy__secondary:hover {
+  color: var(--paper);
+  border-bottom-color: var(--burnt);
+}
+
+.buy__retailers {
+  display: flex;
+  gap: 22px;
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+}
+
+.buy__retailers a {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--khaki);
+  text-decoration: none;
+  transition: color 0.16s ease;
+}
+
+.buy__retailers a:hover {
+  color: var(--highlight);
+}
+
+@media (max-width: 860px) {
+  .buy__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .buy__cover-wrap {
+    max-width: 230px;
+  }
+}
+
+@media (max-width: 640px) {
+  .buy {
+    padding: 66px 0;
+  }
+  .buy__blurb {
+    font-size: 18px;
+  }
+  .buy__actions {
+    gap: 14px;
+  }
+  .buy__primary {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Pre-launch: distinct from the live buy button, but clickable — the label
+   promises an action, so it scrolls to the email capture. */
+.buy__primary--pending {
+  background: transparent;
+  color: var(--highlight);
+  border: 1px dashed rgba(216, 168, 120, 0.55);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.buy__primary--pending:hover {
+  background: rgba(216, 168, 120, 0.12);
+  border-style: solid;
+  border-color: var(--highlight);
+  color: var(--paper);
+}
