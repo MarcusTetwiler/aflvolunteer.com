@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NAV_LINKS, BOOK } from '../site.config';
+import { trackBuyClicked } from '../analytics';
 import './Nav.css';
 
 export default function Nav() {
@@ -63,6 +64,7 @@ export default function Nav() {
             href={BOOK.amazonUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackBuyClicked('nav')}
           >
             Buy the book
           </a>

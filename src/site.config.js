@@ -46,6 +46,32 @@ export const SAMPLE = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+//  THE BUILD WALL
+//  Featured builds live in src/data/buildWall.js. Nothing renders without a
+//  recorded permission grant.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const WALL = {
+  eyebrow: 'The Build Wall',
+  headline: 'Real builds, real benches.',
+  sub:
+    'The novel opens on a girl assembling a drone at her kitchen table from ' +
+    'resin, regrind, and salvaged cells. People actually do this. These are ' +
+    'their builds, featured with permission and credited to them.',
+  emptyCopy:
+    'The wall is just getting started. If you build your own, we would like to ' +
+    'put it here \u2014 full credit, link back to you, and you keep every right ' +
+    'you had before.',
+  submitCta: 'Submit a build',
+  submitEmail: 'wall@theamericanforeignlegion.com',
+  submitSubject: 'Build Wall submission',
+  creditNote:
+    'Every image here is published with its maker\u2019s permission and remains ' +
+    'theirs. Names link back to the builder. If you are featured and want your ' +
+    'build removed, email us and it comes down.',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 //  AUTHOR
 //  Photo is optional. Leave `photo` as null and the section renders text-only
 //  rather than showing an empty frame.
@@ -157,6 +183,7 @@ export const CAUSES = [
 export const NAV_LINKS = [
   { href: '#front', label: 'The Front' },
   { href: '#read', label: 'Read' },
+  { href: '#wall', label: 'Builds' },
   { href: '#buy', label: 'Buy' },
   { href: '#author', label: 'Author' },
   { href: '#contribute', label: 'Contribute' },

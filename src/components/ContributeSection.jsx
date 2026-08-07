@@ -1,4 +1,5 @@
 import { CAUSES, CAUSES_INTRO } from '../site.config';
+import { trackCauseClicked } from '../analytics';
 import './ContributeSection.css';
 
 export default function ContributeSection() {
@@ -19,6 +20,7 @@ export default function ContributeSection() {
                 href={cause.url}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackCauseClicked(cause.id)}
               >
                 <span className="contribute__index" aria-hidden="true">
                   {String(i + 1).padStart(2, '0')}

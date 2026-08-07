@@ -3,11 +3,15 @@ import Nav from './components/Nav';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
+import BuildWall from './components/BuildWall';
 import BuySection from './components/BuySection';
 import AuthorSection from './components/AuthorSection';
 import ContributeSection from './components/ContributeSection';
 import Footer from './components/Footer';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { BOOK } from './site.config';
+import { trackBuyClicked } from './analytics';
 import './App.css';
 
 function StickyMobileCta() {
@@ -29,7 +33,12 @@ function StickyMobileCta() {
   return (
     <div className="sticky-cta">
       {BOOK.available ? (
-        <a href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer">
+        <a
+          href={BOOK.amazonUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => trackBuyClicked('sticky-bar')}
+        >
           Buy the book
         </a>
       ) : (
@@ -46,11 +55,14 @@ export default function App() {
       <Hero />
       <IntroContext />
       <ReadSection />
+      <BuildWall />
       <BuySection />
       <AuthorSection />
       <ContributeSection />
       <Footer />
       <StickyMobileCta />
+      <Analytics />
+      <SpeedInsights />
     </>
   );
 }

@@ -1,4 +1,5 @@
 import { BOOK } from '../site.config';
+import { trackBuyClicked } from '../analytics';
 import './BuySection.css';
 
 export default function BuySection() {
@@ -10,7 +11,13 @@ export default function BuySection() {
     .join(' · ');
 
   return (
-    <section className="buy grain" id="buy">
+    <section className="buy" id="buy">
+      <div
+        className="buy__bg"
+        role="img"
+        aria-label="Watercolor field art: an FPV drone pilot in goggles gestures toward a swarm of drones under a smoke-and-fire sky above a pine forest."
+      />
+
       <div className="container buy__inner">
         <div className="buy__cover-wrap">
           {BOOK.coverImage ? (
@@ -43,6 +50,7 @@ export default function BuySection() {
                   href={BOOK.amazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() => trackBuyClicked('buy-section')}
                 >
                   Buy on Amazon
                 </a>

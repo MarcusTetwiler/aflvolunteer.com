@@ -40,24 +40,51 @@ src/
   site.config.js         ← EDIT THIS: links, book details, orgs, nav
   data/
     chapters.js          ← EDIT THIS: free sample chapter text
+    buildWall.js         ← EDIT THIS: featured builds + permission records
   components/
     Nav.jsx              sticky tab bar with scroll-spy
     Hero.jsx             The Front — the map
     FrontMap.jsx         interactive briefing map (Elena/Andrew POV toggle)
     IntroContext.jsx     Article 5 / occupation copy + field art
     ReadSection.jsx      email gate -> in-browser sample reader
+    BuildWall.jsx        homemade-drone builds, permission-gated
     BuySection.jsx       cover, blurb, Amazon CTA
     AuthorSection.jsx    bio + optional portrait
     ContributeSection.jsx  philanthropy click-throughs
     Footer.jsx
 api/
-  volunteer.js           POST handler, writes to Upstash via REST API
+  _shared.js             Redis pipeline, unsubscribe tokens, validation
+  volunteer.js           POST handler; consent record + optional ESP sync
+  unsubscribe.js         one-click opt-out, returns a styled confirmation page
+  export.js              key-protected CSV export
+scripts/
+  generate-images.py     regenerates responsive derivatives + og.jpg
+design-assets/           full-res masters (NOT deployed)
 public/images/
-  hero-watercolor.jpg    full art (Intro/Context section)
-  cta-watercolor.jpg     cropped art
+  hero-watercolor-*.{avif,webp,jpg}   Intro/Context background, 3 widths
+  cta-watercolor-*.{avif,webp,jpg}    Buy section background, 3 widths
+  og.jpg                              1200x630 social share card
   cover.jpg              ← ADD THIS: book cover (2:3 ratio)
   author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
+
+## The Build Wall
+
+A wall of real homemade drone builds, featured with permission. It doubles as
+lead generation: someone who builds drones is the target reader. See
+**OUTREACH.md** for the DM templates and workflow.
+
+`PUBLISHABLE_BUILDS` in `src/data/buildWall.js` filters out any entry whose
+`permission.granted` is not exactly `true`, so an unlicensed or half-finished
+entry cannot render. Screenshots of each grant go in `permissions/`, which is
+git-ignored — back them up somewhere else too.
+
+**Ask before you publish.** Posting first and asking after turns a friendly
+request into written evidence of infringement, and the audience you're courting
+is exactly the audience that would notice.
+
+With no entries the section renders a deliberate empty state with a submit CTA,
+which reads as new rather than broken.
 
 ## The email gate is not protection
 
@@ -70,100 +97,92 @@ token before returning anything.
 Note also that Amazon KDP Select exclusivity caps how much of the book you may
 post on your own site (roughly 10%). Check two chapters against that limit.
 
-## Signup storage
+## Email list
 
-Every submission writes three things to Redis:
+Signups write to Upstash Redis:
 
-- `volunteer:<email>` — a hash (idempotent, re-signups overwrite cleanly)
-- `volunteers:all` — chronological list of every signup
-- `volunteers:<list>` — per-funnel list, e.g. `volunteers:sample-chapters`
-
-The `list` field is what keeps the sample-chapter audience separable from the
-retired early-reader list already sitting in the same database.
+| Key | What |
+| --- | --- |
+| `volunteer:<email>` | Hash per person, incl. consent IP/UA and unsubscribe token |
+| `volunteers:all` | Chronological list of every signup |
+| `volunteers:<list>` | Per-funnel list, e.g. `volunteers:sample-chapters` |
+| `volunteers:unsubscribed` | Set of opted-out addresses |
 
 Storage failures are **soft** — `api/volunteer.js` returns 200 and the reader
 still gets the sample. A config problem should never cost you the read.
 
+An address in `volunteers:unsubscribed` is **never silently resurrected** by a
+later signup. Re-subscribing has to be deliberate.
+
+### Endpoints
+
+- `POST /api/volunteer` — capture a signup
+- `GET|POST /api/unsubscribe?email=…&token=…` — one-click opt-out, no login
+- `GET /api/export?key=…` — CSV of the list, incl. per-person unsubscribe URLs
+
+```
+curl "https://YOUR-DOMAIN/api/export?key=YOUR_KEY" -o volunteers.csv
+```
+
+Add `&list=sample-chapters` to export a single funnel.
+
+### Before you send your first email
+
+CAN-SPAM requires a working opt-out in every commercial message, honored within
+ten business days. `/api/unsubscribe` is that mechanism. Include both headers so
+Gmail and Yahoo render a native unsubscribe button:
+
+```
+List-Unsubscribe: <https://YOUR-DOMAIN/api/unsubscribe?email=…&token=…>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+```
+
+The `unsubscribe_url` column in the CSV export is already built per subscriber —
+merge it into your sends.
+
+**This site cannot send email.** It captures addresses and can hand them to an
+ESP; nothing here delivers a message. Set `BEEHIIV_API_KEY` and
+`BEEHIIV_PUBLICATION_ID` and every signup forwards to Beehiiv automatically
+(the code no-ops when they're absent). Until you connect an ESP, the launch
+announcement is a manual export away.
+
+## Environment variables
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `KV_REST_API_URL` | yes | Upstash, injected by the Vercel integration |
+| `KV_REST_API_TOKEN` | yes | Upstash, injected by the Vercel integration |
+| `UNSUBSCRIBE_SECRET` | recommended | Signs unsubscribe links. Falls back to the Redis token, but rotating Redis credentials would then break every link already in someone's inbox |
+| `EXPORT_KEY` | for export | Long random string. Without it `/api/export` refuses to run rather than exposing the list |
+| `BEEHIIV_API_KEY` | optional | Enables ESP sync |
+| `BEEHIIV_PUBLICATION_ID` | optional | Enables ESP sync |
+
+**Redeploy after changing env vars** — they only reach new builds.
+
+## Images
+
+Masters live in `design-assets/` and are **not** deployed; everything in
+`public/` ships whether referenced or not. The site serves AVIF/WebP/JPEG at
+1036, 768 and 480 px via CSS `image-set()`, plus `og.jpg` for social sharing.
+
+```
+pip install Pillow pillow-avif-plugin
+npm run images
+```
+
+The hero went from a single 716 kB JPEG to 40 kB of AVIF on a phone.
+
+## Analytics
+
+`@vercel/analytics` and `@vercel/speed-insights` are mounted in `App.jsx`.
+Custom funnel events live in `src/analytics.js`: `sample_unlocked`,
+`chapter_viewed`, `sample_finished`, `buy_clicked` (tagged by location), and
+`cause_clicked`.
+
+Pageviews and Speed Insights work on any plan. **Custom events require Vercel
+Pro** — on Hobby they silently no-op, so the funnel numbers won't appear.
+
 ## Deploying
 
-Same as before: upload the folder to GitHub (web UI drag-and-drop is fine),
-Vercel auto-detects the Vite preset, and `KV_REST_API_URL` / `KV_REST_API_TOKEN`
-inject from the Upstash integration. **Redeploy after connecting storage** —
-env vars only reach new builds.
-
-## Migrating to Beehiiv later
-
-`volunteers:all` is a Redis list of JSON strings (`{name, email, source,
-createdAt}`), and `volunteer:<email>` is a hash with the same fields. To
-move to Beehiiv:
-
-- **Bulk migration**: pull everything off `volunteers:all` (`LRANGE
-  volunteers:all 0 -1`) and import as a CSV, or
-- **Live sync going forward**: add a `fetch` call to Beehiiv's subscribe
-  endpoint inside `api/volunteer.js`, right alongside the Upstash write —
-  the frontend doesn't need to change either way.
-
-## MVP scope notes
-
-The Front Map is intentionally static for v1: hand-placed pins with
-hover/click tooltips, no toggleable layers (Drone Activity, Known/Unknown
-Signals, etc.). The data model (`LOCATIONS` array in `FrontMap.jsx`) is
-already shaped so layers could be added later by tagging each location and
-filtering, without a rebuild.
-
-## The map itself
-
-Elena's view of the Front Map sits on a **real geographic basemap** — a
-continental view of Europe and western Russia (Atlantic coast to Moscow,
-Scandinavia to the Mediterranean), sourced from Natural Earth's
-public-domain data and pre-processed into `src/data/theaterMap.json` (see
-`geodata-pipeline/README.md` for how to regenerate it). The Poland/Ukraine
-theater is a hot zone inside that much larger map, not the entire frame —
-the war is one churning piece of something bigger, which is also why
-London is a real on-canvas pin now instead of an off-map edge tab.
-
-The front itself isn't a single clean line. It's a main boundary curve
-plus several hand-authored organic "salient" and "pocket" blobs that bulge
-across it in both directions — a held pocket stranded inside occupied
-territory, an occupied salient pushing west — meant to read as fluid and
-contested rather than a tidy coastline. All story locations (Camp Tadeusz,
-Lublin, Rzeszów, Lviv, Zalissia, Kyiv, Odesa, Moscow, London) are fictional
-and hand-placed on top of that real geography, using the same lat/lon →
-SVG projection the basemap was built with, so they land at geographically
-honest positions. Lublin/Rzeszów/Medyka/Lviv sit close enough together in
-reality (~45px apart at this zoom) that they're shown as a single focus
-ring with one external callout rather than four crowded individual labels
-— each pin is still its own hoverable/clickable target underneath.
-
-**If you move a pin or change the map's bounding box**, re-check it against
-the front boundary and every salient blob — `FrontMap.jsx` has comments
-documenting which side of the line every pin needs to stay on, but none of
-that geometry self-corrects; it only protects pins at the coordinates it
-was actually verified against (see `geodata-pipeline/README.md` for the
-verification approach).
-
-## Elena / Andrew toggle
-
-The map has two POVs, switched via the toggle above the frame, and both
-render the **same underlying geography** — `TheaterBasemap` is one
-component used by both, themed via a `variant` prop (`"light"` for Elena,
-`"dark"` for Andrew). This matters: toggling should read as one world seen
-two ways, not two unrelated screens.
-
-- **Elena** — the operational map described above.
-- **Andrew** — the same countries, rivers, and projection, recolored dark
-  (faint amber land fills, muted river glow) instead of replaced with an
-  abstract background. Layered on top: ~130 procedurally generated
-  drone-contract markers (sector codes like `NX-847`, classified
-  Talon/broadcast or Private — shown via dot color — and
-  Closed/Interrupted status — shown via a ring around the dot, since
-  classification and status are independent axes on the same contract and
-  both need to be visible at once). Generated in `andrewContracts.js` with
-  a fixed random seed, so positions/codes are stable across reloads. Every
-  contract sits on actual land, sampled from `src/data/landPoints.json` (a
-  precomputed grid of points inside the real country polygons — see
-  `geodata-pipeline/README.md` for how it's built), not scattered freely
-  across the canvas including open ocean. Deliberately contains no
-  character names or references to Elena — the two POVs don't leak into
-  each other, only the geography is shared.
-
+Upload the folder to GitHub (web UI drag-and-drop is fine); Vercel auto-detects
+the Vite preset and builds.

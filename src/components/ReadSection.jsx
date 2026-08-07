@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { SAMPLE, BOOK } from '../site.config';
 import { CHAPTERS } from '../data/chapters';
+import {
+  trackSampleUnlocked,
+  trackChapterViewed,
+  trackSampleFinished,
+  trackBuyClicked,
+} from '../analytics';
 import './ReadSection.css';
 
 const UNLOCK_KEY = 'afl:sample-unlocked';
@@ -22,6 +28,8 @@ export default function ReadSection() {
   const [errors, setErrors] = useState({});
   const [activeChapter, setActiveChapter] = useState(CHAPTERS[0]?.id);
   const readerRef = useRef(null);
+  const endRef = useRef(null);
+  const finishedFired = useRef(false);
   const justUnlocked = useRef(false);
 
   useEffect(() => {
@@ -30,6 +38,21 @@ export default function ReadSection() {
       justUnlocked.current = false;
     }
   }, [unlocked]);
+
+  useEffect(() => {
+    if (!unlocked || !endRef.current || !('IntersectionObserver' in window)) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !finishedFired.current) {
+          finishedFired.current = true;
+          trackSampleFinished();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(endRef.current);
+    return () => obs.disconnect();
+  }, [unlocked, activeChapter]);
 
   function validate() {
     const next = {};
@@ -66,9 +89,15 @@ export default function ReadSection() {
       // Non-fatal.
     }
 
+    trackSampleUnlocked();
     justUnlocked.current = true;
     setStatus('idle');
     setUnlocked(true);
+  }
+
+  function selectChapter(id) {
+    setActiveChapter(id);
+    trackChapterViewed(id);
   }
 
   const chapter = CHAPTERS.find((c) => c.id === activeChapter) || CHAPTERS[0];
@@ -132,30 +161,35 @@ export default function ReadSection() {
               </button>
 
               <p className="read__fine-print">
-                Opens immediately, right here on the page. No spam, no drip
-                sequence &mdash; occasional dispatches only.
+                Opens immediately, right here on the page. By submitting you
+                agree to occasional email about the book &mdash; no drip
+                sequence, and every message carries a one-click unsubscribe.
+                Your address is never sold or shared.
               </p>
             </form>
           </div>
         ) : (
           <div className="read__reader" ref={readerRef}>
-            <div className="read__tabs" role="tablist" aria-label="Sample chapters">
+            {/* Plain toggle buttons rather than role="tablist". A real tab
+                pattern owes the user aria-controls, tabpanel roles, and
+                arrow-key navigation; announcing a tab interface that doesn't
+                behave like one is worse than not announcing it at all. */}
+            <div className="read__tabs">
               {CHAPTERS.map((c) => (
                 <button
                   key={c.id}
-                  role="tab"
                   type="button"
-                  aria-selected={c.id === activeChapter}
+                  aria-pressed={c.id === activeChapter}
                   className={`read__tab${c.id === activeChapter ? ' is-active' : ''}`}
-                  onClick={() => setActiveChapter(c.id)}
+                  onClick={() => selectChapter(c.id)}
                 >
                   {c.label}
                 </button>
               ))}
             </div>
 
-            <article className="read__prose">
-              <h3 className="read__chapter-title">
+            <article className="read__prose" aria-labelledby="read-chapter-heading">
+              <h3 className="read__chapter-title" id="read-chapter-heading">
                 {chapter.kicker && (
                   <span className="read__chapter-number">{chapter.kicker}</span>
                 )}
@@ -175,7 +209,7 @@ export default function ReadSection() {
               )}
             </article>
 
-            <div className="read__end">
+            <div className="read__end" ref={endRef}>
               {BOOK.available ? (
                 <>
                   <p className="read__end-copy">
@@ -186,6 +220,7 @@ export default function ReadSection() {
                     href={BOOK.amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackBuyClicked('end-of-sample')}
                   >
                     Keep reading
                   </a>

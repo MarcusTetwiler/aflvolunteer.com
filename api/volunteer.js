@@ -1,7 +1,65 @@
 // Vercel serverless function: POST /api/volunteer
-// Stores each signup in Upstash Redis (via the Vercel Marketplace KV integration).
-// Designed so a later migration to Beehiiv (or any ESP) can read straight out of
-// this same Redis list/hash without touching the frontend.
+//
+// Captures a signup, stores it in Upstash Redis, and — when an ESP is
+// configured — forwards it so the list is actually mailable.
+//
+// Storage layout:
+//   volunteer:<email>          hash, one per person (idempotent re-signups)
+//   volunteers:all             chronological list of every signup
+//   volunteers:<list>          per-funnel list, e.g. volunteers:sample-chapters
+//   volunteers:unsubscribed    set of emails that have opted out
+//
+// Two things worth knowing:
+//   1. Storage failures are soft. A config problem must never cost a reader
+//      the sample they were promised.
+//   2. An unsubscribed address is never silently resurrected by a later
+//      signup. Re-subscribing has to be deliberate.
+
+import {
+  redisPipeline,
+  unsubscribeToken,
+  isValidEmail,
+  clientIp,
+} from './_shared.js';
+
+/**
+ * Optional Beehiiv sync. No-ops unless both env vars are set, so the site
+ * behaves identically before and after you connect an ESP.
+ */
+async function syncToBeehiiv(record) {
+  const apiKey = process.env.BEEHIIV_API_KEY;
+  const pubId = process.env.BEEHIIV_PUBLICATION_ID;
+  if (!apiKey || !pubId) return { synced: false, reason: 'not-configured' };
+
+  try {
+    const res = await fetch(
+      `https://api.beehiiv.com/v2/publications/${pubId}/subscriptions`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: record.email,
+          reactivate_existing: false,
+          send_welcome_email: true,
+          utm_source: 'afl-site',
+          custom_fields: [{ name: 'Name', value: record.name }],
+        }),
+      }
+    );
+
+    if (!res.ok) {
+      console.error('Beehiiv sync failed:', res.status, await res.text());
+      return { synced: false, reason: `http-${res.status}` };
+    }
+    return { synced: true };
+  } catch (err) {
+    console.error('Beehiiv sync error:', err);
+    return { synced: false, reason: 'exception' };
+  }
+}
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -14,60 +72,68 @@ export default async function handler(req, res) {
   if (!name || typeof name !== 'string' || !name.trim()) {
     return res.status(400).json({ error: 'Name is required.' });
   }
-  if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+  if (!isValidEmail(email)) {
     return res.status(400).json({ error: 'A valid email is required.' });
   }
 
-  const restUrl = process.env.KV_REST_API_URL;
-  const restToken = process.env.KV_REST_API_TOKEN;
+  const cleanEmail = email.trim().toLowerCase();
 
-  if (!restUrl || !restToken) {
-    console.error('Upstash env vars missing: KV_REST_API_URL / KV_REST_API_TOKEN');
-    // Don't block the user's path to Redline over a config issue — fail soft.
-    return res.status(200).json({ ok: true, persisted: false });
-  }
-
-  // `list` distinguishes which funnel the signup came from, so the sample-chapter
-  // audience stays separable from the retired early-reader list already in Redis.
   const record = {
     name: name.trim(),
-    email: email.trim().toLowerCase(),
+    email: cleanEmail,
     source: 'afl-site',
     list: typeof list === 'string' && list.trim() ? list.trim() : 'general',
     createdAt: new Date().toISOString(),
+    // Consent record. CAN-SPAM doesn't require opt-in, but if a recipient ever
+    // disputes a send, being able to show when and from where they signed up is
+    // the difference between a complaint and a problem.
+    consentIp: clientIp(req),
+    consentUserAgent: (req.headers['user-agent'] || '').slice(0, 300),
   };
 
+  const token = unsubscribeToken(cleanEmail);
+
   try {
-    // Store as a hash keyed by email (idempotent re-signups overwrite cleanly)
-    // and also push onto a list for easy chronological export later.
-    const hashKey = `volunteer:${record.email}`;
+    // Don't resurrect someone who already opted out.
+    const check = await redisPipeline([
+      ['SISMEMBER', 'volunteers:unsubscribed', cleanEmail],
+    ]);
 
-    const pipeline = [
-      ['HSET', hashKey, 'name', record.name, 'email', record.email, 'source', record.source, 'list', record.list, 'createdAt', record.createdAt],
-      ['LPUSH', 'volunteers:all', JSON.stringify(record)],
-      ['LPUSH', `volunteers:${record.list}`, JSON.stringify(record)],
-    ];
-
-    const upstashRes = await fetch(`${restUrl}/pipeline`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${restToken}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(pipeline),
-    });
-
-    if (!upstashRes.ok) {
-      const text = await upstashRes.text();
-      console.error('Upstash write failed:', upstashRes.status, text);
+    if (!check) {
+      console.error('Storage not configured: KV_REST_API_URL / KV_REST_API_TOKEN');
       return res.status(200).json({ ok: true, persisted: false });
     }
 
-    return res.status(200).json({ ok: true, persisted: true });
+    if (check[0]?.result === 1) {
+      // Honor the prior opt-out. The reader still gets the sample.
+      return res.status(200).json({ ok: true, persisted: false, unsubscribed: true });
+    }
+
+    const hashKey = `volunteer:${cleanEmail}`;
+
+    await redisPipeline([
+      [
+        'HSET', hashKey,
+        'name', record.name,
+        'email', record.email,
+        'source', record.source,
+        'list', record.list,
+        'createdAt', record.createdAt,
+        'consentIp', record.consentIp || '',
+        'consentUserAgent', record.consentUserAgent,
+        'unsubscribeToken', token,
+        'status', 'subscribed',
+      ],
+      ['LPUSH', 'volunteers:all', JSON.stringify(record)],
+      ['LPUSH', `volunteers:${record.list}`, JSON.stringify(record)],
+    ]);
+
+    const esp = await syncToBeehiiv(record);
+
+    return res.status(200).json({ ok: true, persisted: true, esp: esp.synced });
   } catch (err) {
     console.error('Volunteer capture error:', err);
-    // Still soft-fail — the reward (Redline access) should never be blocked
-    // by a storage hiccup.
+    // Soft-fail: the reward should never be blocked by a storage hiccup.
     return res.status(200).json({ ok: true, persisted: false });
   }
 }
