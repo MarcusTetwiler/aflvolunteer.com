@@ -39,6 +39,7 @@ You shouldn't need to open a component to update copy.
 src/
   site.config.js         ← EDIT THIS: links, book details, orgs, nav
   data/
+    mapAtlas.js          GENERATED — do not hand-edit (npm run atlas)
     chapters.js          ← EDIT THIS: free sample chapter text
     buildWall.js         ← EDIT THIS: featured builds + permission records
     glossary.js          ← EDIT THIS: 50 spoiler-free term definitions
@@ -60,6 +61,7 @@ api/
   unsubscribe.js         one-click opt-out, returns a styled confirmation page
   export.js              key-protected CSV export
 scripts/
+  generate-map-atlas.py  regenerates src/data/mapAtlas.js from lat/lon
   generate-images.py     regenerates responsive derivatives + og.jpg
   inject-schema.mjs      postbuild: JSON-LD into dist/index.html
 design-assets/           full-res masters (NOT deployed)
@@ -70,6 +72,45 @@ public/images/
   cover.jpg              ← ADD THIS: book cover (2:3 ratio)
   author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
+
+## The map
+
+`FrontMap.jsx` renders a worldbuilding artifact, not a route map. 13 pins,
+4 linear features, and 6 regional overlays across four toggleable layers:
+Places, Terrain, Military Geography, Infrastructure.
+
+**Spoiler rule.** Every entry describes what a cartographer inside this world
+could legitimately draw — geography, infrastructure, civic and military
+function. Nothing describes what happens somewhere, what is hidden there, or
+what a character finds. There are deliberately **no character routes**: a route
+reveals narrative sequence. The whole map can be read before Chapter 1 without
+learning anything about the plot.
+
+Features marked `origin: 'fictional'` show a "Does not exist. Created for the
+novel." note in their brief card — same real-vs-invented distinction the
+glossary makes.
+
+**Coordinates are generated, never hand-placed.** Edit lat/lon in
+`scripts/generate-map-atlas.py` and run `npm run atlas`. The projection is:
+
+```
+x = (lon + 11.0) / 59.0 * 1000      // lon  -11.0E .. 48.0E
+y = -26.1028 * lat + 1732.06        // lat  66.36N (y=0) .. 32.64N (y=880)
+```
+
+Solved against the eight real-place pins to 0.19px. An earlier comment in
+`FrontMap.jsx` claimed the latitude bounds were 35–64N; they are not, and using
+those puts a pin ~65px out — enough to land Lublin in Slovakia.
+
+Label positions (`labelDx`/`labelDy`/`labelAnchor` on pins, `labelAt` and
+`shortLabel` on areas) are hand-tuned because centroid placement collided
+badly — text ran off the canvas and sat on top of the rail line. If you add
+features, render and *look* at the result before shipping.
+
+**Global Context** (Strait of Hormuz, Taiwan Strait, Cape of Good Hope,
+California) is not implemented. Those coordinates fall far outside the canvas —
+Taiwan is more than twice the canvas width away — so they need a separate
+world view or inset, not a layer toggle.
 
 ## Glossary
 

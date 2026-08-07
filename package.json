@@ -8,7 +8,8 @@
     "build": "vite build && node scripts/inject-schema.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
-    "images": "python3 scripts/generate-images.py"
+    "images": "python3 scripts/generate-images.py",
+    "atlas": "python3 scripts/generate-map-atlas.py"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

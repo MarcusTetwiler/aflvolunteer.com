@@ -1,103 +1,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { ANDREW_CONTRACTS, ANDREW_STATUS_LABEL, ANDREW_CLASS_LABEL } from './andrewContracts';
 import TheaterBasemap from './TheaterBasemap';
+import { MAP_PINS, MAP_LINES, MAP_AREAS, MAP_LAYERS } from '../data/mapAtlas';
 import './FrontMap.css';
 
-// Coordinates are real-world equirectangular projections onto a 1000x880
-// canvas. See src/data/theaterMap.json and geodata-pipeline/.
-//
-// To place a new pin, use exactly this (solved against all eight real-place
-// pins below; max error 0.19px):
-//
-//   x = (lon + 11.0) / 59.0 * 1000        // lon bbox -11.0E .. 48.0E
-//   y = -26.1028 * lat + 1732.06          // lat bbox 66.36N (y=0) .. 32.64N (y=880)
-//
-// The latitude bounds are NOT 35-64N. An earlier version of this comment said
-// they were, which puts a new pin ~65px out — about 2.5 degrees, enough to land
-// Lublin in Slovakia. Longitude is a plain linear fit; only latitude differs.
-//
-// At this zoom the theater is a hot zone inside a much larger visible map,
-// not the entire frame — the war is one churning piece of something bigger.
-//
-// SPOILER RULE FOR THIS ARRAY: these are cartographic entries, not scene notes.
-// A pin describes what a mapmaker inside this world could legitimately draw —
-// geography, infrastructure, and civic function. It must not describe what
-// happens at a location, what is hidden there, or what a character finds. If a
-// summary would only make sense to someone who has read the book, rewrite it.
-const LOCATIONS = [
-  {
-    id: 'medyka',
-    name: 'Camp Tadeusz',
-    country: 'Medyka, Poland',
-    x: 575.8, y: 431.8,
-    status: 'active',
-    summary: 'NATO-aligned volunteer training and staging camp on the Polish side of the frontier, beside the former border crossing at Medyka.',
-  },
-  {
-    id: 'lublin',
-    name: 'Lublin',
-    country: 'Poland',
-    x: 569.0, y: 394.4,
-    status: 'fortified',
-    summary: 'Heavily militarized Polish city well behind the frontier: watchtowers, rail-fed artillery, and autonomous air defense. Supports Allied command and communications.',
-  },
-  {
-    id: 'rzeszow',
-    name: 'Rzeszów',
-    country: 'Poland',
-    x: 559.4, y: 425.9,
-    status: 'active',
-    summary: 'Polish transportation gateway on the S19 corridor, moving people and freight toward the Ukrainian frontier.',
-  },
-  {
-    id: 'lviv',
-    name: 'Lviv',
-    country: 'Ukraine',
-    x: 593.7, y: 431.1,
-    status: 'unknown',
-    summary: 'Western Ukrainian rail and road hub, the historic first stop east of the Polish border. Occupied; conditions unreported.',
-  },
-  {
-    id: 'zalissia',
-    name: 'Zalissia',
-    country: 'Ukraine',
-    x: 640, y: 370,
-    status: 'unknown',
-    summary: 'National parkland and long-abandoned settlements northwest of Kyiv, threaded with Soviet-era infrastructure. Occupied; conditions unreported.',
-  },
-  {
-    id: 'kyiv',
-    name: 'Kyiv',
-    country: 'Ukraine',
-    x: 703.8, y: 415.2,
-    status: 'unknown',
-    summary: 'Ukrainian capital astride the Dnipro and a central anchor of the Eastern Front. Independence Square sits at its civic center. Occupied; conditions unreported.',
-  },
-  {
-    id: 'odesa',
-    name: 'Odesa',
-    country: 'Ukraine',
-    x: 707.2, y: 518.8,
-    status: 'unknown',
-    summary: 'Black Sea port city of broad streets and arcades, backed by docks, container yards, and rail. Occupied; conditions unreported.',
-  },
-  {
-    id: 'moscow',
-    name: 'Moscow',
-    country: 'Russia',
-    x: 824.0, y: 276.7,
-    status: 'hostile',
-    summary: 'Russian capital and the western terminus of the reconstructed east-west rail network. Ringed by depots, transfer stations, and checkpoints.',
-  },
-  {
-    id: 'london',
-    name: 'London',
-    country: 'United Kingdom',
-    x: 184.3, y: 387.6,
-    status: 'active',
-    summary: 'Western departure point for the eastern theater. Heathrow carries the outbound traffic toward Poland and the frontier.',
-  },
-];
+// Pins, lines, and areas all come from src/data/mapAtlas.js, where every
+// coordinate is generated from real lat/lon rather than placed by hand. See
+// that file's header for the projection formula and the spoiler rule.
 
 // Lublin / Rzeszów / Medyka / Lviv sit within ~45px of each other at this
 // zoom (they're genuinely that close in reality). Rather than cram four
@@ -106,7 +15,7 @@ const LOCATIONS = [
 const FOCUS_CLUSTER = {
   ids: ['medyka', 'lublin', 'rzeszow', 'lviv'],
   cx: 574, cy: 421, r: 41,
-  labelX: 460, labelY: 360,
+  labelX: 404, labelY: 470,
 };
 
 // The main front: a single irregular boundary running the length of the
@@ -134,6 +43,14 @@ const SALIENTS = [
   { kind: 'occupied', d: 'M 797.9,650.1 L 797.1,654.4 L 795.3,658.0 L 792.6,661.0 L 789.2,663.5 L 785.3,665.5 L 781.0,667.1 L 776.5,668.6 L 771.9,669.8 L 767.4,670.9 L 763.1,672.0 L 759.0,672.5 L 755.0,672.3 L 751.1,670.8 L 747.3,667.9 L 744.1,664.0 L 742.3,659.7 L 742.6,656.0 L 745.4,653.4 L 748.7,651.0 L 750.7,648.0 L 751.9,644.4 L 752.8,640.4 L 753.8,636.2 L 755.4,631.9 L 758.3,627.8 L 762.3,624.2 L 766.6,622.0 L 770.3,622.3 L 772.7,625.7 L 774.2,630.0 L 776.6,630.8 L 780.3,628.1 L 784.2,626.7 L 787.9,627.7 L 791.3,630.6 L 794.1,634.8 L 796.3,639.8 L 797.6,645.1 L 797.9,650.1 Z' },
 ];
 
+const FEATURE_LABEL = {
+  rail: 'Rail Corridor',
+  'rail-planned': 'Advertised Rail Extension',
+  air: 'Air Route',
+  water: 'Waterway',
+  corridor: 'Strategic Corridor',
+};
+
 const STATUS_LABEL = {
   active: 'ACTIVE',
   fortified: 'FORTIFIED',
@@ -145,9 +62,36 @@ export default function FrontMap() {
   const [pov, setPov] = useState('elena'); // 'elena' | 'andrew'
   const [activeId, setActiveId] = useState(null);
   const [pinned, setPinned] = useState(false); // true once tapped on touch devices
+  // All layers start visible; the map is meant to read as a finished artifact
+  // on arrival, not as an empty frame the reader has to assemble.
+  const [layers, setLayers] = useState(() => new Set(MAP_LAYERS.map((l) => l.id)));
   const containerRef = useRef(null);
 
-  const active = LOCATIONS.find((l) => l.id === activeId) || null;
+  const shown = (layer) => layers.has(layer);
+
+  function toggleLayer(id) {
+    setLayers((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+    setActiveId(null);
+    setPinned(false);
+  }
+
+  const visiblePins = MAP_PINS.filter((p) => shown(p.layer));
+  const visibleLines = MAP_LINES.filter((l) => shown(l.layer));
+  const visibleAreas = MAP_AREAS.filter((a) => shown(a.layer));
+
+  // The brief card serves pins, lines and areas alike; normalise them so it
+  // only has to deal with one shape.
+  const active =
+    visiblePins.find((l) => l.id === activeId) ||
+    [...visibleLines, ...visibleAreas]
+      .filter((f) => f.id === activeId)
+      .map((f) => ({ ...f, x: f.labelAt[0], y: f.labelAt[1] }))[0] ||
+    null;
   const activeContract = ANDREW_CONTRACTS.find((c) => c.id === activeId) || null;
 
   function switchPov(next) {
@@ -210,8 +154,8 @@ export default function FrontMap() {
           <>
             <div className="front-map__header">
               <div className="front-map__header-text">
-                <h2>Russian Forces Advance Into Eastern Poland</h2>
-                <p>Control of Terrain Assessment — Current Operational Period</p>
+                <h2>The World of The American Foreign Legion</h2>
+                <p>Control of Terrain &amp; Infrastructure Assessment — Current Operational Period</p>
               </div>
               <div className="front-map__header-logo">
                 <span className="front-map__header-logo-mark">⚑</span>
@@ -222,13 +166,29 @@ export default function FrontMap() {
               </div>
             </div>
 
+            <div className="front-map__layers" role="group" aria-label="Map layers">
+              <span className="front-map__layers-label">Layers</span>
+              {MAP_LAYERS.map((layer) => (
+                <button
+                  key={layer.id}
+                  type="button"
+                  aria-pressed={layers.has(layer.id)}
+                  title={layer.note}
+                  className={`front-map__layer${layers.has(layer.id) ? ' is-on' : ''}`}
+                  onClick={() => toggleLayer(layer.id)}
+                >
+                  {layer.label}
+                </button>
+              ))}
+            </div>
+
             <div className="front-map__body">
               <svg
                 className="front-map__svg"
                 viewBox="0 0 1000 880"
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="Map of Europe and western Russia showing a contested, irregular front line running from the Baltic to the Black Sea, with salients and pockets on both sides, and the eastern Poland theater highlighted."
+                aria-label="Map of Europe and western Russia. A contested, irregular front line runs from the Baltic to the Black Sea with salients and pockets on both sides. Cities, a Chinese-administered reconstruction rail corridor entering from the east, the Dnipro, the Black Sea, the Suwalki Corridor, and shaded regional overlays are marked. Layer toggles above the map control what is shown."
               >
                 <defs>
                   <clipPath id="occupiedClip">
@@ -241,6 +201,35 @@ export default function FrontMap() {
                 {/* territory tint: held = bare basemap, occupied = warm rust wash */}
                 <rect x="0" y="0" width="1000" height="880" className="front-map__occupied-fill" clipPath="url(#occupiedClip)" />
 
+                {/* regional overlays sit under the front line so the boundary
+                    always reads clearly on top of them */}
+                {visibleAreas.map((area) => (
+                  <g
+                    key={area.id}
+                    className={`front-map__area front-map__area--${area.id} ${activeId === area.id ? 'is-active' : ''}`}
+                    onPointerEnter={() => handleEnter(area.id)}
+                    onPointerLeave={handleLeave}
+                    onClick={() => handleClick(area.id)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${area.name}. Region.`}
+                    onFocus={() => handleEnter(area.id)}
+                    onBlur={handleLeave}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(area.id); } }}
+                  >
+                    <path d={area.d} className="front-map__area-fill" />
+                    {area.shortLabel && (
+                      <text
+                        x={area.labelAt[0]} y={area.labelAt[1]}
+                        textAnchor={area.labelAnchor}
+                        className="front-map__area-label"
+                      >
+                        {area.shortLabel}
+                      </text>
+                    )}
+                  </g>
+                ))}
+
                 {/* decorative salients/pockets — fluid, bubbling front texture */}
                 {SALIENTS.map((s, i) => (
                   <path key={i} d={s.d} className={`front-map__salient front-map__salient--${s.kind}`} />
@@ -249,6 +238,28 @@ export default function FrontMap() {
                 {/* the main boundary, inked double-stroke for a hand-drawn feel */}
                 <path d={FRONT_BOUNDARY} className="front-map__frontline-shadow" />
                 <path d={FRONT_BOUNDARY} className="front-map__frontline" />
+
+                {/* linear features: rail, air route, river, corridor */}
+                {visibleLines.map((ln) => (
+                  <g
+                    key={ln.id}
+                    className={`front-map__line front-map__line--${ln.kind} ${activeId === ln.id ? 'is-active' : ''}`}
+                    onPointerEnter={() => handleEnter(ln.id)}
+                    onPointerLeave={handleLeave}
+                    onClick={() => handleClick(ln.id)}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`${ln.name}.`}
+                    onFocus={() => handleEnter(ln.id)}
+                    onBlur={handleLeave}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(ln.id); } }}
+                  >
+                    {/* invisible fat stroke widens the hit target to something
+                        a finger can actually land on */}
+                    <path d={ln.d} className="front-map__line-hit" />
+                    <path d={ln.d} className="front-map__line-stroke" />
+                  </g>
+                ))}
 
                 {/* focus ring around the dense Lublin/Rzeszów/Medyka/Lviv cluster */}
                 <circle
@@ -266,8 +277,9 @@ export default function FrontMap() {
 
                 {/* location pins (no always-on text labels for the focus-cluster four —
                     those are reachable via hover/click only, to avoid crowding) */}
-                {LOCATIONS.map((loc) => {
+                {visiblePins.map((loc) => {
                   const inCluster = FOCUS_CLUSTER.ids.includes(loc.id);
+                  const labelled = !inCluster && loc.tier === 1;
                   return (
                     <g
                       key={loc.id}
@@ -285,8 +297,12 @@ export default function FrontMap() {
                     >
                       <circle r={inCluster ? '7' : '9'} className="front-map__pin-halo" />
                       <circle r={inCluster ? '3' : '4'} className="front-map__pin-dot" />
-                      {!inCluster && (
-                        <text y="-14" textAnchor="middle" className="front-map__pin-label">
+                      {labelled && (
+                        <text
+                          x={loc.labelDx} y={loc.labelDy}
+                          textAnchor={loc.labelAnchor}
+                          className="front-map__pin-label"
+                        >
                           {loc.name}
                         </text>
                       )}
@@ -321,13 +337,22 @@ export default function FrontMap() {
                   }}
                 >
                   <div className="front-map__brief-card">
-                    <p className="front-map__brief-label">Location</p>
-                    <h3 className="front-map__brief-name">{active.name}</h3>
-                    <p className="front-map__brief-meta">{active.country}</p>
-                    <p className={`front-map__brief-status front-map__brief-status--${active.status}`}>
-                      {STATUS_LABEL[active.status]}
+                    <p className="front-map__brief-label">
+                      {active.country ? 'Location' : active.kind ? FEATURE_LABEL[active.kind] : 'Region'}
                     </p>
+                    <h3 className="front-map__brief-name">{active.name}</h3>
+                    {active.country && (
+                      <p className="front-map__brief-meta">{active.country}</p>
+                    )}
+                    {active.status && (
+                      <p className={`front-map__brief-status front-map__brief-status--${active.status}`}>
+                        {STATUS_LABEL[active.status]}
+                      </p>
+                    )}
                     <p className="front-map__brief-summary">{active.summary}</p>
+                    {active.origin === 'fictional' && (
+                      <p className="front-map__brief-origin">Does not exist. Created for the novel.</p>
+                    )}
                   </div>
                 </div>
               )}
