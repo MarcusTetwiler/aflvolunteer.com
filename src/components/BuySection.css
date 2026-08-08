@@ -73,9 +73,19 @@
   perspective: 1200px;
 }
 
+.buy__cover-wrap picture {
+  display: block;
+}
+
+/* The <img> carries width="600" height="900" so the browser reserves space and
+   avoids layout shift. Those attributes are CSS presentational hints, so
+   `height: auto` is REQUIRED here — without it the 900px hint stands, an
+   explicit height defeats aspect-ratio, and object-fit crops the cover's sides
+   to fill a 1:3 box. */
 .buy__cover {
   display: block;
   width: 100%;
+  height: auto;
   aspect-ratio: 2 / 3;
   object-fit: cover;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 2px 0 rgba(231, 214, 188, 0.1);
