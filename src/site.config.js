@@ -19,9 +19,17 @@ export const BOOK = {
     // { label: 'Kindle', url: '' },
     // { label: 'Audiobook', url: '' },
   ],
-  // TODO: drop a cover image at public/images/cover.jpg and leave this as-is,
-  // or set to null to render the typographic fallback cover instead.
+  // Cover art. Master lives in design-assets/cover-master.png; run
+  // `npm run images` to regenerate the derivatives. Set to null to fall back to
+  // the typographic cover.
   coverImage: '/images/cover.jpg',
+  // Responsive widths generated alongside coverImage, named cover-<w>.<ext>.
+  // Set to null to serve coverImage alone with no srcset.
+  coverWidths: [300, 600, 900],
+  coverAlt:
+    'Cover of The American Foreign Legion. Four volunteers on a ridge above a ' +
+    'burning city at dusk, a swarm of drones filling the orange sky. One kneels ' +
+    'in FPV goggles with a controller, pointing toward the skyline.',
   formats: 'Paperback · Kindle',
   pageCount: null, // e.g. 312 — set to null to hide
   blurb:

@@ -28,6 +28,11 @@ OUT_DIR = "public/images"
 WIDTHS = [1036, 768, 480]
 MASTERS = ["hero-watercolor.jpg", "cta-watercolor.jpg"]
 
+# The cover displays at 300px CSS (230 on tablet); 600px covers 2x retina and
+# 900px is kept for the share card.
+COVER_MASTER = "cover-master.png"
+COVER_WIDTHS = [900, 600, 300]
+
 # Sampled from the field art; keep in sync with src/index.css.
 INK = (28, 25, 22)
 PAPER = (231, 214, 188)
@@ -70,6 +75,37 @@ def build_derivatives():
                 out = os.path.join(OUT_DIR, f"{stem}-{w}.{ext}")
                 rs.save(out, **kwargs)
                 print(f"   {stem}-{w}.{ext:<4}  {os.path.getsize(out) / 1024:6.1f} kB")
+
+
+def build_cover():
+    """Responsive derivatives for the book cover, plus a plain cover.jpg fallback."""
+    path = os.path.join(SRC_DIR, COVER_MASTER)
+    if not os.path.exists(path):
+        print(f"\nskip cover ({COVER_MASTER} not found)")
+        return
+
+    im = Image.open(path).convert("RGB")
+    ow, oh = im.size
+    print(f"\n{COVER_MASTER}  {ow}x{oh}  {os.path.getsize(path) / 1024:.0f} kB")
+
+    formats = [("webp", dict(quality=82, method=6)),
+               ("jpg", dict(quality=86, optimize=True, progressive=True))]
+    if pillow_avif:
+        formats.insert(0, ("avif", dict(quality=58, speed=4)))
+
+    for w in COVER_WIDTHS:
+        if w > ow:
+            continue
+        rs = im.resize((w, round(oh * w / ow)), Image.LANCZOS)
+        for ext, kwargs in formats:
+            out = os.path.join(OUT_DIR, f"cover-{w}.{ext}")
+            rs.save(out, **kwargs)
+            print(f"   cover-{w}.{ext:<4}  {os.path.getsize(out) / 1024:6.1f} kB")
+        # Plain fallback for browsers ignoring srcset, and for BOOK.coverImage.
+        if w == 600:
+            fb = os.path.join(OUT_DIR, "cover.jpg")
+            rs.save(fb, quality=86, optimize=True, progressive=True)
+            print(f"   cover.jpg      {os.path.getsize(fb) / 1024:6.1f} kB  (fallback)")
 
 
 def build_og_image():
@@ -116,5 +152,6 @@ if __name__ == "__main__":
         sys.exit(f"Missing {SRC_DIR}/ — run this from the project root.")
     os.makedirs(OUT_DIR, exist_ok=True)
     build_derivatives()
+    build_cover()
     build_og_image()
     print("\nDone.")

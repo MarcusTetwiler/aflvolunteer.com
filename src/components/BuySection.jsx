@@ -2,6 +2,14 @@ import { BOOK } from '../site.config';
 import { trackBuyClicked } from '../analytics';
 import './BuySection.css';
 
+// Matches the CSS: 300px column, 230px at the tablet breakpoint.
+const COVER_SIZES = '(max-width: 860px) 230px, 300px';
+
+const srcSet = (ext) =>
+  (BOOK.coverWidths || [])
+    .map((w) => `/images/cover-${w}.${ext} ${w}w`)
+    .join(', ');
+
 export default function BuySection() {
   const hasRetailers =
     BOOK.available && BOOK.otherRetailers && BOOK.otherRetailers.length > 0;
@@ -21,12 +29,25 @@ export default function BuySection() {
       <div className="container buy__inner">
         <div className="buy__cover-wrap">
           {BOOK.coverImage ? (
-            <img
-              className="buy__cover"
-              src={BOOK.coverImage}
-              alt={`Cover of ${BOOK.title}`}
-              loading="lazy"
-            />
+            <picture>
+              {BOOK.coverWidths && (
+                <>
+                  <source type="image/avif" srcSet={srcSet('avif')} sizes={COVER_SIZES} />
+                  <source type="image/webp" srcSet={srcSet('webp')} sizes={COVER_SIZES} />
+                </>
+              )}
+              <img
+                className="buy__cover"
+                src={BOOK.coverImage}
+                srcSet={BOOK.coverWidths ? srcSet('jpg') : undefined}
+                sizes={BOOK.coverWidths ? COVER_SIZES : undefined}
+                alt={BOOK.coverAlt || `Cover of ${BOOK.title}`}
+                width="600"
+                height="900"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           ) : (
             <div className="buy__cover buy__cover--fallback" aria-hidden="true">
               <span className="buy__cover-mark">⚑</span>

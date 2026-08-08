@@ -5,6 +5,7 @@ it's referenced or not, so the unoptimized originals live here instead.
 
 - `hero-watercolor.jpg` — 1036×1536, 716 kB
 - `cta-watercolor.jpg` — 1036×636, 219 kB
+- `cover-master.png` — 1024×1536, 2.6 MB (book cover)
 
 The site serves derivatives generated from these: AVIF, WebP and JPEG at 1036,
 768 and 480 px wide, plus `og.jpg` for social sharing. To regenerate after

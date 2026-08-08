@@ -69,7 +69,8 @@ public/images/
   hero-watercolor-*.{avif,webp,jpg}   Intro/Context background, 3 widths
   cta-watercolor-*.{avif,webp,jpg}    Buy section background, 3 widths
   og.jpg                              1200x630 social share card
-  cover.jpg              ← ADD THIS: book cover (2:3 ratio)
+  cover.jpg              cover fallback (600x900)
+  cover-{300,600,900}.{avif,webp,jpg}   responsive cover, 3 widths
   author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
 
@@ -245,7 +246,9 @@ pip install Pillow pillow-avif-plugin
 npm run images
 ```
 
-The hero went from a single 716 kB JPEG to 40 kB of AVIF on a phone.
+The hero went from a single 716 kB JPEG to 40 kB of AVIF on a phone. The cover
+is served as a `<picture>` with AVIF/WebP/JPEG at 300, 600 and 900 px — a phone
+downloads 18 kB rather than the 2.6 MB master.
 
 ## Analytics
 
