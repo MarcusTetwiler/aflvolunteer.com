@@ -33,6 +33,15 @@ MASTERS = ["hero-watercolor.jpg", "cta-watercolor.jpg"]
 COVER_MASTER = "cover-master.png"
 COVER_WIDTHS = [900, 600, 300]
 
+# Art-directed wide crop of the hero art for the Article 5 section.
+# The master is portrait 2:3; covering a wide viewport-height band showed only
+# ~42% of its height, and because the crop window resizes with the viewport, any
+# fixed percentage anchor bisected a different figure at a different screen size.
+# This crop puts every head in the TOP HALF so top-anchored cover only ever
+# trims below the chins. Verified clean 1024x700 through 2560x1200.
+HERO_WIDE_CROP = (0, 90, 1036, 1000)      # from hero-watercolor.jpg
+HERO_WIDE_WIDTHS = [1440, 1080, 720]
+
 # Sampled from the field art; keep in sync with src/index.css.
 INK = (28, 25, 22)
 PAPER = (231, 214, 188)
@@ -108,6 +117,29 @@ def build_cover():
             print(f"   cover.jpg      {os.path.getsize(fb) / 1024:6.1f} kB  (fallback)")
 
 
+def build_hero_wide():
+    """Art-directed landscape crop of the hero art (see HERO_WIDE_CROP)."""
+    path = os.path.join(SRC_DIR, "hero-watercolor.jpg")
+    if not os.path.exists(path):
+        print("\nskip hero-wide (master not found)")
+        return
+    im = Image.open(path).convert("RGB").crop(HERO_WIDE_CROP)
+    cw, ch = im.size
+    print(f"\nhero-wide crop {cw}x{ch} (ratio {cw / ch:.2f})")
+
+    formats = [("webp", dict(quality=78, method=6)),
+               ("jpg", dict(quality=82, optimize=True, progressive=True))]
+    if pillow_avif:
+        formats.insert(0, ("avif", dict(quality=54, speed=4)))
+
+    for w in HERO_WIDE_WIDTHS:
+        rs = im.resize((w, round(ch * w / cw)), Image.LANCZOS)
+        for ext, kwargs in formats:
+            out = os.path.join(OUT_DIR, f"hero-wide-{w}.{ext}")
+            rs.save(out, **kwargs)
+            print(f"   hero-wide-{w}.{ext:<4}  {os.path.getsize(out) / 1024:6.1f} kB")
+
+
 def build_og_image():
     """1200x630 share card, cropped from the hero art with the title set over it."""
     src_path = os.path.join(SRC_DIR, "hero-watercolor.jpg")
@@ -153,5 +185,6 @@ if __name__ == "__main__":
     os.makedirs(OUT_DIR, exist_ok=True)
     build_derivatives()
     build_cover()
+    build_hero_wide()
     build_og_image()
     print("\nDone.")

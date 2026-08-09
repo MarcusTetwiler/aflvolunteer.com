@@ -1,53 +1,69 @@
-TWO CHANGES — 2 files
-=====================
+TWO FIXES — 13 files
+====================
 
-  src/site.config.js   adds The HALO Trust as org 06, plus the nav reorder
-  src/App.jsx          moves the Glossary to the end of the page
+1. THE CUT-OFF HEAD IN THE ARTICLE 5 IMAGE
+   Fixed, and the cause was structural rather than a bad number.
 
-Both changes are in this one upload, so you only need to do it once.
+   The art is portrait 2:3. Covering a wide, viewport-height band showed only
+   about 42% of its height — and because the crop window RESIZES with the
+   viewport, any fixed percentage anchor slides across the composition and
+   bisects a different figure at a different screen size. I measured it:
 
-1. GLOSSARY MOVED TO THE END
-   Order is now: The Front -> Article 5 -> Read -> Builds -> Buy -> Author
-                 -> Contribute -> Glossary
-   Nav follows:  The Front · Read · Builds · Buy · Contribute · Glossary
+        1440x900  clean
+        1440x800  cuts the seated operator
+        1440x1000 cuts the lower pointing figure
+        1920x900  cuts the seated operator
 
-   The glossary is 50 terms and about half the page height. In front of the Buy
-   section it buried the cover:
-        phone    12.7 screens down  ->  4.1   (3.1x closer)
-        desktop   8.3 screens down  ->  4.3   (1.9x closer)
+   No single percentage can work. So wide screens now get a purpose-made crop
+   whose subjects all sit in the TOP HALF, anchored to the top — trimming then
+   only ever happens at the bottom, below everyone's chin. Verified clean from
+   1024x700 through 2560x1200. Narrow screens keep the portrait original, which
+   barely crops there.
 
-2. THE HALO TRUST ADDED AS 06
-   06 — CLEARING THE GROUND — The HALO Trust
-   https://www.halotrust.org/where-we-work/europe-and-caucasus/ukraine/
+   The operator now appears complete: head, headset, controller.
 
-   Six organizations now fill the grid exactly: 3 columns x 2 rows, no empty
-   cell.
+2. ELENA / ANDREW PARITY
+   Andrew's panel had no filter bar, no legend and no cartography footer, which
+   is exactly why it felt unfinished next to Elena's. All three added — but in
+   his own vocabulary rather than as copies of hers:
+
+     Filter bar:  CONTRACTS — Broadcast | Private
+                  (his data already carries this distinction; it filters for
+                   real — 130 markers drop to 77 when Private is hidden, and it
+                   refuses to empty the ledger entirely)
+     Legend:      Broadcast contract / Private engagement / Closed / Interrupted
+     Credit:      "Ledger: Talon Performance Interface. Sector codes are
+                   abstracted... Contract records, classifications, and payouts
+                   are fictional."
+
+   I also fixed two things that surfaced while building it: the filter bar was
+   rendering on light paper inside the dark panel, and the footer text was too
+   dim to read at 10px on near-black.
+
+FILES
+  src/components/FrontMap.jsx      Andrew filter bar + footer
+  src/components/FrontMap.css      Andrew bar/legend/footer styling
+  src/components/IntroContext.css  art-directed background
+  scripts/generate-images.py       regenerates the wide crop (npm run images)
+  public/images/hero-wide-*.{avif,webp,jpg}   9 files, 3 widths
 
 HOW TO UPLOAD
-  GitHub -> Add file -> Upload files -> drag the "src" folder from this zip.
-  It merges with your existing src/ — only these 2 files change.
-  Commit: "Add HALO Trust; move glossary to end of page"
+  GitHub -> Add file -> Upload files -> drag these three folders from the zip:
+        src
+        public
+        scripts
+  Commit: "Fix Article 5 image framing; Elena/Andrew map parity"
 
   Drag the CONTENTS, not a wrapper folder.
 
-ON THE BLURB
-  I checked every claim against HALO's live Ukraine page before writing it:
-  ~2 million mines laid since 2022, an area larger than Greece still to survey,
-  764,471 people given safety training, 20+ million square metres cleared
-  including farmland, and explicitly drones, AI analysis of satellite imagery,
-  and remote-controlled clearance machines. All confirmed.
-
-  I tightened your wording slightly and added the two-million-mines and
-  "larger than Greece" figures, since a specific number lands harder than
-  "one of the most heavily mined places on earth" alone. Nothing was invented.
-
-WORTH NOTING
-  This is the one organization on the page whose actual work is the novel's
-  subject matter — drone-assisted detection and remote clearance. It arguably
-  belongs higher than 06.
-
 TESTED
-  Grid fills evenly (6 cards, 3 cols, 2 rows, 0 empty cells) on desktop and
-  stacks to 6 on mobile. Link verified live. Nav order, scroll-spy and the
-  per-term glossary deep links all still work. Responsive sweep passes at all
-  7 widths. Lint and build clean.
+  Both views audited: Elena has 4 layer buttons, 3 legend items, credit line;
+  Andrew now has 2 filter buttons, 4 legend items, credit line. Filtering
+  verified working. Responsive sweep passes at all 7 widths. Lint and build
+  clean.
+
+A NOTE ON THE ART
+  The text card sits over the lower-left, which now overlaps the first standing
+  figure. It reads fine, but if you want the trio fully clear of the copy, the
+  crop is one line in scripts/generate-images.py (HERO_WIDE_CROP) and a
+  regenerate.

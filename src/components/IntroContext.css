@@ -8,25 +8,46 @@
   color: var(--paper);
 }
 
+/* ART DIRECTION, not just a background.
+   The master art is portrait 2:3. Covering a wide, viewport-height band showed
+   only ~42% of its height, and because the crop window resizes with the
+   viewport, ANY fixed percentage anchor slides across the composition and
+   bisects a different head at a different screen size (1440x900 was clean;
+   1440x800 cut the seated operator; 1440x1000 cut the lower figure).
+
+   So wide viewports get a purpose-made crop whose subjects all sit in the top
+   half, anchored to the top. Trimming then only ever happens at the bottom,
+   below everyone's chin. Verified clean from 1024x700 through 2560x1200.
+   Narrow viewports keep the portrait original, which barely crops there. */
 .intro-context__bg {
   position: absolute;
   inset: 0;
-  /* Plain url() first as a fallback for browsers without image-set(). */
-  background-image: url('/images/hero-watercolor-1036.jpg');
+  background-image: url('/images/hero-wide-1440.jpg');
   background-image: image-set(
-    url('/images/hero-watercolor-1036.avif') type('image/avif'),
-    url('/images/hero-watercolor-1036.webp') type('image/webp'),
-    url('/images/hero-watercolor-1036.jpg') type('image/jpeg')
+    url('/images/hero-wide-1440.avif') type('image/avif'),
+    url('/images/hero-wide-1440.webp') type('image/webp'),
+    url('/images/hero-wide-1440.jpg') type('image/jpeg')
   );
   background-size: cover;
-  background-position: 50% 30%;
+  background-position: 50% 0;
   background-repeat: no-repeat;
   filter: sepia(0.12) contrast(1.02);
 }
 
+@media (max-width: 1200px) and (min-width: 901px) {
+  .intro-context__bg {
+    background-image: url('/images/hero-wide-1080.jpg');
+    background-image: image-set(
+      url('/images/hero-wide-1080.avif') type('image/avif'),
+      url('/images/hero-wide-1080.webp') type('image/webp'),
+      url('/images/hero-wide-1080.jpg') type('image/jpeg')
+    );
+  }
+}
+
 /* Smaller viewports get proportionally smaller files. A phone never needs the
    1036px master: at 480px wide the AVIF is 40 kB against the original's 716 kB. */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .intro-context__bg {
     background-image: url('/images/hero-watercolor-768.jpg');
     background-image: image-set(
@@ -34,6 +55,7 @@
       url('/images/hero-watercolor-768.webp') type('image/webp'),
       url('/images/hero-watercolor-768.jpg') type('image/jpeg')
     );
+    background-position: 50% 0;
   }
 }
 
@@ -45,6 +67,7 @@
       url('/images/hero-watercolor-480.webp') type('image/webp'),
       url('/images/hero-watercolor-480.jpg') type('image/jpeg')
     );
+    background-position: 50% 0;
   }
 }
 
@@ -107,7 +130,7 @@
     min-height: 100svh;
   }
   .intro-context__bg {
-    background-position: 50% 18%;
+    background-position: 50% 0;
   }
   .intro-context__copy {
     padding: 22px 20px;

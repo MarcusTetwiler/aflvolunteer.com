@@ -876,3 +876,67 @@
     padding-right: 44px;
   }
 }
+
+/* ---- Andrew view: parity with Elena's frame ----
+   The Andrew panel had no filter bar, no legend and no credit line, which is
+   why it read as unfinished next to Elena's. These give it the same archival
+   furniture, described in its own vocabulary rather than borrowing hers. */
+
+/* The bar sits above the dark map body, so it has to carry its own dark
+   background — inheriting the frame's paper made it read as a light strip
+   dropped into the middle of the panel. */
+.front-map__layers--andrew {
+  background: #14110D;
+  border-bottom: 1px solid rgba(216, 168, 120, 0.16);
+}
+
+.front-map__layers--andrew .front-map__layers-label {
+  color: rgba(216, 168, 120, 0.75);
+}
+
+.front-map__layers--andrew .front-map__layer {
+  color: rgba(216, 168, 120, 0.82);
+  border-color: rgba(216, 168, 120, 0.28);
+}
+
+.front-map__layers--andrew .front-map__layer:hover {
+  color: var(--highlight);
+}
+
+.front-map__layers--andrew .front-map__layer.is-on {
+  color: var(--paper);
+  border-color: rgba(216, 168, 120, 0.5);
+  background: rgba(216, 168, 120, 0.12);
+}
+
+.front-map__legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.front-map__legend-dot--talon { background: var(--highlight); }
+.front-map__legend-dot--private { background: #7A2E1B; }
+.front-map__legend-dot--closed { background: rgba(216, 168, 120, 0.55); }
+.front-map__legend-dot--interrupted {
+  background: transparent;
+  border: 1px solid var(--highlight);
+}
+
+.front-map__frame--andrew .front-map__footer-content {
+  border-top: 1px solid rgba(216, 168, 120, 0.16);
+}
+
+.front-map__frame--andrew .front-map__footer-content {
+  background: #14110D;
+}
+
+.front-map__frame--andrew .front-map__legend {
+  color: rgba(231, 214, 188, 0.9);
+}
+
+.front-map__frame--andrew .front-map__credit {
+  color: rgba(216, 168, 120, 0.78);
+}
