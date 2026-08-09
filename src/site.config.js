@@ -211,9 +211,9 @@ export const NAV_LINKS = [
   { href: '#front', label: 'The Front' },
   { href: '#read', label: 'Read' },
   { href: '#wall', label: 'Builds' },
-  { href: '#glossary', label: 'Glossary' },
   { href: '#buy', label: 'Buy' },
   { href: '#contribute', label: 'Contribute' },
+  { href: '#glossary', label: 'Glossary' },
 ];
 
 export const CONTACT_EMAILS = [

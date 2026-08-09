@@ -144,10 +144,10 @@ export default function App() {
       <IntroContext />
       <ReadSection />
       <BuildWall />
-      <Glossary />
       <BuySection />
       <AuthorSection />
       <ContributeSection />
+      <Glossary />
       <Footer />
       <StickyMobileCta />
       <Analytics />
