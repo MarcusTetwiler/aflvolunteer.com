@@ -62,7 +62,7 @@ AREAS = [
   "Former population centers remain on official maps even where civilian life has largely withdrawn from the landscape.",
   [P(58.4,38.6),P(58.6,48.0),P(52.6,48.0),P(52.4,39.2),P(54.6,36.9),P(57.2,36.6)],
   P(57.6,42.5),"middle"),
- ("reconstruction-zone","Eastern Corridor Reconstruction Zone","RECONSTRUCTION ZONE","infrastructure","fictional",
+ ("reconstruction-zone","Eastern Corridor Reconstruction Zone","","infrastructure","fictional",
   "Repaired roads, transfer stations, water towers, construction yards, prefab housing, and customs infrastructure follow the rail axis. Much of the signage is in Mandarin.",
   [P(56.9,39.0),P(56.6,32.0),P(55.0,27.0),P(53.2,22.9),P(51.2,21.0),P(51.0,23.6),P(52.6,27.9),P(53.6,32.4),P(54.4,39.2)],
   P(52.3,25.6),"middle"),
@@ -97,9 +97,16 @@ def line(pts):
     for x,y in pts[1:]: d += f" L {x},{y}"
     return d
 
+# On a phone the SVG renders around 332px wide against a 1000-unit viewBox — a
+# 0.33 scale — so a desktop label draws at under 4px. Mobile shows a curated
+# five anchors at a much larger user-unit size instead of all ten at an
+# illegible one. Everything else stays reachable by tap.
+MOBILE_LABELS = {"london", "warsaw", "kyiv", "moscow", "odesa"}
+
 pins = [{"id":i,"name":n,"country":c,"x":px(lo),"y":py(la),"status":s,
          "layer":ly,"tier":t,"origin":o,"summary":sm,
-         "labelDx":dx,"labelDy":dy,"labelAnchor":an}
+         "labelDx":dx,"labelDy":dy,"labelAnchor":an,
+         "mobileLabel": i in MOBILE_LABELS}
         for i,n,c,la,lo,s,ly,t,o,sm,dx,dy,an in PINS]
 lines = [{"id":i,"name":n,"layer":ly,"origin":o,"kind":k,"summary":sm,
           "d":line(pts),"labelAt":pts[len(pts)//2]}
