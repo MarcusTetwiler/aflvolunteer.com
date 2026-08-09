@@ -130,6 +130,9 @@ body.bench-open .nav, body.bench-open .sticky-cta { display: none; }
 .bench__specialty { font-family: var(--font-mono); font-size: 10px; letter-spacing: .16em; }
 .bench__flag { align-self: center; padding: 7px 12px; border: 1px solid var(--burnt); color: var(--burnt-ink); font-family: var(--font-mono); font-size: 9px; letter-spacing: .14em; }
 .bench__artifact footer { padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--font-mono); font-size: 8px; letter-spacing: .16em; color: var(--khaki-ink); }
+.bench__artifact-views { display: flex; justify-content: center; gap: 5px; margin-top: -5px; }
+.bench__artifact-views button { min-width: 58px; min-height: 30px; border: 1px solid var(--line); background: transparent; color: var(--khaki-ink); font-family: var(--font-mono); font-size: 7px; letter-spacing: .1em; }
+.bench__artifact-views button.is-on { border-color: var(--burnt); color: var(--burnt-ink); }
 .bench-wall__filters { display: flex; gap: 8px; margin: -8px 0 20px; overflow-x: auto; }
 .bench-wall__filters button { min-height: 38px; padding: 0 14px; white-space: nowrap; border: 1px solid var(--line); background: transparent; color: var(--khaki-ink); font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
 .bench-wall__filters button.is-on { border-color: var(--burnt); color: var(--burnt-ink); }

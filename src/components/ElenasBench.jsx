@@ -112,7 +112,10 @@ export default function ElenasBench() {
   const [shared, setShared] = useState(false);
   const [optionPage, setOptionPage] = useState(0);
   const [wallFilter, setWallFilter] = useState('recent');
+  const [view, setView] = useState('top');
+  const [highlight, setHighlight] = useState(null);
   const touchStart = useRef(null);
+  const installTimer = useRef(null);
   const fullScreen = state.phase !== 'intro';
   const stats = useMemo(() => statsFor(state.build, state.seed), [state.build, state.seed]);
   const trials = useMemo(() => trialsFor(stats, state.seed), [stats, state.seed]);
@@ -141,6 +144,7 @@ export default function ElenasBench() {
     const timer = setTimeout(() => dispatch({ type: 'trials' }), 2700);
     return () => clearTimeout(timer);
   }, [state.phase]);
+  useEffect(() => () => clearTimeout(installTimer.current), []);
 
   function publish() {
     const record = { id: machine.serial, build: state.build, callsign: machine.callsign, passed, flag, specialty: specialty(stats), seed: state.seed, created: Date.now() };
@@ -155,6 +159,12 @@ export default function ElenasBench() {
     try { if (navigator.share) await navigator.share(data); else await navigator.clipboard.writeText(data.url); setShared(true); setTimeout(() => setShared(false), 2000); } catch { /* dismissed */ }
   }
   function movePage(delta) { setOptionPage((page) => Math.max(0, Math.min(pages - 1, page + delta))); }
+  function choose(category, value) {
+    dispatch({ type: 'select', category, value });
+    setHighlight(category);
+    clearTimeout(installTimer.current);
+    installTimer.current = setTimeout(() => setHighlight(null), 1250);
+  }
   function swipeEnd(event) {
     if (touchStart.current == null) return;
     const distance = event.changedTouches[0].clientX - touchStart.current;
@@ -178,14 +188,14 @@ export default function ElenasBench() {
             <main className="bench-system__main">
               {state.phase === 'build' && (
                 <div className="bench__builder">
-                  <div className="bench__visual"><DroneRender build={state.build} /><div className="bench__view-switch"><button className="is-on">TOP</button><button disabled title="Required for public release">FRONT</button><button disabled title="Required for public release">PROFILE</button></div></div>
+                  <div className="bench__visual"><DroneRender build={state.build} view={view} highlight={highlight} /><div className="bench__view-switch">{['top','front','profile'].map((item) => <button key={item} type="button" className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div></div>
                   <div className="bench__choice">
                     <div className="bench__progress">{BENCH_STEPS.map((step, i) => <span key={step.id} className={i <= state.step ? 'is-on' : ''} />)}</div>
                     <p className="bench__step">{String(state.step + 1).padStart(2, '0')} / 06 &nbsp; {current.label}</p><h3>{current.prompt}</h3>
-                    {isFinish ? <FinishControls build={state.build} choose={(category, value) => dispatch({ type: 'select', category, value })} /> : (
+                    {isFinish ? <FinishControls build={state.build} choose={choose} /> : (
                       <>
                         <div className="bench__options" onTouchStart={(e) => { touchStart.current = e.touches[0].clientX; }} onTouchEnd={swipeEnd}>
-                          {options.map((option) => <button key={option.id} type="button" className={selected === option.id ? 'is-selected' : ''} onClick={() => dispatch({ type: 'select', category: current.id, value: option.id })}><span><b>{option.name}</b>{option.tag && <em>{option.tag}</em>}</span><small>{option.detail}</small></button>)}
+                          {options.map((option) => <button key={option.id} type="button" className={selected === option.id ? 'is-selected' : ''} onClick={() => choose(current.id, option.id)}><span><b>{option.name}</b>{option.tag && <em>{option.tag}</em>}</span><small>{option.detail}</small></button>)}
                         </div>
                         <div className="bench__paging"><button disabled={optionPage === 0} onClick={() => movePage(-1)}>← Previous</button><span>{String(optionPage + 1).padStart(2, '0')} / {String(pages).padStart(2, '0')} &nbsp; {Array.from({ length: pages }, (_, i) => i === optionPage ? '●' : '○').join(' ')}</span><button disabled={optionPage === pages - 1} onClick={() => movePage(1)}>Next →</button></div>
                       </>
@@ -221,5 +231,6 @@ function TrialScreen({ trials, revealed, build, next, finish }) {
   return <div className="bench__trials"><p className="bench__status">FIELD TRIAL // {Math.min(revealed + 1, 5)} OF 5</p><div className="bench__trial-machine"><DroneRender build={build} label={false}/></div><h3>{current.name}</h3>{revealed > 0 && <div className={`bench__diagnostic ${trials[revealed - 1].passed ? 'is-pass' : 'is-fail'}`}><strong>{trials[revealed - 1].passed ? 'PASSED' : 'FAILED'}</strong>{trials[revealed - 1].notes.map((note) => <span key={note}>{note}</span>)}</div>}<ol>{trials.map((trial, i) => <li key={trial.id} className={i < revealed ? (trial.passed ? 'is-pass' : 'is-fail') : i === revealed ? 'is-current' : ''}>{trial.name}<b>{i < revealed ? (trial.passed ? 'PASS' : 'FAIL') : i === revealed ? 'READY' : 'LOCKED'}</b></li>)}</ol>{revealed < trials.length ? <button className="btn btn--primary" onClick={next}>Run test</button> : <button className="btn btn--primary" onClick={finish}>Open field report</button>}</div>;
 }
 function Result({ build, machine, stats, passed, flag, specialty: earned, published, shared, publish, share, restart, close }) {
-  return <div className="bench__result"><div className="bench__artifact"><div className="bench__artifact-head"><span>ELENA&rsquo;S BENCH</span><span>FIELD CONFIGURATION</span></div><p className="bench__serial">{machine.serial}</p><h3>{machine.callsign}</h3><DroneRender build={build} label={false}/><div className="bench__grade"><strong>{passed}/5</strong><span>TRIALS SURVIVED</span></div><p className="bench__specialty">{earned}</p>{flag > 0 && <p className={`bench__flag bench__flag--${flag}`}>TIER {flag} REFERRAL FLAG</p>}<div className="bench__result-stats">{STAT_KEYS.slice(0,4).map((key) => <span key={key}>{key.toUpperCase()}<b>{stats[key]}</b></span>)}</div><footer>THE AMERICAN FOREIGN LEGION</footer></div><div className="bench__result-actions"><button className="btn btn--primary" onClick={share}>{shared ? 'Link copied' : 'Share build'}</button><button className="btn btn--secondary" onClick={publish} disabled={published}>{published ? 'Added to wall' : 'Add to build wall'}</button><button className="bench__again" onClick={restart}>Build again</button><button className="bench__again" onClick={close}>Return to site</button></div></div>;
+  const [view, setView] = useState('top');
+  return <div className="bench__result"><div className="bench__artifact"><div className="bench__artifact-head"><span>ELENA&rsquo;S BENCH</span><span>FIELD CONFIGURATION</span></div><p className="bench__serial">{machine.serial}</p><h3>{machine.callsign}</h3><DroneRender build={build} label={false} view={view}/><div className="bench__artifact-views">{['top','front','profile'].map((item) => <button key={item} className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div><div className="bench__grade"><strong>{passed}/5</strong><span>TRIALS SURVIVED</span></div><p className="bench__specialty">{earned}</p>{flag > 0 && <p className={`bench__flag bench__flag--${flag}`}>TIER {flag} REFERRAL FLAG</p>}<div className="bench__result-stats">{STAT_KEYS.slice(0,4).map((key) => <span key={key}>{key.toUpperCase()}<b>{stats[key]}</b></span>)}</div><footer>THE AMERICAN FOREIGN LEGION</footer></div><div className="bench__result-actions"><button className="btn btn--primary" onClick={share}>{shared ? 'Link copied' : 'Share build'}</button><button className="btn btn--secondary" onClick={publish} disabled={published}>{published ? 'Added to wall' : 'Add to build wall'}</button><button className="bench__again" onClick={restart}>Build again</button><button className="bench__again" onClick={close}>Return to site</button></div></div>;
 }
