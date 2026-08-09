@@ -102,6 +102,34 @@ function specialty(stats) {
   const labels = { endurance: 'LONG-RANGE', agility: 'CLOSE-CONTROL', durability: 'FIELD-DURABLE', sensing: 'NIGHT-RECON', signal: 'SIGNAL-RESILIENT' };
   return labels[STAT_KEYS.reduce((best, key) => stats[key] > stats[best] ? key : best, STAT_KEYS[0])];
 }
+function checkpointPoints(trial, index) {
+  if (!trial) return 0;
+  return Math.max(120, Math.round((trial.score * 11 + (trial.passed ? 260 : 40) - index * 15) / 10) * 10);
+}
+function sortiePoints(trials, count = trials.length) {
+  return trials.slice(0, count).reduce((total, trial, index) => total + checkpointPoints(trial, index), 0);
+}
+function announcerLine(trial, points) {
+  const lines = {
+    range: trial.passed
+      ? ['That machine came hungry.', 'Reserve intact. The circuit noticed.', 'Fast enough to make the sponsors nervous.']
+      : ['A short flight can still become a long invoice.', 'Reserve is gone. Pride remains.', 'Someone forgot to negotiate the return trip.'],
+    wind: trial.passed
+      ? ['What a turn!', 'It bent with the weather and kept the line.', 'That correction just raised the contract price.']
+      : ['Not exactly a pilot like Talon.', 'The wind filed its own flight plan.', 'Frame held. Dignity pending.'],
+    loss: trial.passed
+      ? ['Signal is gone. It is still flying.', 'No link, no panic. Private buyers love that.', 'Autonomy confirmed. Legal is already calling.']
+      : ['The audience lost it before the operator did.', 'Link down. Contract value following.', 'Some machines need the leash.'],
+    night: trial.passed
+      ? ['It saw the gate before we did.', 'Night optics clear. Sponsors incoming.', 'The dark just became billable.']
+      : ['The dark wins this heat.', 'Sensors searched. The wall answered.', 'That obstacle was not in the sponsorship package.'],
+    recovery: trial.passed
+      ? ['Printer Three built a survivor.', 'It came home. That is what buyers remember.', 'Recovered intact. Do you have an agent?']
+      : ['Recovery team, bring a larger case.', 'It crossed the line. Most of it.', 'The circuit keeps the footage. You keep the invoice.'],
+  };
+  const choices = lines[trial.id] || (trial.passed ? ['The circuit approves.'] : ['The circuit remembers.']);
+  return choices[hashString(`${trial.id}:${trial.score}:${points}`) % choices.length];
+}
 function encode(payload) { try { return btoa(encodeURIComponent(JSON.stringify(payload))); } catch { return ''; } }
 function decode(value) { try { return JSON.parse(decodeURIComponent(atob(value))); } catch { return null; } }
 function stored(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || '') || fallback; } catch { return fallback; } }
@@ -122,6 +150,7 @@ export default function ElenasBench() {
   const stats = useMemo(() => statsFor(state.build, state.seed), [state.build, state.seed]);
   const trials = useMemo(() => trialsFor(stats, state.seed), [stats, state.seed]);
   const passed = trials.filter((t) => t.passed).length;
+  const sortieScore = sortiePoints(trials);
   const machine = identity(state.build, state.seed);
   const flag = referralFlag(stats, passed, state.seed);
   const current = BENCH_STEPS[state.step];
@@ -149,7 +178,7 @@ export default function ElenasBench() {
   useEffect(() => () => clearTimeout(installTimer.current), []);
 
   function publish() {
-    const record = { id: machine.serial, build: state.build, callsign: machine.callsign, passed, flag, specialty: specialty(stats), seed: state.seed, created: Date.now() };
+    const record = { id: machine.serial, build: state.build, callsign: machine.callsign, passed, flag, specialty: specialty(stats), sortieScore, seed: state.seed, created: Date.now() };
     const next = [record, ...wall.filter((item) => item.id !== record.id)].slice(0, 24);
     setWall(next); setPublished(true);
     try { localStorage.setItem(WALL_KEY, JSON.stringify(next)); } catch { /* session-only fallback */ }
@@ -157,7 +186,7 @@ export default function ElenasBench() {
   async function share() {
     const url = new URL(window.location.href);
     url.searchParams.set('bench', encode({ build: state.build, seed: state.seed })); url.hash = 'bench';
-    const data = { title: `${machine.serial} “${machine.callsign}”`, text: `${passed}/5 trials survived${flag ? ` · Tier ${flag} Referral Flag` : ''}`, url: url.toString() };
+    const data = { title: `${machine.serial} “${machine.callsign}”`, text: `${passed}/5 trials survived · ${sortieScore.toLocaleString()} points${flag ? ` · Tier ${flag} Referral Flag` : ''}`, url: url.toString() };
     try { if (navigator.share) await navigator.share(data); else await navigator.clipboard.writeText(data.url); setShared(true); setTimeout(() => setShared(false), 2000); } catch { /* dismissed */ }
   }
   function movePage(delta) { setOptionPage((page) => Math.max(0, Math.min(pages - 1, page + delta))); }
@@ -225,7 +254,7 @@ export default function ElenasBench() {
               {state.phase === 'commit' && <Moment className="bench__commit" status="FABRICATION QUEUE READY" build={state.build}><h3>DESIGNATION PENDING</h3><p>Selections cannot be changed after the queue is locked.</p><button className="btn btn--primary" onClick={() => dispatch({ type: 'print', seed: makeSeed() })}>Send to printer</button></Moment>}
               {state.phase === 'printing' && <Moment className="bench__printing" status="FABRICATION QUEUE LOCKED" build={state.build} printing><p>PRINTING // SERIAL SEED FIXED</p></Moment>}
               {state.phase === 'trials' && <FlightSimulator trials={trials} revealed={state.revealed} build={state.build} next={() => dispatch({ type: 'reveal' })} finish={() => dispatch({ type: 'result' })} />}
-              {state.phase === 'result' && <Result build={state.build} machine={machine} stats={stats} passed={passed} flag={flag} specialty={specialty(stats)} published={published} shared={shared} publish={publish} share={share} restart={() => dispatch({ type: 'restart' })} close={() => dispatch({ type: 'return' })} />}
+              {state.phase === 'result' && <Result build={state.build} machine={machine} stats={stats} passed={passed} flag={flag} sortieScore={sortieScore} specialty={specialty(stats)} published={published} shared={shared} publish={publish} share={share} restart={() => dispatch({ type: 'restart' })} close={() => dispatch({ type: 'return' })} />}
             </main>
           </div>
         )}
@@ -233,7 +262,7 @@ export default function ElenasBench() {
         <div className="bench-wall">
           <div className="bench-wall__head"><div><p className="eyebrow">The Build Wall</p><h3>Recent field configurations.</h3></div><span>{wall.length} LOCAL BUILDS</span></div>
           <div className="bench-wall__filters"><button className={wallFilter === 'recent' ? 'is-on' : ''} onClick={() => setWallFilter('recent')}>Recent</button><button className={wallFilter === 'referred' ? 'is-on' : ''} onClick={() => setWallFilter('referred')}>Referred</button><button className={wallFilter === 'survivors' ? 'is-on' : ''} onClick={() => setWallFilter('survivors')}>5/5 Survivors</button></div>
-          {filteredWall.length ? <ul>{filteredWall.map((item) => <li key={`${item.id}-${item.created}`}><DroneRender build={item.build} label={false}/><b>{item.id} &ldquo;{item.callsign}&rdquo;</b><span>{item.passed}/5 TRIALS · {item.specialty}</span>{item.flag > 0 && <em>TIER {item.flag} REFERRAL FLAG</em>}</li>)}</ul> : <div className="bench-wall__empty"><span>NO MATCHING FIELD CONFIGURATIONS</span><a href="#bench">BUILD THE FIRST</a></div>}
+          {filteredWall.length ? <ul>{filteredWall.map((item) => <li key={`${item.id}-${item.created}`}><DroneRender build={item.build} label={false}/><b>{item.id} &ldquo;{item.callsign}&rdquo;</b><span>{item.passed}/5 TRIALS · {item.sortieScore ? `${item.sortieScore.toLocaleString()} PTS · ` : ''}{item.specialty}</span>{item.flag > 0 && <em>TIER {item.flag} REFERRAL FLAG</em>}</li>)}</ul> : <div className="bench-wall__empty"><span>NO MATCHING FIELD CONFIGURATIONS</span><a href="#bench">BUILD THE FIRST</a></div>}
         </div>
         </div>}
       </div>
@@ -252,8 +281,10 @@ function FlightSimulator({ trials, revealed, build, next, finish }) {
   const completed = trials.slice(0, revealed);
   const failures = completed.filter((trial) => !trial.passed).length;
   const last = revealed > 0 ? trials[revealed - 1] : null;
+  const lastPoints = last ? checkpointPoints(last, revealed - 1) : 0;
+  const totalPoints = sortiePoints(trials, revealed);
   const power = Math.max(18, 100 - revealed * 14 - failures * 7);
-  const link = Math.max(12, current?.id === 'signal' ? 28 : 94 - failures * 16 - revealed * 4);
+  const link = Math.max(12, current?.id === 'loss' ? 28 : 94 - failures * 16 - revealed * 4);
   const speed = running ? Math.max(31, 74 + current.score - 50 - failures * 8) : 0;
 
   function execute() {
@@ -269,6 +300,7 @@ function FlightSimulator({ trials, revealed, build, next, finish }) {
     <div className="flight-sim">
       <header className="flight-sim__header">
         <span>FIELD SORTIE // {String(Math.min(revealed + 1, 5)).padStart(2, '0')} OF 05</span>
+        <strong>SORTIE SCORE // {totalPoints.toLocaleString().padStart(5, '0')}</strong>
         <span>{failures ? `AIRFRAME DAMAGE ${failures}` : 'AIRFRAME NOMINAL'}</span>
       </header>
 
@@ -301,6 +333,7 @@ function FlightSimulator({ trials, revealed, build, next, finish }) {
           {failures > 1 && <i className="flight-sim__damage flight-sim__damage--two" />}
         </div>
         <div className="flight-sim__reticle"><span /><i /></div>
+        <div className={`flight-sim__effect flight-sim__effect--${current?.id || 'complete'}`} aria-hidden="true" />
 
         <div className="flight-sim__telemetry flight-sim__telemetry--left">
           <span>SPD <b>{String(Math.round(speed)).padStart(3, '0')}</b></span>
@@ -311,6 +344,15 @@ function FlightSimulator({ trials, revealed, build, next, finish }) {
           <span>CELL <b>{power}%</b></span>
         </div>
         {running && <div className="flight-sim__executing">EXECUTING // {current.name}</div>}
+        {last && !running && revealed <= trials.length && (
+          <div className={`flight-sim__score-card${last.passed ? ' is-pass' : ' is-fail'}`}>
+            <p>{last.name} // {last.passed ? 'CLEARED' : 'DEGRADED'}</p>
+            <strong>+{lastPoints.toLocaleString()}</strong>
+            <span>SORTIE SCORE {totalPoints.toLocaleString()}</span>
+            <blockquote>&ldquo;{announcerLine(last, lastPoints)}&rdquo;</blockquote>
+            <small>THE CIRCUIT // LIVE</small>
+          </div>
+        )}
       </div>
 
       <div className="flight-sim__control">
@@ -344,7 +386,7 @@ function FlightSimulator({ trials, revealed, build, next, finish }) {
     </div>
   );
 }
-function Result({ build, machine, stats, passed, flag, specialty: earned, published, shared, publish, share, restart, close }) {
+function Result({ build, machine, stats, passed, flag, sortieScore, specialty: earned, published, shared, publish, share, restart, close }) {
   const [view, setView] = useState('top');
-  return <div className="bench__result"><div className="bench__artifact"><div className="bench__artifact-head"><span>ELENA&rsquo;S BENCH</span><span>FIELD CONFIGURATION</span></div><p className="bench__serial">{machine.serial}</p><h3>{machine.callsign}</h3><DroneRender build={build} label={false} view={view}/><div className="bench__artifact-views">{['top','front','profile'].map((item) => <button key={item} className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div><div className="bench__grade"><strong>{passed}/5</strong><span>TRIALS SURVIVED</span></div><p className="bench__specialty">{earned}</p>{flag > 0 && <p className={`bench__flag bench__flag--${flag}`}>TIER {flag} REFERRAL FLAG</p>}<div className="bench__result-stats">{STAT_KEYS.slice(0,4).map((key) => <span key={key}>{key.toUpperCase()}<b>{stats[key]}</b></span>)}</div><footer>THE AMERICAN FOREIGN LEGION</footer></div><div className="bench__result-actions"><button className="btn btn--primary" onClick={share}>{shared ? 'Link copied' : 'Share build'}</button><button className="btn btn--secondary" onClick={publish} disabled={published}>{published ? 'Added to wall' : 'Add to build wall'}</button><button className="bench__again" onClick={restart}>Build again</button><button className="bench__again" onClick={close}>Return to site</button></div></div>;
+  return <div className="bench__result"><div className="bench__artifact"><div className="bench__artifact-head"><span>ELENA&rsquo;S BENCH</span><span>FIELD CONFIGURATION</span></div><p className="bench__serial">{machine.serial}</p><h3>{machine.callsign}</h3><DroneRender build={build} label={false} view={view}/><div className="bench__artifact-views">{['top','front','profile'].map((item) => <button key={item} className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div><div className="bench__grade"><strong>{passed}/5</strong><span>TRIALS SURVIVED</span></div><p className="bench__sortie-score">SORTIE SCORE // {sortieScore.toLocaleString()}</p><p className="bench__specialty">{earned}</p>{flag > 0 && <p className={`bench__flag bench__flag--${flag}`}>TIER {flag} REFERRAL FLAG</p>}<div className="bench__result-stats">{STAT_KEYS.slice(0,4).map((key) => <span key={key}>{key.toUpperCase()}<b>{stats[key]}</b></span>)}</div><footer>THE AMERICAN FOREIGN LEGION</footer></div><div className="bench__result-actions"><button className="btn btn--primary" onClick={share}>{shared ? 'Link copied' : 'Share build'}</button><button className="btn btn--secondary" onClick={publish} disabled={published}>{published ? 'Added to wall' : 'Add to build wall'}</button><button className="bench__again" onClick={restart}>Build again</button><button className="bench__again" onClick={close}>Return to site</button></div></div>;
 }

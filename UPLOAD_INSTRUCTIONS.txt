@@ -1,42 +1,19 @@
-ELENA'S BENCH — GITHUB UPLOAD
-================================
+AFL FLIGHT SIMULATOR V2 — GITHUB WEB UPLOAD
 
-This package changes only six source files. The rest of the website remains
-untouched.
+1. Unzip AFL_FLIGHT_SIMULATOR_V2.zip on your computer.
+2. Open the extracted folder.
+3. In the GitHub repository, choose Add file > Upload files.
+4. Drag BOTH the src folder and public folder onto the upload page.
+5. Confirm paths begin exactly with src/ and public/.
+6. Commit directly to main and allow Vercel to redeploy.
 
-FILES
-  src/App.jsx
-  src/components/DroneRender.jsx
-  src/components/DroneRender.css
-  src/components/ElenasBench.jsx
-  src/components/ElenasBench.css
-  src/data/benchCatalog.js
+V2 adds:
+- Persistent, prominent Sortie Score
+- Checkpoint score freeze after every trial
+- Recurring THE CIRCUIT // LIVE announcer reactions
+- Original commentary shaped by circuit performance and pass/fail outcome
+- Strong speed, crosswind, signal glitch, night sensor, and recovery effects
+- Sortie Score on the final artifact, shared text, and Build Wall records
 
-HOW TO UPLOAD
-
-1. Unzip this package on your computer.
-2. Open https://github.com/MarcusTetwiler/aflvolunteer.com
-3. Choose Add file -> Upload files.
-4. Drag the "src" folder from this package into the GitHub upload area.
-5. Confirm GitHub shows the six paths listed above.
-6. Use this commit message:
-
-   Add Elena's Bench playable prototype
-
-7. Commit directly to the main branch only if you want Vercel to update the
-   current site immediately. For a safer preview, choose "Create a new branch
-   for this commit and start a pull request."
-
-RECOMMENDED
-
-Choose the new-branch option. Vercel should attach a preview deployment to the
-pull request if the repository's Vercel integration is active.
-
-VALIDATION COMPLETED
-  npm run lint  — passed
-  npm run build — passed
-
-PROTOTYPE LIMITS
-  - The Build Wall is stored on the visitor's device for this iteration.
-  - TOP view is implemented. FRONT and PROFILE remain launch requirements.
-  - The procedural drone artwork is prototype artwork.
+The package is cumulative and also contains the modular drone renderer,
+collapsible sections, MAKE YOUR DRONE CTA, and illustrated footer.
