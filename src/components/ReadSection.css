@@ -260,6 +260,10 @@
   border-color: var(--ink);
 }
 
+.read__finish { margin-left: auto; }
+
+.read > .container > .section-toggle { margin: -36px 0; }
+
 @media (max-width: 900px) {
   .read__gate {
     grid-template-columns: 1fr;
@@ -302,4 +306,6 @@
     flex-direction: column;
     align-items: flex-start;
   }
+  .read__finish { width: 100%; margin-left: 0; }
+  .read > .container > .section-toggle { margin: -22px 0; }
 }

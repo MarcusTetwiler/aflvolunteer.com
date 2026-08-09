@@ -5,6 +5,7 @@ import './ElenasBench.css';
 
 const WALL_KEY = 'afl:bench-wall';
 const SESSION_KEY = 'afl:bench-session';
+const COLLAPSED_KEY = 'afl:bench-collapsed';
 const PAGE_SIZE = 4;
 const FINISH = {
   finish: [
@@ -114,6 +115,7 @@ export default function ElenasBench() {
   const [wallFilter, setWallFilter] = useState('recent');
   const [view, setView] = useState('top');
   const [highlight, setHighlight] = useState(null);
+  const [collapsed, setCollapsed] = useState(() => stored(COLLAPSED_KEY, false));
   const touchStart = useRef(null);
   const installTimer = useRef(null);
   const fullScreen = state.phase !== 'intro';
@@ -173,10 +175,26 @@ export default function ElenasBench() {
   }
   const filteredWall = wallFilter === 'referred' ? wall.filter((item) => item.flag) : wallFilter === 'survivors' ? wall.filter((item) => item.passed === 5) : wall;
 
+  function toggleCollapsed() {
+    const next = !collapsed;
+    setCollapsed(next);
+    try { localStorage.setItem(COLLAPSED_KEY, JSON.stringify(next)); } catch { /* optional */ }
+  }
+
   return (
     <section className="bench" id="wall">
       <div className="container">
-        <header className="bench__head"><p className="eyebrow">Elena&rsquo;s Bench</p><h2>The printer is waiting.</h2><p>Build a field machine from what remains.</p></header>
+        <button
+          className="section-toggle"
+          type="button"
+          aria-expanded={!collapsed}
+          aria-controls="bench-content"
+          onClick={toggleCollapsed}
+        >
+          <span><small>Elena&rsquo;s Bench</small><strong>Six decisions. Five field trials.</strong></span>
+          <span>{collapsed ? 'Enter +' : 'Collapse −'}</span>
+        </button>
+        {!collapsed && <div id="bench-content">
         <div className="bench__entry" id="bench">
           <DroneRender build={{ chassis: 'scout', material: 'gyroid', power: 'endurance', sensor: 'thermal', system: 'relay', finish: 'bone' }} />
           <div><p className="bench__status">PRINTER 03 // AVAILABLE</p><h3>Six decisions.<br />Five field trials.</h3><p>No account. Approximately two minutes.</p><button className="btn btn--primary" type="button" onClick={() => dispatch({ type: 'start' })}>{state.resumePhase || state.step || state.seed ? 'Resume fabrication' : 'Begin fabrication'}</button></div>
@@ -217,6 +235,7 @@ export default function ElenasBench() {
           <div className="bench-wall__filters"><button className={wallFilter === 'recent' ? 'is-on' : ''} onClick={() => setWallFilter('recent')}>Recent</button><button className={wallFilter === 'referred' ? 'is-on' : ''} onClick={() => setWallFilter('referred')}>Referred</button><button className={wallFilter === 'survivors' ? 'is-on' : ''} onClick={() => setWallFilter('survivors')}>5/5 Survivors</button></div>
           {filteredWall.length ? <ul>{filteredWall.map((item) => <li key={`${item.id}-${item.created}`}><DroneRender build={item.build} label={false}/><b>{item.id} &ldquo;{item.callsign}&rdquo;</b><span>{item.passed}/5 TRIALS · {item.specialty}</span>{item.flag > 0 && <em>TIER {item.flag} REFERRAL FLAG</em>}</li>)}</ul> : <div className="bench-wall__empty"><span>NO MATCHING FIELD CONFIGURATIONS</span><a href="#bench">BUILD THE FIRST</a></div>}
         </div>
+        </div>}
       </div>
     </section>
   );

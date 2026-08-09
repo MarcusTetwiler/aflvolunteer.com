@@ -168,6 +168,44 @@ button {
   display: inline-block;
 }
 
+.section-toggle {
+  width: 100%;
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+  border: 0;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.section-toggle > span:first-child { display: flex; align-items: baseline; gap: 20px; }
+.section-toggle small,
+.section-toggle > span:last-child {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--burnt-ink);
+}
+.section-toggle strong { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+.section-toggle > span:last-child { white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .section-toggle { min-height: 70px; gap: 12px; }
+  .section-toggle > span:first-child { display: block; }
+  .section-toggle small { display: block; margin-bottom: 5px; }
+  .section-toggle strong { font-size: 18px; }
+  .section-toggle > span:last-child { font-size: 8px; }
+}
+
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Shared control system

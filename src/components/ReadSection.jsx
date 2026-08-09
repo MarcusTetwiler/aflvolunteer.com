@@ -11,6 +11,7 @@ import {
 } from '../analytics';
 import './ReadSection.css';
 
+const SAMPLE_FINISHED_KEY = 'afl:sample-finished';
 
 export default function ReadSection() {
   // Read during lazy init rather than in an effect, so a returning visitor
@@ -27,6 +28,13 @@ export default function ReadSection() {
   const [status, setStatus] = useState('idle'); // idle | submitting
   const [errors, setErrors] = useState({});
   const [activeChapter, setActiveChapter] = useState(CHAPTERS[0]?.id);
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return window.localStorage.getItem(SAMPLE_FINISHED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
   const readerRef = useRef(null);
   const endRef = useRef(null);
   const finishedFired = useRef(false);
@@ -95,11 +103,34 @@ export default function ReadSection() {
     trackChapterViewed(id);
   }
 
+  function finishReading() {
+    trackSampleFinished();
+    finishedFired.current = true;
+    setCollapsed(true);
+    try { window.localStorage.setItem(SAMPLE_FINISHED_KEY, '1'); } catch { /* optional */ }
+    requestAnimationFrame(() => document.getElementById('read')?.scrollIntoView({ block: 'start' }));
+  }
+
   const chapter = CHAPTERS.find((c) => c.id === activeChapter) || CHAPTERS[0];
+  const isLastChapter = activeChapter === CHAPTERS.at(-1)?.id;
 
   return (
     <section className="read" id="read">
       <div className="container read__inner">
+        {collapsed ? (
+          <button
+            className="section-toggle"
+            type="button"
+            aria-expanded="false"
+            aria-controls="sample-content"
+            onClick={() => setCollapsed(false)}
+          >
+            <span><small>Sample</small><strong>Prologue + Chapter One</strong></span>
+            <span>Read again&nbsp; +</span>
+          </button>
+        ) : (
+          <>
+        <div id="sample-content">
         <header className="read__head">
           <p className="eyebrow">Sample</p>
           <h2 className="read__title">{SAMPLE.headline}</h2>
@@ -192,7 +223,21 @@ export default function ReadSection() {
             </article>
 
             <div className="read__end" ref={endRef}>
-              {BOOK.available ? (
+              {!isLastChapter ? (
+                <>
+                  <p className="read__end-copy">Continue the opening.</p>
+                  <button
+                    className="read__end-cta btn btn--primary"
+                    type="button"
+                    onClick={() => {
+                      selectChapter(CHAPTERS[1].id);
+                      readerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                  >
+                    Read Chapter One
+                  </button>
+                </>
+              ) : BOOK.available ? (
                 <>
                   <p className="read__end-copy">
                     That&rsquo;s the opening. Continue with the full book on Amazon.
@@ -212,8 +257,16 @@ export default function ReadSection() {
                   That&rsquo;s the opening. We&rsquo;ll email you when the full book is available.
                 </p>
               )}
+              {isLastChapter && (
+                <button className="read__finish btn btn--secondary" type="button" onClick={finishReading}>
+                  Mark finished &amp; collapse
+                </button>
+              )}
             </div>
           </div>
+        )}
+        </div>
+          </>
         )}
       </div>
     </section>

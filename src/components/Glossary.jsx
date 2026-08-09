@@ -1,12 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { GLOSSARY, GLOSSARY_GROUPS } from '../data/glossary';
-import { GLOSSARY_INTRO } from '../site.config';
 import { trackGlossaryFilter, trackGlossarySearch } from '../analytics';
 import './Glossary.css';
 
 export default function Glossary() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
+  const [expanded, setExpanded] = useState(() => window.location.hash.startsWith('#g-'));
+
+  useEffect(() => {
+    const openDeepLink = () => {
+      if (window.location.hash === '#glossary' || window.location.hash.startsWith('#g-')) setExpanded(true);
+    };
+    window.addEventListener('hashchange', openDeepLink);
+    return () => window.removeEventListener('hashchange', openDeepLink);
+  }, []);
 
   // Report a settled query rather than every keystroke: per-keystroke events
   // would fill the report with partial words and tell you nothing.
@@ -41,12 +49,18 @@ export default function Glossary() {
   return (
     <section className="glossary" id="glossary">
       <div className="container">
-        <header className="glossary__head">
-          <p className="eyebrow">{GLOSSARY_INTRO.eyebrow}</p>
-          <h2 className="glossary__title">{GLOSSARY_INTRO.headline}</h2>
-          <p className="glossary__sub">{GLOSSARY_INTRO.sub}</p>
-        </header>
+        <button
+          className="section-toggle"
+          type="button"
+          aria-expanded={expanded}
+          aria-controls="glossary-content"
+          onClick={() => setExpanded((value) => !value)}
+        >
+          <span><small>Glossary</small><strong>50 spoiler-free terms</strong></span>
+          <span>{expanded ? 'Collapse −' : 'Explore +'}</span>
+        </button>
 
+        {expanded && <div className="glossary__content" id="glossary-content">
         <div className="glossary__controls">
           <div className="glossary__search">
             <label className="glossary__search-label" htmlFor="glossary-search">
@@ -110,7 +124,7 @@ export default function Glossary() {
           </dl>
         )}
 
-        <p className="glossary__footnote">{GLOSSARY_INTRO.footnote}</p>
+        </div>}
       </div>
     </section>
   );
