@@ -224,7 +224,7 @@ export default function ElenasBench() {
               )}
               {state.phase === 'commit' && <Moment className="bench__commit" status="FABRICATION QUEUE READY" build={state.build}><h3>DESIGNATION PENDING</h3><p>Selections cannot be changed after the queue is locked.</p><button className="btn btn--primary" onClick={() => dispatch({ type: 'print', seed: makeSeed() })}>Send to printer</button></Moment>}
               {state.phase === 'printing' && <Moment className="bench__printing" status="FABRICATION QUEUE LOCKED" build={state.build} printing><p>PRINTING // SERIAL SEED FIXED</p></Moment>}
-              {state.phase === 'trials' && <TrialScreen trials={trials} revealed={state.revealed} build={state.build} next={() => dispatch({ type: 'reveal' })} finish={() => dispatch({ type: 'result' })} />}
+              {state.phase === 'trials' && <FlightSimulator trials={trials} revealed={state.revealed} build={state.build} next={() => dispatch({ type: 'reveal' })} finish={() => dispatch({ type: 'result' })} />}
               {state.phase === 'result' && <Result build={state.build} machine={machine} stats={stats} passed={passed} flag={flag} specialty={specialty(stats)} published={published} shared={shared} publish={publish} share={share} restart={() => dispatch({ type: 'restart' })} close={() => dispatch({ type: 'return' })} />}
             </main>
           </div>
@@ -245,9 +245,104 @@ function FinishControls({ build, choose }) {
   return <div className="bench__finish">{Object.entries(FINISH).map(([category, options]) => <fieldset key={category}><legend>{category === 'finish' ? 'Resin' : category}</legend><div>{options.map((option) => <button type="button" key={option.id} className={build[category] === option.id ? 'is-selected' : ''} onClick={() => choose(category, option.id)}>{option.name}</button>)}</div></fieldset>)}</div>;
 }
 function Moment({ className, status, build, printing, children }) { return <div className={className}><p className="bench__status">{status}</p><DroneRender build={build} printing={printing} />{children}</div>; }
-function TrialScreen({ trials, revealed, build, next, finish }) {
-  const current = trials[Math.min(revealed, trials.length - 1)];
-  return <div className="bench__trials"><p className="bench__status">FIELD TRIAL // {Math.min(revealed + 1, 5)} OF 5</p><div className="bench__trial-machine"><DroneRender build={build} label={false}/></div><h3>{current.name}</h3>{revealed > 0 && <div className={`bench__diagnostic ${trials[revealed - 1].passed ? 'is-pass' : 'is-fail'}`}><strong>{trials[revealed - 1].passed ? 'PASSED' : 'FAILED'}</strong>{trials[revealed - 1].notes.map((note) => <span key={note}>{note}</span>)}</div>}<ol>{trials.map((trial, i) => <li key={trial.id} className={i < revealed ? (trial.passed ? 'is-pass' : 'is-fail') : i === revealed ? 'is-current' : ''}>{trial.name}<b>{i < revealed ? (trial.passed ? 'PASS' : 'FAIL') : i === revealed ? 'READY' : 'LOCKED'}</b></li>)}</ol>{revealed < trials.length ? <button className="btn btn--primary" onClick={next}>Run test</button> : <button className="btn btn--primary" onClick={finish}>Open field report</button>}</div>;
+function FlightSimulator({ trials, revealed, build, next, finish }) {
+  const [running, setRunning] = useState(false);
+  const currentIndex = Math.min(revealed, trials.length - 1);
+  const current = trials[currentIndex];
+  const completed = trials.slice(0, revealed);
+  const failures = completed.filter((trial) => !trial.passed).length;
+  const last = revealed > 0 ? trials[revealed - 1] : null;
+  const power = Math.max(18, 100 - revealed * 14 - failures * 7);
+  const link = Math.max(12, current?.id === 'signal' ? 28 : 94 - failures * 16 - revealed * 4);
+  const speed = running ? Math.max(31, 74 + current.score - 50 - failures * 8) : 0;
+
+  function execute() {
+    if (running || revealed >= trials.length) return;
+    setRunning(true);
+    setTimeout(() => {
+      next();
+      setRunning(false);
+    }, 1900);
+  }
+
+  return (
+    <div className="flight-sim">
+      <header className="flight-sim__header">
+        <span>FIELD SORTIE // {String(Math.min(revealed + 1, 5)).padStart(2, '0')} OF 05</span>
+        <span>{failures ? `AIRFRAME DAMAGE ${failures}` : 'AIRFRAME NOMINAL'}</span>
+      </header>
+
+      <div className={`flight-sim__viewport stage-${currentIndex}${running ? ' is-running' : ''}${failures ? ` damage-${Math.min(failures, 3)}` : ''}`}>
+        <svg className="flight-sim__world" viewBox="0 0 900 500" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="sim-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#15191a"/><stop offset="1" stopColor="#443b31"/></linearGradient>
+            <linearGradient id="sim-ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#463d31"/><stop offset="1" stopColor="#171513"/></linearGradient>
+          </defs>
+          <rect width="900" height="500" fill="url(#sim-sky)"/>
+          <path className="flight-sim__clouds" d="M0 118 C170 80 250 140 410 104 S720 60 900 112 V210 H0Z" fill="#786a56" opacity=".18"/>
+          <path d="M0 270 L125 210 240 252 348 174 465 248 590 188 720 244 825 198 900 228 900 500 0 500Z" fill="#282823"/>
+          <path className="flight-sim__tree-line" d="M0 317 l30-38 26 38 34-54 34 54 24-36 31 36 38-58 35 58 32-45 29 45 44-62 38 62 30-34 31 34 37-55 36 55 31-39 32 39 46-66 42 66 32-43 35 43 40-58 38 58 35-47 34 47 40-68 45 68V500H0Z" fill="#151815"/>
+          <path className="flight-sim__ground" d="M0 340 C170 320 278 365 430 344 S690 316 900 350 V500 H0Z" fill="url(#sim-ground)"/>
+          <path className="flight-sim__route" d="M410 500 L458 330 L486 330 L552 500Z" fill="#756750" opacity=".36"/>
+          <g className="flight-sim__structures" fill="#191918" stroke="#76654e" strokeWidth="2">
+            <path d="M65 342v-78h88v78M82 264v-34h16v34M127 264v-51h12v51"/>
+            <path d="M730 344v-105h106v105M748 239v-28h70v28"/>
+          </g>
+          <g className="flight-sim__checkpoint" fill="none" stroke="#d2793f" strokeWidth="3" opacity=".72">
+            <ellipse cx="470" cy="304" rx="70" ry="29"/>
+            <path d="M400 304h-24m188 0h-24"/>
+          </g>
+        </svg>
+
+        <div className="flight-sim__horizon">SECTOR E-17 // COURSE LOCKED</div>
+        <div className="flight-sim__machine">
+          <DroneRender build={build} label={false} view="profile" />
+          {failures > 0 && <i className="flight-sim__damage flight-sim__damage--one" />}
+          {failures > 1 && <i className="flight-sim__damage flight-sim__damage--two" />}
+        </div>
+        <div className="flight-sim__reticle"><span /><i /></div>
+
+        <div className="flight-sim__telemetry flight-sim__telemetry--left">
+          <span>SPD <b>{String(Math.round(speed)).padStart(3, '0')}</b></span>
+          <span>ALT <b>{running ? 118 + currentIndex * 17 : 104}</b></span>
+        </div>
+        <div className="flight-sim__telemetry flight-sim__telemetry--right">
+          <span>LINK <b>{link}%</b></span>
+          <span>CELL <b>{power}%</b></span>
+        </div>
+        {running && <div className="flight-sim__executing">EXECUTING // {current.name}</div>}
+      </div>
+
+      <div className="flight-sim__control">
+        <div className="flight-sim__mission">
+          <p>CHECKPOINT {String(Math.min(revealed + 1, 5)).padStart(2, '0')}</p>
+          <h3>{revealed < trials.length ? current.name : 'SORTIE COMPLETE'}</h3>
+          {last && !running && (
+            <div className={`flight-sim__result${last.passed ? ' is-pass' : ' is-fail'}`}>
+              <strong>{last.passed ? 'CLEARED' : 'DEGRADED'}</strong>
+              <span>{last.notes[0]}</span>
+            </div>
+          )}
+        </div>
+
+        <ol className="flight-sim__route-list">
+          {trials.map((trial, index) => (
+            <li key={trial.id} className={index < revealed ? (trial.passed ? 'is-pass' : 'is-fail') : index === revealed ? 'is-current' : ''}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <b>{trial.name}</b>
+              <i>{index < revealed ? (trial.passed ? 'CLEAR' : 'DAMAGE') : index === revealed ? 'READY' : '—'}</i>
+            </li>
+          ))}
+        </ol>
+
+        {revealed < trials.length ? (
+          <button className="btn btn--primary" disabled={running} onClick={execute}>{running ? 'Executing…' : 'Execute checkpoint'}</button>
+        ) : (
+          <button className="btn btn--primary" onClick={finish}>Open field report</button>
+        )}
+      </div>
+    </div>
+  );
 }
 function Result({ build, machine, stats, passed, flag, specialty: earned, published, shared, publish, share, restart, close }) {
   const [view, setView] = useState('top');
