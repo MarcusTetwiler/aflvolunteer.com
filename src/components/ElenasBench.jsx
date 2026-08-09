@@ -5,7 +5,7 @@ import './ElenasBench.css';
 
 const WALL_KEY = 'afl:bench-wall';
 const SESSION_KEY = 'afl:bench-session';
-const COLLAPSED_KEY = 'afl:bench-collapsed';
+const COLLAPSED_KEY = 'afl:bench-collapsed-v2';
 const PAGE_SIZE = 4;
 const FINISH = {
   finish: [
@@ -115,7 +115,7 @@ export default function ElenasBench() {
   const [wallFilter, setWallFilter] = useState('recent');
   const [view, setView] = useState('top');
   const [highlight, setHighlight] = useState(null);
-  const [collapsed, setCollapsed] = useState(() => stored(COLLAPSED_KEY, false));
+  const [collapsed, setCollapsed] = useState(() => stored(COLLAPSED_KEY, true));
   const touchStart = useRef(null);
   const installTimer = useRef(null);
   const fullScreen = state.phase !== 'intro';
@@ -182,7 +182,7 @@ export default function ElenasBench() {
   }
 
   return (
-    <section className="bench" id="wall">
+    <section className={`bench${collapsed ? ' is-collapsed' : ''}`} id="wall">
       <div className="container">
         <button
           className="section-toggle"
@@ -191,8 +191,8 @@ export default function ElenasBench() {
           aria-controls="bench-content"
           onClick={toggleCollapsed}
         >
-          <span><small>Elena&rsquo;s Bench</small><strong>Six decisions. Five field trials.</strong></span>
-          <span>{collapsed ? 'Enter +' : 'Collapse −'}</span>
+          <span><small>Elena&rsquo;s Bench</small><strong>Make Your Drone</strong></span>
+          <span>{collapsed ? 'Begin +' : 'Collapse −'}</span>
         </button>
         {!collapsed && <div id="bench-content">
         <div className="bench__entry" id="bench">

@@ -47,7 +47,7 @@ export default function Glossary() {
   }
 
   return (
-    <section className="glossary" id="glossary">
+    <section className={`glossary${expanded ? '' : ' is-collapsed'}`} id="glossary">
       <div className="container">
         <button
           className="section-toggle"

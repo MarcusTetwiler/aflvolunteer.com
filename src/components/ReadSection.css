@@ -263,6 +263,8 @@
 .read__finish { margin-left: auto; }
 
 .read > .container > .section-toggle { margin: -36px 0; }
+.read.is-collapsed { padding: 28px 0; }
+.read.is-collapsed > .container > .section-toggle { margin: 0; }
 
 @media (max-width: 900px) {
   .read__gate {
@@ -308,4 +310,6 @@
   }
   .read__finish { width: 100%; margin-left: 0; }
   .read > .container > .section-toggle { margin: -22px 0; }
+  .read.is-collapsed { padding: 18px 0; }
+  .read.is-collapsed > .container > .section-toggle { margin: 0; }
 }

@@ -11,6 +11,8 @@
 
 .glossary__content { padding-top: 38px; }
 .glossary > .container > .section-toggle { margin: -36px 0; }
+.glossary.is-collapsed { padding: 28px 0; }
+.glossary.is-collapsed > .container > .section-toggle { margin: 0; }
 
 .glossary__title {
   font-size: clamp(24px, 5.2vw, 42px);
@@ -195,6 +197,8 @@
   }
   .glossary__content { padding-top: 28px; }
   .glossary > .container > .section-toggle { margin: -24px 0; }
+  .glossary.is-collapsed { padding: 18px 0; }
+  .glossary.is-collapsed > .container > .section-toggle { margin: 0; }
   .glossary__controls {
     flex-direction: column;
     align-items: stretch;

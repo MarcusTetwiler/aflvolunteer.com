@@ -115,7 +115,7 @@ export default function ReadSection() {
   const isLastChapter = activeChapter === CHAPTERS.at(-1)?.id;
 
   return (
-    <section className="read" id="read">
+    <section className={`read${collapsed ? ' is-collapsed' : ''}`} id="read">
       <div className="container read__inner">
         {collapsed ? (
           <button
