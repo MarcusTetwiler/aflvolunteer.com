@@ -67,7 +67,7 @@ export default function BuySection() {
             {BOOK.available ? (
               <>
                 <a
-                  className="buy__primary"
+                  className="buy__primary btn btn--primary"
                   href={BOOK.amazonUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -82,7 +82,7 @@ export default function BuySection() {
             ) : (
               <>
                 <a
-                  className="buy__primary buy__primary--pending"
+                  className="buy__primary buy__primary--pending btn"
                   href="#read"
                   onClick={() => trackBuyClicked('notify-me')}
                 >

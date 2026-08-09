@@ -101,22 +101,47 @@
 /* Mobile: tabs scroll horizontally, buy button moves to the sticky footer bar */
 @media (max-width: 720px) {
   .nav__inner {
-    height: 54px;
-    gap: 12px;
+    height: 52px;
+    gap: 10px;
+    /* The scrolling tab strip needs to reach the screen edge so a half-visible
+       tab reads as "more this way" rather than as a layout mistake. */
+    padding-right: 0;
   }
   .nav__cta {
     display: none;
   }
   .nav__links {
+    position: relative;
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    /* Room for the fade cue, and the safe-area inset on landscape iPhones. */
+    padding-right: max(18px, env(safe-area-inset-right, 0px));
+    /* Fade the trailing edge only when more tabs exist off-screen. */
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+  .nav__links[data-more-right='true'] {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 26px), transparent 100%);
+            mask-image: linear-gradient(to right, #000 calc(100% - 26px), transparent 100%);
+  }
+  .nav__links[data-more-left='true'][data-more-right='true'] {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 26px), transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 20px, #000 calc(100% - 26px), transparent 100%);
   }
   .nav__links::-webkit-scrollbar {
     display: none;
   }
   .nav__link {
-    padding: 8px 10px;
-    font-size: 11px;
+    /* `white-space: nowrap` matters: "The Front" was wrapping to two lines and
+       inflating the whole bar to 55px. */
+    white-space: nowrap;
+    scroll-snap-align: center;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 11px;
+    font-size: 11.5px;
   }
 }

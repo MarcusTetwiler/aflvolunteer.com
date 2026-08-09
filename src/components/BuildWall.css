@@ -10,7 +10,7 @@
 }
 
 .wall__title {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(24px, 5.2vw, 42px);
   line-height: 1.1;
   letter-spacing: -0.015em;
   margin: 14px 0 18px;
@@ -24,13 +24,38 @@
 
 /* ── Grid ───────────────────────────────────────────────────────────────── */
 
+/* Base: an even grid. Fine for a handful of builds. */
 .wall__grid {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+/* From four builds up, the first runs full width and the rest tighten. Ten
+   equal tiles at phone width is ten screens of scrolling; a lead image plus a
+   denser grid reads as a collection instead of a queue. */
+@media (min-width: 700px) {
+  .wall__grid--featured {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .wall__grid--featured .wall__item--featured {
+    grid-column: 1 / -1;
+  }
+  .wall__grid--featured .wall__item--featured .wall__image {
+    aspect-ratio: 21 / 9;
+  }
+  .wall__grid--featured .wall__item--featured .wall__caption-text {
+    max-width: 60ch;
+  }
+}
+
+@media (min-width: 1100px) {
+  .wall__grid--featured {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .wall__figure {
@@ -53,6 +78,53 @@
   padding-top: 12px;
 }
 
+.wall__caption-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Share control: quiet until wanted. This is the growth mechanism — a featured
+   builder sharing their own feature — so it must be one tap on a phone. */
+.wall__share {
+  background: none;
+  border: none;
+  padding: 6px 0 6px 8px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--khaki-ink);
+  cursor: pointer;
+  white-space: nowrap;
+  min-height: 32px;
+  transition: color 0.16s ease;
+}
+
+.wall__share:hover {
+  color: var(--burnt-ink);
+}
+
+/* Landing from a shared link: mark the target so it is obvious which build the
+   link meant, then fade the marker out. */
+.wall__item {
+  scroll-margin-top: 84px;
+}
+
+.wall__item.is-linked .wall__image {
+  outline: 2px solid var(--burnt);
+  outline-offset: 3px;
+}
+
+.wall__form-wrap {
+  margin-top: 36px;
+}
+
+.wall__credit-note--standalone {
+  margin-top: 28px;
+}
+
 .wall__builder {
   display: inline-block;
   font-family: var(--font-mono);
@@ -60,7 +132,7 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   text-decoration: none;
-  color: var(--burnt);
+  color: var(--burnt-ink);
   border-bottom: 1px solid transparent;
   transition: border-color 0.16s ease;
 }
@@ -70,11 +142,19 @@
 }
 
 .wall__caption-text {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   margin-top: 7px;
   font-size: 14.5px;
   line-height: 1.58;
   color: var(--umber);
+}
+
+/* The lead tile has the width to carry a longer caption. */
+.wall__grid--featured .wall__item--featured .wall__caption-text {
+  -webkit-line-clamp: 2;
 }
 
 /* ── Empty state ────────────────────────────────────────────────────────── */
@@ -134,16 +214,28 @@
   max-width: 560px;
   font-size: 12.5px;
   line-height: 1.62;
-  color: var(--khaki);
+  color: var(--khaki-ink);
 }
 
 @media (max-width: 640px) {
   .wall {
     padding: 66px 0;
   }
+  /* Two columns even on a phone once there are several builds: a wall of
+     thumbnails reads as a collection, where one-per-screen reads as a slideshow
+     nobody finishes. */
   .wall__grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .wall__grid--featured .wall__item--featured {
+    grid-column: 1 / -1;
+  }
+  .wall__caption-text {
+    font-size: 13px;
+  }
+  .wall__share {
+    min-height: 40px;
   }
   .wall__empty {
     padding: 38px 24px;

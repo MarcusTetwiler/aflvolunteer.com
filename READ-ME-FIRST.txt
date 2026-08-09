@@ -1,0 +1,100 @@
+BATCH 2 of 2 — code (66 files)
+
+Do Batch 1 first. This batch expects those images to already be there.
+
+WHAT TO DO
+  1. Unzip this.
+  2. In GitHub: Add file -> Upload files.
+  3. Drag these in. You can do it in one go (66 files is under the 100 limit):
+       src            api            scripts
+       design-assets  geodata-pipeline
+     plus these loose files from the root of the unzipped folder:
+       README.md  OUTREACH.md  index.html  package.json  package-lock.json
+       eslint.config.js  vite.config.js
+  4. Commit message: "Phase 1 + 2: responsive QA, accessibility, Build Wall"
+  5. Commit.
+
+  Vercel will rebuild. Give it a minute, then check the site.
+
+=============================================================================
+STEP 2 — THE .gitignore FILE  (please don't skip)
+=============================================================================
+There is a file called ".gitignore" in the unzipped folder. It starts with a
+dot, so macOS Finder and Windows Explorer HIDE IT BY DEFAULT and your drag
+will probably miss it.
+
+Easiest reliable way — create it directly on GitHub:
+  1. Add file -> Create new file
+  2. Name it exactly:  .gitignore
+  3. Paste this in:
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+.vite/
+
+# Environment — never commit Upstash/Beehiiv credentials
+.env
+.env.*
+!.env.example
+
+# Editor / OS noise
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Private permission screenshots (DMs) — keep local, back up elsewhere
+permissions/*
+!permissions/README.md
+
+# QA screenshot output
+qa-shots/
+
+  4. Commit.
+
+Why it matters: this repo has never had a .gitignore. Without it, anyone who
+clones the repo and runs "npm install" will try to commit ~4,300 dependency
+files on their next commit. It costs nothing now and saves a mess later.
+
+=============================================================================
+STEP 3 — DELETE SIX FILES  (uploading can't do this)
+=============================================================================
+The web uploader can add and overwrite files, but it cannot delete or move
+them. These six are superseded. Open each on GitHub and click the trash icon
+(or "..." -> Delete file), then commit.
+
+RETIRED COMPONENTS — the old Redline volunteer funnel, no longer used:
+  src/components/CtaSection.jsx
+  src/components/CtaSection.css
+  src/components/FeatureStory.jsx
+  src/components/FeatureStory.css
+
+MOVED TO design-assets/ — the unoptimised originals:
+  public/images/hero-watercolor.jpg      (716 KB)
+  public/images/cta-watercolor.jpg       (219 KB)
+
+Nothing breaks if you forget these — I tested it, the build and lint both pass
+with them still present. But everything in public/ gets deployed whether the
+site uses it or not, so leaving those two means shipping 936 KB of images
+nothing references. That undoes a chunk of the performance work.
+
+=============================================================================
+AFTER
+=============================================================================
+Check on a phone:
+  - Glossary: no big empty gap between the search box and the filter buttons
+  - Map: "LAYERS" reads in full, five city labels legible, tapping a pin opens
+    a card with an X to close it
+  - Bottom bar: says "Read the opening", and after you read the sample it
+    changes to "Get launch news"
+  - Buy section: cover is whole, not cropped
+  - Nav: tabs scroll, and the edge fades where more tabs exist
+
+Still pending your decisions (nothing blocking):
+  - The domain. Canonical URL, OG tags and sitemap all still point at
+    aflvolunteer-com.vercel.app.
+  - Vercel plan. The custom analytics events need Pro; on Hobby they silently
+    record nothing.

@@ -1,0 +1,139 @@
+.submit-form {
+  border: 1px solid var(--line-strong);
+  background: var(--paper);
+  padding: 28px;
+  max-width: 560px;
+}
+
+.submit-form__intro {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--umber);
+  margin-bottom: 22px;
+}
+
+.submit-form__field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.submit-form__field label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--umber);
+  margin-bottom: 7px;
+}
+
+.submit-form__optional {
+  letter-spacing: 0.1em;
+  text-transform: none;
+  color: var(--khaki-ink);
+}
+
+.submit-form__field input,
+.submit-form__field textarea {
+  font-family: var(--font-body);
+  /* 16px minimum or iOS Safari zooms the page on focus. */
+  font-size: var(--input-fs);
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  padding: 11px 13px;
+  transition: border-color 0.16s ease;
+  width: 100%;
+}
+
+.submit-form__field textarea {
+  resize: vertical;
+  min-height: 84px;
+  line-height: 1.5;
+}
+
+.submit-form__field input:focus,
+.submit-form__field textarea:focus {
+  border-color: var(--burnt);
+  outline: none;
+}
+
+/* Positioned off-screen rather than display:none — some bots skip hidden
+   inputs but happily fill positioned ones. */
+.submit-form__honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.submit-form__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 6px 0 18px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--umber);
+  cursor: pointer;
+}
+
+.submit-form__check input {
+  /* Comfortable to hit without dominating the row. */
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  accent-color: var(--burnt);
+}
+
+.submit-form__error {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--burnt-ink);
+  margin-bottom: 14px;
+}
+
+.submit-form__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.submit-form__fine {
+  margin-top: 16px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--khaki-ink);
+}
+
+/* ---- success state ---- */
+
+.submit-form--done {
+  text-align: left;
+}
+
+.submit-form__done-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.submit-form__done-copy {
+  font-size: 15px;
+  line-height: 1.62;
+  color: var(--umber);
+  margin-bottom: 20px;
+}
+
+@media (max-width: 640px) {
+  .submit-form {
+    padding: 22px 18px;
+    max-width: none;
+  }
+  .submit-form__actions .btn {
+    flex: 1 1 auto;
+  }
+}

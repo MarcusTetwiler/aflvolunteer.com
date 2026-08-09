@@ -2,6 +2,11 @@ import { useState, useRef, useEffect } from 'react';
 import { ANDREW_CONTRACTS, ANDREW_STATUS_LABEL, ANDREW_CLASS_LABEL } from './andrewContracts';
 import TheaterBasemap from './TheaterBasemap';
 import { MAP_PINS, MAP_LINES, MAP_AREAS, MAP_LAYERS } from '../data/mapAtlas';
+import {
+  trackMapPovChanged,
+  trackMapLayerToggled,
+  trackMapFeatureOpened,
+} from '../analytics';
 import './FrontMap.css';
 
 // Pins, lines, and areas all come from src/data/mapAtlas.js, where every
@@ -15,7 +20,11 @@ import './FrontMap.css';
 const FOCUS_CLUSTER = {
   ids: ['medyka', 'lublin', 'rzeszow', 'lviv'],
   cx: 574, cy: 421, r: 41,
-  labelX: 404, labelY: 470,
+  // Sits immediately left of the ring, end-anchored, so it reads as annotating
+  // the cluster. An earlier position at x=404 was chosen to dodge the Warsaw pin
+  // in an isolated test render — against the real basemap that put the words in
+  // eastern France, ~170px from the thing they label.
+  labelX: 524, labelY: 425, labelAnchor: 'end',
 };
 
 // The main front: a single irregular boundary running the length of the
@@ -66,10 +75,20 @@ export default function FrontMap() {
   // on arrival, not as an empty frame the reader has to assemble.
   const [layers, setLayers] = useState(() => new Set(MAP_LAYERS.map((l) => l.id)));
   const containerRef = useRef(null);
+  const hoverCapable = useRef(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const apply = () => { hoverCapable.current = mq.matches; };
+    apply();
+    mq.addEventListener('change', apply);
+    return () => mq.removeEventListener('change', apply);
+  }, []);
 
   const shown = (layer) => layers.has(layer);
 
   function toggleLayer(id) {
+    trackMapLayerToggled(id, !layers.has(id));
     setLayers((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -95,6 +114,7 @@ export default function FrontMap() {
   const activeContract = ANDREW_CONTRACTS.find((c) => c.id === activeId) || null;
 
   function switchPov(next) {
+    if (next !== pov) trackMapPovChanged(next);
     if (next === pov) return;
     setPov(next);
     setActiveId(null);
@@ -112,10 +132,18 @@ export default function FrontMap() {
     return () => document.removeEventListener('pointerdown', handleOutside);
   }, []);
 
+  // Hover-driven preview only where hovering is a real input. On touch (and on
+  // narrow viewports where the detail card docks across the foot of the map) a
+  // hover-opened card covers the feature that opened it, which fires
+  // pointer-leave, which hides the card, which uncovers the feature — an
+  // enter/leave oscillation that made the card flicker and swallowed taps.
+  // There, only an explicit tap opens a card.
   function handleEnter(id) {
+    if (!hoverCapable.current) return;
     if (!pinned) setActiveId(id);
   }
   function handleLeave() {
+    if (!hoverCapable.current) return;
     if (!pinned) setActiveId(null);
   }
   function handleClick(id) {
@@ -125,6 +153,7 @@ export default function FrontMap() {
     } else {
       setActiveId(id);
       setPinned(true);
+      trackMapFeatureOpened(id);
     }
   }
 
@@ -218,6 +247,7 @@ export default function FrontMap() {
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(area.id); } }}
                   >
                     <path d={area.d} className="front-map__area-fill" />
+                    <path d={area.d} className="front-map__area-hit" />
                     {area.shortLabel && (
                       <text
                         x={area.labelAt[0]} y={area.labelAt[1]}
@@ -267,11 +297,16 @@ export default function FrontMap() {
                   className="front-map__focus-ring"
                 />
                 <line
-                  x1={FOCUS_CLUSTER.cx - FOCUS_CLUSTER.r * 0.7} y1={FOCUS_CLUSTER.cy - FOCUS_CLUSTER.r * 0.7}
-                  x2={FOCUS_CLUSTER.labelX + 70} y2={FOCUS_CLUSTER.labelY + 14}
+                  x1={FOCUS_CLUSTER.cx - FOCUS_CLUSTER.r} y1={FOCUS_CLUSTER.cy}
+                  x2={FOCUS_CLUSTER.labelX + 4} y2={FOCUS_CLUSTER.labelY - 4}
                   className="front-map__focus-lead"
                 />
-                <text x={FOCUS_CLUSTER.labelX} y={FOCUS_CLUSTER.labelY} className="front-map__focus-label">
+                <text
+                  x={FOCUS_CLUSTER.labelX}
+                  y={FOCUS_CLUSTER.labelY}
+                  textAnchor={FOCUS_CLUSTER.labelAnchor}
+                  className="front-map__focus-label"
+                >
                   VOLUNTEER CORRIDOR
                 </text>
 
@@ -295,13 +330,17 @@ export default function FrontMap() {
                       onBlur={handleLeave}
                       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(loc.id); } }}
                     >
+                      {/* Invisible touch target. The visible dot renders at
+                          about 1.3px on a phone; this gives the tap somewhere
+                          to land without changing the drawing. */}
+                      <circle r="26" className="front-map__pin-hit" />
                       <circle r={inCluster ? '7' : '9'} className="front-map__pin-halo" />
                       <circle r={inCluster ? '3' : '4'} className="front-map__pin-dot" />
                       {labelled && (
                         <text
                           x={loc.labelDx} y={loc.labelDy}
                           textAnchor={loc.labelAnchor}
-                          className="front-map__pin-label"
+                          className={`front-map__pin-label${loc.mobileLabel ? ' front-map__pin-label--mobile' : ''}`}
                         >
                           {loc.name}
                         </text>
@@ -337,6 +376,20 @@ export default function FrontMap() {
                   }}
                 >
                   <div className="front-map__brief-card">
+                    {pinned && (
+                      <button
+                        type="button"
+                        className="front-map__brief-close"
+                        aria-label="Close detail"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPinned(false);
+                          setActiveId(null);
+                        }}
+                      >
+                        &times;
+                      </button>
+                    )}
                     <p className="front-map__brief-label">
                       {active.country ? 'Location' : active.kind ? FEATURE_LABEL[active.kind] : 'Region'}
                     </p>

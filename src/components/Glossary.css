@@ -10,7 +10,7 @@
 }
 
 .glossary__title {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(24px, 5.2vw, 42px);
   line-height: 1.1;
   letter-spacing: -0.015em;
   margin: 14px 0 18px;
@@ -51,7 +51,7 @@
 
 .glossary__search input {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--input-fs);
   color: var(--ink);
   background: var(--paper);
   border: 1px solid var(--line-strong);
@@ -71,6 +71,9 @@
 }
 
 .glossary__filter {
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
   background: none;
   border: 1px solid transparent;
   font-family: var(--font-mono);
@@ -98,7 +101,7 @@
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--khaki);
+  color: var(--khaki-ink);
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
 }
@@ -158,7 +161,7 @@
 }
 
 .glossary__badge--invented {
-  color: var(--burnt);
+  color: var(--burnt-ink);
   border-color: rgba(189, 100, 51, 0.45);
 }
 
@@ -174,7 +177,7 @@
   margin-top: 32px;
   font-size: 12.5px;
   line-height: 1.62;
-  color: var(--khaki);
+  color: var(--khaki-ink);
 }
 
 @media (max-width: 860px) {
@@ -190,6 +193,14 @@
   .glossary__controls {
     flex-direction: column;
     align-items: stretch;
+  }
+  /* Once the parent stacks, the main axis is vertical and `flex: 1 1 260px`
+     turns that basis into 260px of HEIGHT — 227px of it empty. Reset the
+     basis explicitly; min-width would otherwise keep forcing a floor. */
+  .glossary__search {
+    flex: none;
+    width: 100%;
+    min-width: 0;
   }
   .glossary__filters {
     gap: 4px;

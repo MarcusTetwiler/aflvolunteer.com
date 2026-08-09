@@ -45,3 +45,29 @@ export const trackBuildSubmitIntent = (location) =>
 /** Which glossary filter people reach for. Tells you what readers came to look up. */
 export const trackGlossaryFilter = (filterId) =>
   safeTrack('glossary_filter', { filter: filterId });
+
+/** POV switch on the front map — tells you whether Andrew's view gets used at all. */
+export const trackMapPovChanged = (pov) => safeTrack('map_pov_changed', { pov });
+
+/** Layer toggled on/off. Reveals which map layers readers actually care about. */
+export const trackMapLayerToggled = (layer, on) =>
+  safeTrack('map_layer_toggled', { layer, state: on ? 'on' : 'off' });
+
+/** A map feature's detail card was opened. The map's real engagement signal. */
+export const trackMapFeatureOpened = (id) => safeTrack('map_feature_opened', { feature: id });
+
+/**
+ * Glossary search. Fires on a settled query, not per keystroke — per-keystroke
+ * events would bury the signal in partial words and burn quota for nothing.
+ */
+export const trackGlossarySearch = (term) =>
+  safeTrack('glossary_search', { term: String(term).slice(0, 60).toLowerCase() });
+
+/** A Build Wall entry's share/copy-link was used. */
+export const trackBuildShared = (buildId) => safeTrack('build_shared', { build: buildId });
+
+/** A build was landed on via a shared #build-<id> link. Measures the loop working. */
+export const trackBuildViewed = (buildId) => safeTrack('build_viewed', { build: buildId });
+
+/** An inbound build submission completed. */
+export const trackBuildSubmitSuccess = () => safeTrack('build_submit_success');

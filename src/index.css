@@ -10,6 +10,15 @@
   --khaki:        #8A7556;
   --burnt:        #BD6433;
   --burnt-bright: #D2793F;
+
+  /* Accessible text variants. --burnt and --khaki are the brand colours and stay
+     exactly as they are for fills, rules, borders and large display type. But as
+     small text on paper they measure 2.93:1 and 3.10:1 against the 4.5:1 WCAG AA
+     requirement — which meant form error messages and fine print were failing.
+     These darkened variants share the same hue and saturation and clear 4.5:1 on
+     both paper tones. Use them for text at body size and below. */
+  --burnt-ink:    #7E4222;   /* 5.48:1 on paper, 4.52:1 on paper-deep */
+  --khaki-ink:    #5F503B;   /* 5.47:1 on paper, 4.50:1 on paper-deep */
   --highlight:    #D8A878;
   --line:         rgba(28, 25, 22, 0.16);
   --line-strong:  rgba(28, 25, 22, 0.3);
@@ -21,7 +30,49 @@
 
   --container: 1180px;
 
+  /* ---- Responsive page gutter ----
+     One variable drives every .container inset, so section CSS never needs its
+     own gutter media query. Desktop proportions are unchanged at 28px. */
+  --gutter: 28px;
+
+  /* ---- Control tokens ----
+     Shared by every button and input so height, type and padding stay in step.
+     --touch is the minimum comfortable tap target. */
+  --touch: 44px;
+  --control-h: 44px;
+  --control-pad-x: 22px;
+  --control-fs: 12.5px;
+  --control-ls: 0.11em;
+
+  /* Inputs must be >=16px on mobile or iOS Safari zooms the page on focus.
+     Kept as a token so no input can be styled below the threshold by accident. */
+  --input-fs: 16px;
+
+  /* Sticky mobile CTA height, read by body padding so the two cannot drift.
+     Includes the iOS home-indicator inset. */
+  --sticky-cta-h: 0px;
+
   color-scheme: light;
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 20px; }
+}
+
+@media (max-width: 380px) {
+  :root { --gutter: 16px; }
+}
+
+/* Respect a reader's motion preference: the smooth-scroll and every transition
+   become instant rather than animated. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * { box-sizing: border-box; }
@@ -95,7 +146,7 @@ button {
   width: 100%;
   max-width: var(--container);
   margin: 0 auto;
-  padding: 0 28px;
+  padding: 0 var(--gutter);
 }
 
 .eyebrow {
@@ -115,4 +166,83 @@ button {
   height: 1px;
   background: var(--burnt);
   display: inline-block;
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Shared control system
+   `.btn` normalises height, type, padding and touch area. Variants carry only
+   the colour and border differences that are intentional.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--control-h);
+  padding: 0 var(--control-pad-x);
+  font-family: var(--font-mono);
+  font-size: var(--control-fs);
+  letter-spacing: var(--control-ls);
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.btn--primary {
+  background: var(--burnt);
+  border-color: var(--burnt);
+  color: var(--paper);
+}
+
+.btn--primary:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.btn--secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.btn--secondary:hover {
+  border-color: var(--burnt);
+  color: var(--burnt-ink);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Keyboard users had no focus indicator at all. */
+:focus-visible {
+  outline: 2px solid var(--burnt-ink);
+  outline-offset: 2px;
+}
+
+
+/* Inline text links are visually correct but were 15-22px tall — too small to
+   hit reliably on a phone. On touch viewports they gain height without any
+   change to type or colour. */
+@media (max-width: 720px) {
+  .nav__brand,
+  .buy__secondary,
+  .author__contact,
+  .footer__links a,
+  .buy__retailers a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
 }

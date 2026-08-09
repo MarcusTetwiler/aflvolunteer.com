@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { SAMPLE, BOOK } from '../site.config';
+import { attribution } from '../attribution';
+import { SAMPLE_UNLOCK_KEY, markSampleUnlocked } from '../sampleState';
 import { CHAPTERS } from '../data/chapters';
 import {
   trackSampleUnlocked,
@@ -9,20 +11,18 @@ import {
 } from '../analytics';
 import './ReadSection.css';
 
-const UNLOCK_KEY = 'afl:sample-unlocked';
 
 export default function ReadSection() {
   // Read during lazy init rather than in an effect, so a returning visitor
   // never sees the gate flash before the reader replaces it.
   const [unlocked, setUnlocked] = useState(() => {
     try {
-      return window.localStorage.getItem(UNLOCK_KEY) === '1';
+      return window.localStorage.getItem(SAMPLE_UNLOCK_KEY) === '1';
     } catch {
       // Private browsing / storage disabled — gate simply shows again.
       return false;
     }
   });
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle'); // idle | submitting
   const [errors, setErrors] = useState({});
@@ -56,7 +56,6 @@ export default function ReadSection() {
 
   function validate() {
     const next = {};
-    if (!name.trim()) next.name = 'Tell us who\u2019s reading.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = 'Enter a valid email.';
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -72,9 +71,9 @@ export default function ReadSection() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: name.trim(),
           email: email.trim(),
           list: 'sample-chapters',
+          ...attribution(),
         }),
       });
     } catch (err) {
@@ -83,11 +82,7 @@ export default function ReadSection() {
       console.error('Sample signup capture failed:', err);
     }
 
-    try {
-      window.localStorage.setItem(UNLOCK_KEY, '1');
-    } catch {
-      // Non-fatal.
-    }
+    markSampleUnlocked();
 
     trackSampleUnlocked();
     justUnlocked.current = true;
@@ -125,22 +120,6 @@ export default function ReadSection() {
               <p className="read__form-label">Open the sample</p>
 
               <div className="read__field">
-                <label htmlFor="read-name">Name</label>
-                <input
-                  id="read-name"
-                  type="text"
-                  autoComplete="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  aria-invalid={Boolean(errors.name)}
-                  aria-describedby={errors.name ? 'read-name-err' : undefined}
-                />
-                {errors.name && (
-                  <span className="read__error" id="read-name-err">{errors.name}</span>
-                )}
-              </div>
-
-              <div className="read__field">
                 <label htmlFor="read-email">Email</label>
                 <input
                   id="read-email"
@@ -156,7 +135,11 @@ export default function ReadSection() {
                 )}
               </div>
 
-              <button type="submit" className="read__submit" disabled={status === 'submitting'}>
+              <button
+                type="submit"
+                className="read__submit btn btn--primary btn--block"
+                disabled={status === 'submitting'}
+              >
                 {status === 'submitting' ? 'Opening\u2026' : SAMPLE.cta}
               </button>
 
@@ -215,7 +198,7 @@ export default function ReadSection() {
                     That&rsquo;s the opening. Continue with the full book on Amazon.
                   </p>
                   <a
-                    className="read__end-cta"
+                    className="read__end-cta btn btn--primary"
                     href={BOOK.amazonUrl}
                     target="_blank"
                     rel="noopener noreferrer"

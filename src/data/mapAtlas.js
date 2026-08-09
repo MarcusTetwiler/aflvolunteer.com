@@ -60,7 +60,8 @@ export const MAP_PINS = [
     "summary": "Departure point for the novel’s eastbound volunteers. Heathrow routes passengers and freight toward Rzeszów and the Polish frontier.",
     "labelDx": 0,
     "labelDy": -14,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": true
   },
   {
     "id": "warsaw",
@@ -75,7 +76,8 @@ export const MAP_PINS = [
     "summary": "Polish capital and the European anchor named in the reconstruction corridor's advertising.",
     "labelDx": -8,
     "labelDy": -11,
-    "labelAnchor": "end"
+    "labelAnchor": "end",
+    "mobileLabel": true
   },
   {
     "id": "lublin",
@@ -90,7 +92,8 @@ export const MAP_PINS = [
     "summary": "Polish city behind the frontier that supports Allied command, communications, rail movement, and air defense.",
     "labelDx": 0,
     "labelDy": 0,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": false
   },
   {
     "id": "rzeszow",
@@ -105,7 +108,8 @@ export const MAP_PINS = [
     "summary": "Southeastern Polish transport hub and the principal gateway for people and freight moving toward the Ukrainian frontier.",
     "labelDx": 0,
     "labelDy": 0,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": false
   },
   {
     "id": "medyka",
@@ -120,7 +124,8 @@ export const MAP_PINS = [
     "summary": "NATO-aligned volunteer training and staging camp near the former border crossing at Medyka.",
     "labelDx": 0,
     "labelDy": 0,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": false
   },
   {
     "id": "lviv",
@@ -135,7 +140,8 @@ export const MAP_PINS = [
     "summary": "Western Ukrainian rail and road hub, the historic first stop east of the Polish border. Occupied; conditions unreported.",
     "labelDx": 0,
     "labelDy": 0,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": false
   },
   {
     "id": "zalissia",
@@ -150,7 +156,8 @@ export const MAP_PINS = [
     "summary": "National parkland and long-abandoned settlements northwest of Kyiv, threaded with Soviet-era infrastructure. Occupied; conditions unreported.",
     "labelDx": -9,
     "labelDy": -8,
-    "labelAnchor": "end"
+    "labelAnchor": "end",
+    "mobileLabel": false
   },
   {
     "id": "kyiv",
@@ -165,7 +172,8 @@ export const MAP_PINS = [
     "summary": "Ukraine’s capital on the Dnipro and a central geographic anchor of the eastern theater. Independence Square sits at its civic center. Occupied; conditions unreported.",
     "labelDx": 10,
     "labelDy": 5,
-    "labelAnchor": "start"
+    "labelAnchor": "start",
+    "mobileLabel": true
   },
   {
     "id": "odesa",
@@ -180,7 +188,8 @@ export const MAP_PINS = [
     "summary": "Black Sea port city of broad streets, arcades, docks, container yards, and rail infrastructure. Occupied; conditions unreported.",
     "labelDx": -10,
     "labelDy": 3,
-    "labelAnchor": "end"
+    "labelAnchor": "end",
+    "mobileLabel": true
   },
   {
     "id": "moscow",
@@ -195,7 +204,8 @@ export const MAP_PINS = [
     "summary": "Russian capital and a major node on the reconstructed east-west rail system, ringed by depots, transfer stations, and checkpoints.",
     "labelDx": 0,
     "labelDy": -14,
-    "labelAnchor": "middle"
+    "labelAnchor": "middle",
+    "mobileLabel": true
   },
   {
     "id": "kaliningrad",
@@ -210,7 +220,8 @@ export const MAP_PINS = [
     "summary": "Russian exclave on the Baltic, bordering Poland and Lithuania. Forms the western jaw of the Suwałki geography.",
     "labelDx": -10,
     "labelDy": -6,
-    "labelAnchor": "end"
+    "labelAnchor": "end",
+    "mobileLabel": false
   },
   {
     "id": "minsk",
@@ -225,7 +236,8 @@ export const MAP_PINS = [
     "summary": "Belarusian capital. Belarus forms the eastern side of the Suwałki strategic geography.",
     "labelDx": 11,
     "labelDy": 4,
-    "labelAnchor": "start"
+    "labelAnchor": "start",
+    "mobileLabel": false
   },
   {
     "id": "vilnius",
@@ -240,7 +252,8 @@ export const MAP_PINS = [
     "summary": "Lithuanian capital. The Baltic states connect to the rest of the alliance only through the Suwałki land bridge.",
     "labelDx": 10,
     "labelDy": -6,
-    "labelAnchor": "start"
+    "labelAnchor": "start",
+    "mobileLabel": false
   }
 ];
 
@@ -317,7 +330,7 @@ export const MAP_AREAS = [
   {
     "id": "reconstruction-zone",
     "name": "Eastern Corridor Reconstruction Zone",
-    "shortLabel": "RECONSTRUCTION ZONE",
+    "shortLabel": "",
     "layer": "infrastructure",
     "origin": "fictional",
     "summary": "Repaired roads, transfer stations, water towers, construction yards, prefab housing, and customs infrastructure follow the rail axis. Much of the signage is in Mandarin.",

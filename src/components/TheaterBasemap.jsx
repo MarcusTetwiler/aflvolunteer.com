@@ -1,4 +1,5 @@
 import theaterMap from '../data/theaterMap.json';
+import { MAP_PINS } from '../data/mapAtlas';
 
 // At continental zoom we only label a curated set of major cities — enough
 // to orient the reader (this is Europe, here's Moscow's distance from
@@ -8,10 +9,14 @@ const LABELED_CITIES = new Set([
   'Minsk', 'St. Petersburg', 'Kharkiv', 'Athens', 'Istanbul', 'Budapest',
 ]);
 
-// Cities that are also rendered as the story's own interactive pins
-// (FrontMap.jsx LOCATIONS) — suppressed here so we don't double-label the
-// same real place with two overlapping dot+text pairs.
-const SUPPRESSED_DUPLICATES = new Set(['Kyiv', 'Moscow', 'London']);
+// Cities the atlas already renders as interactive pins. The basemap yields to
+// the atlas: an atlas pin carries status, layer membership and a detail card,
+// where a basemap label is inert reference text.
+//
+// Derived from MAP_PINS rather than hand-listed, because a hand-list goes stale
+// the moment a pin is added — which is exactly how Warsaw and Minsk ended up
+// labelled twice.
+const SUPPRESSED_DUPLICATES = new Set(MAP_PINS.map((p) => p.name));
 
 export default function TheaterBasemap({ extraPlaces = [], variant = 'light' }) {
   const { countries, rivers, places } = theaterMap;

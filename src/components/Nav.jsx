@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NAV_LINKS, BOOK } from '../site.config';
 import { trackBuyClicked } from '../analytics';
 import './Nav.css';
@@ -6,6 +6,7 @@ import './Nav.css';
 export default function Nav() {
   const [active, setActive] = useState('#front');
   const [scrolled, setScrolled] = useState(false);
+  const listRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -36,6 +37,42 @@ export default function Nav() {
     return () => obs.disconnect();
   }, []);
 
+  // Bring the active tab into view when the section changes, so the highlighted
+  // item is never the one item you cannot see.
+  useEffect(() => {
+    const el = listRef.current?.querySelector('.nav__link.is-active');
+    if (!el || !listRef.current) return;
+    const list = listRef.current;
+    const elLeft = el.offsetLeft;
+    const elRight = elLeft + el.offsetWidth;
+    if (elLeft < list.scrollLeft || elRight > list.scrollLeft + list.clientWidth) {
+      list.scrollTo({
+        left: elLeft - list.clientWidth / 2 + el.offsetWidth / 2,
+        behavior: 'smooth',
+      });
+    }
+  }, [active]);
+
+  // Fade the trailing edge only while there is more to scroll to, so the cue
+  // means something rather than always being on.
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const update = () => {
+      const more = list.scrollWidth - list.clientWidth - list.scrollLeft > 4;
+      const before = list.scrollLeft > 4;
+      list.dataset.moreRight = more ? 'true' : 'false';
+      list.dataset.moreLeft = before ? 'true' : 'false';
+    };
+    update();
+    list.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      list.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
   return (
     <nav className={`nav${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
       <div className="container nav__inner">
@@ -44,7 +81,7 @@ export default function Nav() {
           <span className="nav__brand-text">The American Foreign Legion</span>
         </a>
 
-        <ul className="nav__links">
+        <ul className="nav__links" ref={listRef}>
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a
@@ -60,7 +97,7 @@ export default function Nav() {
 
         {BOOK.available ? (
           <a
-            className="nav__cta"
+            className="nav__cta btn btn--primary"
             href={BOOK.amazonUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -69,7 +106,7 @@ export default function Nav() {
             Buy the book
           </a>
         ) : (
-          <a className="nav__cta" href="#read">
+          <a className="nav__cta btn btn--primary" href="#read">
             Read the opening
           </a>
         )}

@@ -31,7 +31,7 @@
 }
 
 .author__name {
-  font-size: clamp(27px, 3.6vw, 38px);
+  font-size: clamp(23px, 4.6vw, 38px);
   line-height: 1.1;
   letter-spacing: -0.015em;
   margin: 14px 0 20px;

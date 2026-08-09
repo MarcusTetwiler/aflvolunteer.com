@@ -1,12 +1,21 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GLOSSARY, GLOSSARY_GROUPS } from '../data/glossary';
 import { GLOSSARY_INTRO } from '../site.config';
-import { trackGlossaryFilter } from '../analytics';
+import { trackGlossaryFilter, trackGlossarySearch } from '../analytics';
 import './Glossary.css';
 
 export default function Glossary() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
+
+  // Report a settled query rather than every keystroke: per-keystroke events
+  // would fill the report with partial words and tell you nothing.
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 3) return;
+    const t = setTimeout(() => trackGlossarySearch(q), 900);
+    return () => clearTimeout(t);
+  }, [query]);
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();

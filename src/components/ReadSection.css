@@ -10,7 +10,7 @@
 }
 
 .read__title {
-  font-size: clamp(30px, 4.2vw, 44px);
+  font-size: clamp(25px, 5.4vw, 44px);
   line-height: 1.08;
   letter-spacing: -0.015em;
   margin: 14px 0 16px;
@@ -95,7 +95,7 @@
 
 .read__field input {
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: var(--input-fs);
   color: var(--ink);
   background: transparent;
   border: 1px solid var(--line-strong);
@@ -110,38 +110,19 @@
 
 .read__error {
   font-size: 12.5px;
-  color: var(--burnt);
+  color: var(--burnt-ink);
   margin-top: 6px;
 }
 
+/* Height, type and padding now come from .btn; this only carries the width. */
 .read__submit {
   width: 100%;
-  background: var(--burnt);
-  color: var(--paper);
-  border: 1px solid var(--burnt);
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 14px;
-  cursor: pointer;
-  transition: background 0.18s ease, border-color 0.18s ease;
-}
-
-.read__submit:hover:not(:disabled) {
-  background: var(--ink);
-  border-color: var(--ink);
-}
-
-.read__submit:disabled {
-  opacity: 0.6;
-  cursor: default;
 }
 
 .read__fine-print {
   font-size: 12.5px;
   line-height: 1.55;
-  color: var(--khaki);
+  color: var(--khaki-ink);
   margin-top: 14px;
 }
 
@@ -159,6 +140,9 @@
 }
 
 .read__tab {
+  min-height: var(--touch);
+  display: inline-flex;
+  align-items: center;
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
@@ -279,11 +263,25 @@
 @media (max-width: 900px) {
   .read__gate {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 24px;
+  }
+  /* The form comes first once the columns stack. The decorative preview was
+     eating roughly a screen of height before anyone reached the one action on
+     the section; the literary tease still lands, just after the ask rather than
+     in front of it. */
+  .read__form {
+    order: 1;
   }
   .read__gate-preview {
-    min-height: 240px;
-    padding: 32px 30px 60px;
+    order: 2;
+    min-height: 150px;
+    padding: 24px 24px 44px;
+  }
+  .read__gate-preview .read__gate-line:nth-child(n + 6) {
+    display: none;
+  }
+  .read__gate-fade {
+    height: 90px;
   }
 }
 

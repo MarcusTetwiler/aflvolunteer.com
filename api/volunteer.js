@@ -20,6 +20,9 @@ import {
   unsubscribeToken,
   isValidEmail,
   clientIp,
+  rateLimit,
+  ipBucket,
+  trippedHoneypot,
 } from './_shared.js';
 
 /**
@@ -45,7 +48,9 @@ async function syncToBeehiiv(record) {
           reactivate_existing: false,
           send_welcome_email: true,
           utm_source: 'afl-site',
-          custom_fields: [{ name: 'Name', value: record.name }],
+          ...(record.name
+            ? { custom_fields: [{ name: 'Name', value: record.name }] }
+            : {}),
         }),
       }
     );
@@ -61,17 +66,40 @@ async function syncToBeehiiv(record) {
   }
 }
 
+/** Allow-list the attribution keys and cap their length; never trust the client. */
+function sanitizeAttribution(input) {
+  if (!input || typeof input !== 'object') return '';
+  const allowed = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content',
+                   'utm_term', 'referrer', 'landing', 'firstSeen'];
+  const out = {};
+  for (const k of allowed) {
+    const v = input[k];
+    if (typeof v === 'string' && v.trim()) out[k] = v.trim().slice(0, 120);
+  }
+  return Object.keys(out).length ? JSON.stringify(out).slice(0, 800) : '';
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, list } = req.body || {};
+  const { name, email, list, attribution } = req.body || {};
 
-  if (!name || typeof name !== 'string' || !name.trim()) {
-    return res.status(400).json({ error: 'Name is required.' });
+  // Silently accept and discard bot submissions: a 200 gives a scraper no signal
+  // to retry against, where a 400 tells it exactly what to fix.
+  if (trippedHoneypot(req.body)) {
+    return res.status(200).json({ ok: true, persisted: false });
   }
+
+  const limit = await rateLimit(ipBucket('signup', req), 12, 3600);
+  if (!limit.allowed) {
+    return res.status(429).json({ error: 'Too many signups from this address. Try again later.' });
+  }
+
+  // Name is optional as of the one-field gate. Older records that already carry
+  // a name are untouched; new signups simply omit it.
   if (!isValidEmail(email)) {
     return res.status(400).json({ error: 'A valid email is required.' });
   }
@@ -79,7 +107,7 @@ export default async function handler(req, res) {
   const cleanEmail = email.trim().toLowerCase();
 
   const record = {
-    name: name.trim(),
+    name: typeof name === 'string' && name.trim() ? name.trim() : '',
     email: cleanEmail,
     source: 'afl-site',
     list: typeof list === 'string' && list.trim() ? list.trim() : 'general',
@@ -89,6 +117,9 @@ export default async function handler(req, res) {
     // the difference between a complaint and a problem.
     consentIp: clientIp(req),
     consentUserAgent: (req.headers['user-agent'] || '').slice(0, 300),
+    // First-touch attribution from the client, if any. Campaign tags and a
+    // referrer hostname only — no cross-site identifiers.
+    attribution: sanitizeAttribution(attribution),
   };
 
   const token = unsubscribeToken(cleanEmail);
@@ -121,6 +152,7 @@ export default async function handler(req, res) {
         'createdAt', record.createdAt,
         'consentIp', record.consentIp || '',
         'consentUserAgent', record.consentUserAgent,
+        'attribution', record.attribution,
         'unsubscribeToken', token,
         'status', 'subscribed',
       ],

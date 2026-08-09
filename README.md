@@ -61,6 +61,7 @@ api/
   unsubscribe.js         one-click opt-out, returns a styled confirmation page
   export.js              key-protected CSV export
 scripts/
+  qa-responsive.py       repeatable responsive QA sweep (npm run qa)
   generate-map-atlas.py  regenerates src/data/mapAtlas.js from lat/lon
   generate-images.py     regenerates responsive derivatives + og.jpg
   inject-schema.mjs      postbuild: JSON-LD into dist/index.html
@@ -73,6 +74,41 @@ public/images/
   cover-{300,600,900}.{avif,webp,jpg}   responsive cover, 3 widths
   author.jpg             ← OPTIONAL: author portrait (none by default)
 ```
+
+## Responsive QA
+
+```
+npm run build && npm run qa              # check, print a table
+python3 scripts/qa-responsive.py --shots out/   # also save screenshots
+```
+
+Checks 320/375/390/430/768/1024/1440px for horizontal overflow, failed
+requests, console errors, text below a legible floor, tap targets below the
+comfort floor, sticky-CTA height vs reserved body padding, and the glossary
+control block. Exits non-zero on failure, so it can gate CI.
+
+Requires `pip install playwright && python3 -m playwright install chromium`.
+
+Two request failures are filtered as known-benign: `/_vercel/insights/*`
+(injected only on deployed Vercel builds) and `fonts.googleapis.com` (blocked in
+sandboxed environments).
+
+## Design tokens
+
+`src/index.css` holds the shared system. Prefer these over per-section media
+queries:
+
+- `--gutter` — page inset: 28px desktop, 20px ≤640px, 16px ≤380px
+- `--control-h`, `--control-pad-x`, `--control-fs`, `--touch` — button sizing
+- `--input-fs` — **16px**; anything smaller makes iOS Safari zoom on focus
+- `--sticky-cta-h` — published at runtime by the sticky CTA; body padding reads
+  it so the two can't drift
+- `--burnt-ink`, `--khaki-ink` — accessible text variants. `--burnt` and
+  `--khaki` measure 2.93:1 and 3.10:1 on paper, below the 4.5:1 WCAG AA
+  threshold, so they are for fills, rules and large display type only. Use the
+  `-ink` variants for body-size text and below.
+
+`.btn` / `.btn--primary` / `.btn--secondary` / `.btn--block` normalise every CTA.
 
 ## The map
 
@@ -160,7 +196,27 @@ request into written evidence of infringement, and the audience you're courting
 is exactly the audience that would notice.
 
 With no entries the section renders a deliberate empty state with a submit CTA,
-which reads as new rather than broken.
+which reads as new rather than broken. From four builds up, the first tile runs
+full width (21:9) and the rest form a denser grid — 3 columns, 4 above 1100px,
+and **2 columns on mobile**, because ten phone-width images stacked is ten
+screens of scrolling.
+
+Each entry has a stable anchor: `/#build-<id>`. Landing on one scrolls to it and
+outlines it briefly. Every tile carries a Share control that uses the native
+share sheet where available and falls back to clipboard — a featured builder
+sharing their own feature is the growth loop.
+
+### Inbound submissions
+
+`POST /api/build-submission` queues to `submissions:pending`. **Nothing is
+published from it.** A form checkbox is a claim; the screenshot in
+`permissions/` is the proof, and `PUBLISHABLE_BUILDS` still requires
+`permission.granted === true` set by hand. An inbound submission is *better*
+consent evidence than cold outreach, but a person still reads it first.
+
+The form asks for links, not uploads — less work for the builder, and the site
+never hosts someone's file before a human has looked at it. It also asks
+under-18s not to submit.
 
 ## The email gate is not protection
 
@@ -193,14 +249,21 @@ later signup. Re-subscribing has to be deliberate.
 ### Endpoints
 
 - `POST /api/volunteer` — capture a signup
+- `POST /api/build-submission` — inbound Build Wall submission (queued, never published)
 - `GET|POST /api/unsubscribe?email=…&token=…` — one-click opt-out, no login
 - `GET /api/export?key=…` — CSV of the list, incl. per-person unsubscribe URLs
 
 ```
 curl "https://YOUR-DOMAIN/api/export?key=YOUR_KEY" -o volunteers.csv
+curl "https://YOUR-DOMAIN/api/export?key=YOUR_KEY&kind=submissions" -o builds.csv
 ```
 
 Add `&list=sample-chapters` to export a single funnel.
+
+Both write endpoints carry a honeypot field and a per-IP fixed-window rate limit
+(12/hour signups, 5/hour submissions). The limiter **fails open** if Redis is
+unreachable: an outage should not take the signup form down. Spam is the cheaper
+failure.
 
 ### Before you send your first email
 

@@ -563,7 +563,10 @@
   align-items: center;
   gap: 6px;
   flex-wrap: wrap;
-  padding: 12px 0 14px;
+  /* Horizontal inset must match its siblings inside the frame (header, legend
+     and credit are all 25px). Without it the bar sat flush to the frame border
+     and the "L" of LAYERS was visually clipped. */
+  padding: 12px 25px 14px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 14px;
 }
@@ -578,6 +581,9 @@
 }
 
 .front-map__layer {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.1em;
@@ -710,7 +716,7 @@
   font-size: 9.5px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--burnt);
+  color: var(--burnt-ink);
 }
 
 @media (max-width: 640px) {
@@ -723,5 +729,150 @@
   }
   .front-map__area-label {
     font-size: 7.5px;
+  }
+}
+
+/* ---- touch targets ----
+   The SVG scales to roughly a third of its user-unit size on a phone, so a 4px
+   dot draws at about 1.3px. These transparent shapes give a finger something to
+   hit without altering the drawing at any size. */
+
+.front-map__pin-hit {
+  fill: transparent;
+  stroke: none;
+}
+
+.front-map__area-hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 14;
+}
+
+/* ---- mobile map legibility ----
+   Rather than shrink everything further, mobile drops the label clutter and
+   keeps five curated anchors at a size that actually renders. Shapes, front
+   line, corridor and overlays carry the map's character; the detail cards carry
+   the names. */
+@media (max-width: 720px) {
+  /* Regional overlay captions render at ~2.8px on a phone — illegible, and they
+     were the densest source of visual noise. The region stays; its name arrives
+     on tap. */
+  .front-map__area-label {
+    display: none;
+  }
+
+  /* Basemap reference cities likewise. */
+  .theater-basemap__place-label,
+  .theater-basemap__place-dot {
+    display: none;
+  }
+
+  /* Non-curated atlas labels hide; the curated five scale up in user units so
+     they land near 10px on screen. */
+  .front-map__pin-label {
+    display: none;
+  }
+
+  .front-map__pin-label--mobile {
+    display: block;
+    font-size: 30px;
+    paint-order: stroke;
+    stroke: var(--paper);
+    stroke-width: 6;
+    stroke-linejoin: round;
+  }
+
+  /* Slightly larger dots so the curated anchors stay findable. */
+  .front-map__pin-dot { r: 7; }
+  .front-map__pin-halo { r: 16; }
+
+  /* 45 user units at the mobile scale (~0.33) is about a 30px tap diameter.
+     Larger would start swallowing neighbouring pins in the Medyka cluster,
+     where Rzeszów and Camp Tadeusz sit 17 units apart. */
+  .front-map__pin-hit { r: 45; }
+  .front-map__area-hit { stroke-width: 26; }
+
+  /* Compass and scale bar are decorative at this size and cost legibility. */
+  .front-map__compass,
+  .front-map__scale {
+    display: none;
+  }
+
+  /* The cluster callout renders at ~3px here. The ring itself still reads as
+     "this is the area that matters", so keep the graphic and drop the words. */
+  .front-map__focus-label,
+  .front-map__focus-lead {
+    display: none;
+  }
+}
+
+
+/* ---- detail card: keep it inside the viewport ----
+   The card is positioned from the feature's coordinates, so a feature near the
+   right or bottom edge pushed it off screen — worst on a phone, where the map is
+   only ~332px wide. On mobile it docks to the foot of the map instead of
+   floating, which is both always fully visible and easier to read. */
+@media (max-width: 720px) {
+  .front-map__brief {
+    position: absolute;
+    left: 0 !important;
+    right: 0;
+    top: auto !important;
+    bottom: 0;
+    transform: none !important;
+    padding: 0 10px 10px;
+    pointer-events: none;
+  }
+
+  .front-map__brief-card {
+    max-width: none;
+    width: 100%;
+    pointer-events: auto;
+    box-shadow: 0 -6px 24px rgba(28, 25, 22, 0.18);
+  }
+
+  .front-map__brief-summary {
+    /* Long region descriptions would otherwise cover most of the map. */
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* Dismiss control for a pinned detail card. Touch has no hover-out and keyboard
+   users had no way to close it at all. */
+.front-map__brief-close {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--umber);
+  cursor: pointer;
+  padding: 0;
+}
+
+.front-map__brief-close:hover {
+  color: var(--burnt-ink);
+}
+
+@media (max-width: 720px) {
+  .front-map__brief-close {
+    width: 40px;
+    height: 40px;
+    top: 2px;
+    right: 2px;
+  }
+  /* Leave room so the close control never sits on the label. */
+  .front-map__brief-card {
+    padding-right: 44px;
   }
 }

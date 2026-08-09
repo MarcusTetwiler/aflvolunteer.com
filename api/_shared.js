@@ -74,3 +74,43 @@ export function escapeHtml(str) {
     "'": '&#39;',
   })[c]);
 }
+
+/**
+ * Fixed-window rate limit, backed by Redis INCR + EXPIRE.
+ *
+ * Returns { allowed, count, limit }. Fails OPEN when storage is unavailable:
+ * a Redis outage should not take the signup form down with it. That is the right
+ * trade for a book site — the downside of a missed limit is spam, not data loss.
+ *
+ * Both write endpoints were previously unauthenticated with no limit at all, so
+ * one bot could fill the list.
+ */
+export async function rateLimit(key, limit, windowSeconds) {
+  try {
+    const res = await redisPipeline([
+      ['INCR', key],
+      ['EXPIRE', key, String(windowSeconds), 'NX'],
+    ]);
+    if (!res) return { allowed: true, count: 0, limit, degraded: true };
+    const count = Number(res[0]?.result ?? 0);
+    return { allowed: count <= limit, count, limit };
+  } catch (err) {
+    console.error('rateLimit error (failing open):', err);
+    return { allowed: true, count: 0, limit, degraded: true };
+  }
+}
+
+/** Coarse per-IP bucket key. */
+export function ipBucket(prefix, req) {
+  const ip = clientIp(req) || 'unknown';
+  return `ratelimit:${prefix}:${ip}`;
+}
+
+/**
+ * True when a honeypot field was filled. Real people never see it; bots that
+ * fill every input do.
+ */
+export function trippedHoneypot(body, field = 'website') {
+  const v = body?.[field];
+  return typeof v === 'string' && v.trim().length > 0;
+}
