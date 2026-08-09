@@ -201,6 +201,19 @@ export const CAUSES = [
       'what happens to hospitals: their 2026 report \u201cNo Safe Place to Heal\u201d ' +
       'catalogs attacks on Ukrainian medical facilities and staff.',
   },
+  {
+    id: 'halo-trust',
+    name: 'The HALO Trust',
+    focus: 'Clearing the ground',
+    url: 'https://www.halotrust.org/where-we-work/europe-and-caucasus/ukraine/',
+    blurb:
+      'Ukraine is now one of the most heavily mined places on earth \u2014 roughly ' +
+      'two million mines laid since 2022, and an area larger than Greece still ' +
+      'to be surveyed. HALO surveys contaminated land, clears mines and ' +
+      'unexploded ordnance, teaches civilians how to stay safe, and hands ' +
+      'farmland back. Its Ukraine programme has also become a proving ground ' +
+      'for drones, AI-assisted detection, and remote clearance machines.',
+  },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────

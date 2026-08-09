@@ -1,42 +1,53 @@
-GLOSSARY MOVED TO THE END — 2 files
-===================================
+TWO CHANGES — 2 files
+=====================
 
-WHAT CHANGED
-  Section order is now:
-     The Front -> Article 5 -> Read -> Builds -> Buy -> Author
-     -> Contribute -> Glossary
+  src/site.config.js   adds The HALO Trust as org 06, plus the nav reorder
+  src/App.jsx          moves the Glossary to the end of the page
 
-  The glossary was sitting in front of the Buy section. It is 50 terms and about
-  half the total page height, so it was burying the cover:
+Both changes are in this one upload, so you only need to do it once.
 
-     phone    cover was 12.7 screens down  ->  now 4.1   (3.1x closer)
-     desktop  cover was  8.3 screens down  ->  now 4.3   (1.9x closer)
+1. GLOSSARY MOVED TO THE END
+   Order is now: The Front -> Article 5 -> Read -> Builds -> Buy -> Author
+                 -> Contribute -> Glossary
+   Nav follows:  The Front · Read · Builds · Buy · Contribute · Glossary
 
-  Nav order follows: The Front · Read · Builds · Buy · Contribute · Glossary
+   The glossary is 50 terms and about half the page height. In front of the Buy
+   section it buried the cover:
+        phone    12.7 screens down  ->  4.1   (3.1x closer)
+        desktop   8.3 screens down  ->  4.3   (1.9x closer)
 
-FILES
-  src/App.jsx          section order
-  src/site.config.js   nav order
+2. THE HALO TRUST ADDED AS 06
+   06 — CLEARING THE GROUND — The HALO Trust
+   https://www.halotrust.org/where-we-work/europe-and-caucasus/ukraine/
+
+   Six organizations now fill the grid exactly: 3 columns x 2 rows, no empty
+   cell.
 
 HOW TO UPLOAD
   GitHub -> Add file -> Upload files -> drag the "src" folder from this zip.
-  Merges with your existing src/ — only these 2 files change.
-  Commit message: "Move glossary below Buy; cover no longer buried"
+  It merges with your existing src/ — only these 2 files change.
+  Commit: "Add HALO Trust; move glossary to end of page"
 
-  Remember: drag the CONTENTS, not a wrapper folder.
+  Drag the CONTENTS, not a wrapper folder.
+
+ON THE BLURB
+  I checked every claim against HALO's live Ukraine page before writing it:
+  ~2 million mines laid since 2022, an area larger than Greece still to survey,
+  764,471 people given safety training, 20+ million square metres cleared
+  including farmland, and explicitly drones, AI analysis of satellite imagery,
+  and remote-controlled clearance machines. All confirmed.
+
+  I tightened your wording slightly and added the two-million-mines and
+  "larger than Greece" figures, since a specific number lands harder than
+  "one of the most heavily mined places on earth" alone. Nothing was invented.
+
+WORTH NOTING
+  This is the one organization on the page whose actual work is the novel's
+  subject matter — drone-assisted detection and remote clearance. It arguably
+  belongs higher than 06.
 
 TESTED
-  Nav tabs in the right order, the Glossary tab scrolls to the right place,
-  scroll-spy highlights correctly, per-term deep links like /#g-talon still
-  resolve, no JS errors, and the responsive sweep passes at all 7 widths.
-
-ONE THING WORTH CONSIDERING (not included)
-  The Build Wall still sits between Read and Buy, and right now it renders its
-  empty state — no builds yet. That is 788px of "nothing here yet" on a phone
-  before anyone reaches the cover. Moving Buy above Builds would put the cover
-  at about 3.2 screens instead of 4.1.
-
-  I left it alone because it is a judgment call, not a bug: the wall in front of
-  the cover is how you signal that this is a project people take part in, not
-  just a book for sale. Once you have real builds up there it earns the position.
-  Say the word and it is another two-line change.
+  Grid fills evenly (6 cards, 3 cols, 2 rows, 0 empty cells) on desktop and
+  stacks to 6 on mobile. Link verified live. Nav order, scroll-spy and the
+  per-term glossary deep links all still work. Responsive sweep passes at all
+  7 widths. Lint and build clean.
