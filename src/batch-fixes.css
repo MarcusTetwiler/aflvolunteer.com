@@ -1,0 +1,129 @@
+/* AFL cumulative mobile + journey release ---------------------------------- */
+
+/* One landing offset for every internal destination beneath the 52px mobile nav. */
+section[id], header[id], [id="bench"], [id="contribute-organizations"] {
+  scroll-margin-top: 68px;
+}
+
+/* Shrink guards: grid children may shrink instead of silently being clipped by #root. */
+.container,
+.read__inner,
+.read__gate > *,
+.read__form,
+.read__field,
+.bench__builder > *,
+.bench__choice,
+.front-map,
+.front-map__frame,
+.buy__inner > *,
+.contribute__card-body {
+  min-width: 0;
+}
+
+img, svg { max-width: 100%; }
+
+/* Sample gate: the long CTA can no longer force the mobile grid wider than the phone. */
+@media (max-width: 900px) {
+  .read__gate { grid-template-columns: minmax(0, 1fr); }
+  .read__gate > *, .read__form, .read__field { min-width: 0; }
+  .read__field input { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 640px) {
+  .read__submit {
+    white-space: normal;
+    line-height: 1.3;
+    min-height: 52px;
+    height: auto;
+    padding: 10px 14px;
+  }
+}
+
+/* Elena's Bench: mobile controls stop turning four long labels into a squeeze test. */
+.bench__result-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (max-width: 640px) {
+  .bench__finish fieldset > div { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+  .bench__finish button { white-space: normal; line-height: 1.2; min-height: 44px; overflow-wrap: anywhere; }
+  .bench__nav .btn { min-width: 0; white-space: normal; line-height: 1.2; padding-left: 12px; padding-right: 12px; }
+  .bench-system__header { padding-left: 12px; padding-right: 12px; gap: 10px; }
+  .bench-system__header > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .bench__paging { gap: 6px; }
+  .bench__paging > span { text-align: center; min-width: 0; }
+  .bench__result-stats span { min-width: 0; overflow-wrap: anywhere; letter-spacing: .04em; }
+}
+
+@media (max-width: 360px) {
+  .bench-system__header { font-size: 7px; }
+  .bench-system__header button { font-size: 7px; }
+  .bench__view-switch { gap: 4px; }
+  .bench__view-switch button { min-width: 0; flex: 1; }
+  .bench__paging button { padding-left: 2px; padding-right: 2px; }
+  .bench__paging > span { font-size: 7px; letter-spacing: .05em; }
+}
+
+/* The Front is a feature, not a continent-sized product. Elena's theater is
+   reframed around eastern Poland + Ukraine + Baltics + Moldova + Romania.
+   The underlying real coordinate system is unchanged; the frame simply crops
+   the continental atlas to the operating theater. Andrew's ledger preserves
+   its wider continental extent. */
+.front-map__frame--elena .front-map__body {
+  height: min(74vw, 800px);
+  min-height: 420px;
+  overflow: hidden;
+}
+.front-map__frame--elena .front-map__svg:not(.front-map__svg--andrew) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 160%;
+  max-width: none;
+  transform: translate(-52%, -18%);
+}
+
+/* Once the atlas is cropped, pointer-relative desktop cards no longer share
+   the SVG's transformed coordinate plane. Dock them inside the frame instead. */
+@media (min-width: 721px) {
+  .front-map__frame--elena .front-map__brief {
+    left: auto !important;
+    right: 18px;
+    top: auto !important;
+    bottom: 18px;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .hero { padding-top: 8px; }
+  .hero__map-wrap { padding-top: 14px; }
+  .front-map__frame--elena .front-map__body {
+    height: clamp(270px, 74vw, 360px);
+    min-height: 0;
+  }
+  .front-map__frame--elena .front-map__svg:not(.front-map__svg--andrew) {
+    width: 190%;
+  }
+  .front-map__layers { padding: 10px 14px 12px; gap: 5px; margin-bottom: 8px; }
+  .front-map__layers-label { width: 100%; margin-bottom: 2px; }
+  .front-map__layer { min-height: 38px; }
+  .front-map__footer-content { padding-left: 14px; padding-right: 14px; }
+}
+
+/* Fine-grained 320px regression hardening. */
+@media (max-width: 340px) {
+  .front-map__layer { font-size: 8.5px; padding: 5px 7px; }
+  .front-map__header { padding: 15px 14px; }
+  .front-map__header-logo { display: none; }
+  .btn { max-width: 100%; }
+}
+
+.buy__primary[aria-disabled="true"] {
+  cursor: default;
+  pointer-events: none;
+}
+.buy__primary[aria-disabled="true"]:hover {
+  background: transparent;
+  border-style: dashed;
+  border-color: rgba(216, 168, 120, 0.55);
+  color: var(--highlight);
+}

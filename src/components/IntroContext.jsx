@@ -7,7 +7,7 @@ export default function IntroContext() {
 
       <div className="container intro-context__copy-wrap">
         <div className="intro-context__copy">
-          <p className="eyebrow">Article 5</p>
+          <p className="eyebrow">The Front</p>
           <p className="intro-context__lead">
             Following the occupation of Ukraine, Russian forces advanced westward across
             the pre-war border into eastern Poland, breaching NATO territory under

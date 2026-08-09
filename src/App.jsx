@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Nav from './components/Nav';
+import ExperienceHub from './components/ExperienceHub';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
@@ -8,6 +9,7 @@ import Glossary from './components/Glossary';
 import BuySection from './components/BuySection';
 import AuthorSection from './components/AuthorSection';
 import ContributeSection from './components/ContributeSection';
+import FieldSupply from './components/FieldSupply';
 import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -16,61 +18,85 @@ import { trackBuyClicked } from './analytics';
 import { captureAttribution } from './attribution';
 import { SAMPLE_UNLOCK_KEY, SAMPLE_UNLOCK_EVENT } from './sampleState';
 import './App.css';
+import './batch-fixes.css';
+
+const BENCH_VISITED_KEY = 'afl:journey:bench-visited';
+
+function readFlag(key) {
+  try { return window.localStorage.getItem(key) === '1'; } catch { return false; }
+}
 
 /**
- * Sticky mobile CTA.
- *
- * Understands funnel state rather than repeating one pitch forever:
- *   - book live                    -> Buy the book
- *   - pre-launch, sample unread    -> Read the opening
- *   - pre-launch, sample read      -> Get launch news (the next useful step;
- *                                     re-pitching a sample they just finished
- *                                     reads as broken)
- *
- * It also hides itself while a form field is focused, so it can't sit on top of
- * the iOS keyboard, and publishes its own height to a CSS variable so body
- * padding can never drift out of step with it.
+ * iOS-safe overlay lock.
+ * Fixed full-screen experiences remember the exact page position before opening
+ * and restore it after closing, instead of leaving Safari to infer a new scroll
+ * position after body overflow changes.
  */
-function StickyMobileCta() {
-  const [visible, setVisible] = useState(false);
-  const [unlocked, setUnlocked] = useState(false);
-  const [typing, setTyping] = useState(false);
-  const barRef = useRef(null);
+function useOverlayScrollState(onBenchVisited) {
+  const lockedY = useRef(0);
+  const wasOverlay = useRef(false);
+  const hadBench = useRef(false);
 
-  // Anchor: once the book is live the bar exists to sell; before that it exists
-  // to move people into the sample.
   useEffect(() => {
-    const target = document.getElementById(BOOK.available ? 'buy' : 'read');
-    if (!target || !('IntersectionObserver' in window)) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setVisible(!entry.isIntersecting),
-      { threshold: 0.15 }
-    );
-    obs.observe(target);
-    return () => obs.disconnect();
-  }, []);
+    const body = document.body;
+    const overlayOpen = () => body.classList.contains('bench-open') || body.classList.contains('supply-open');
 
-  // Poll-free: the reader unlocks in another component, so listen for the event
-  // it dispatches and read the persisted flag on mount.
-  useEffect(() => {
-    const read = () => {
-      try {
-        setUnlocked(window.localStorage.getItem(SAMPLE_UNLOCK_KEY) === '1');
-      } catch {
-        setUnlocked(false);
+    const sync = () => {
+      const nowOpen = overlayOpen();
+      const benchNow = body.classList.contains('bench-open');
+
+      if (nowOpen && !wasOverlay.current) {
+        lockedY.current = window.scrollY;
+        body.style.position = 'fixed';
+        body.style.top = `-${lockedY.current}px`;
+        body.style.left = '0';
+        body.style.right = '0';
+        body.style.width = '100%';
       }
+
+      if (benchNow && !hadBench.current) {
+        hadBench.current = true;
+        try { window.localStorage.setItem(BENCH_VISITED_KEY, '1'); } catch { /* optional */ }
+        onBenchVisited(true);
+      }
+
+      if (!nowOpen && wasOverlay.current) {
+        body.style.position = '';
+        body.style.top = '';
+        body.style.left = '';
+        body.style.right = '';
+        body.style.width = '';
+        window.scrollTo(0, lockedY.current);
+        hadBench.current = false;
+      }
+
+      wasOverlay.current = nowOpen;
     };
-    read();
+
+    sync();
+    const observer = new MutationObserver(sync);
+    observer.observe(body, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, [onBenchVisited]);
+}
+
+function StickyMobileCta({ benchVisited, setBenchVisited }) {
+  const [unlocked, setUnlocked] = useState(() => readFlag(SAMPLE_UNLOCK_KEY));
+  const [typing, setTyping] = useState(false);
+  const [pageState, setPageState] = useState({ pastHero: false, lowerSite: false, destinationVisible: false });
+
+  useOverlayScrollState(setBenchVisited);
+
+  useEffect(() => {
+    const read = () => setUnlocked(readFlag(SAMPLE_UNLOCK_KEY));
     window.addEventListener(SAMPLE_UNLOCK_EVENT, read);
     return () => window.removeEventListener(SAMPLE_UNLOCK_EVENT, read);
   }, []);
 
-  // Get out of the way of the mobile keyboard.
   useEffect(() => {
-    const isField = (el) =>
-      el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT');
-    const onFocus = (e) => { if (isField(e.target)) setTyping(true); };
-    const onBlur = (e) => { if (isField(e.target)) setTyping(false); };
+    const isField = (el) => el && ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName);
+    const onFocus = (event) => { if (isField(event.target)) setTyping(true); };
+    const onBlur = (event) => { if (isField(event.target)) setTyping(false); };
     document.addEventListener('focusin', onFocus);
     document.addEventListener('focusout', onBlur);
     return () => {
@@ -79,60 +105,55 @@ function StickyMobileCta() {
     };
   }, []);
 
-  // Publish the real rendered height so body padding matches it exactly.
-  const shown = visible && !typing;
   useEffect(() => {
-    const root = document.documentElement;
-    if (!shown || !barRef.current) {
-      root.style.setProperty('--sticky-cta-h', '0px');
-      return;
-    }
-    const set = () => {
-      const h = barRef.current?.getBoundingClientRect().height || 0;
-      root.style.setProperty('--sticky-cta-h', `${Math.round(h)}px`);
+    const update = () => {
+      const lower = document.getElementById('contribute');
+      const targetId = BOOK.available ? 'buy' : !unlocked ? 'read' : !benchVisited ? 'wall' : 'buy';
+      const target = document.getElementById(targetId);
+      const targetRect = target?.getBoundingClientRect();
+      setPageState({
+        pastHero: window.scrollY > Math.min(480, window.innerHeight * 0.55),
+        lowerSite: Boolean(lower && lower.getBoundingClientRect().top < window.innerHeight * 0.78),
+        destinationVisible: Boolean(targetRect && targetRect.bottom > 80 && targetRect.top < window.innerHeight * 0.82),
+      });
     };
-    set();
-    const ro = new ResizeObserver(set);
-    ro.observe(barRef.current);
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
     return () => {
-      ro.disconnect();
-      root.style.setProperty('--sticky-cta-h', '0px');
+      window.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
     };
-  }, [shown]);
+  }, [unlocked, benchVisited]);
 
-  if (!shown) return null;
+  if (typing || !pageState.pastHero || pageState.lowerSite || pageState.destinationVisible) return null;
 
-  let content;
   if (BOOK.available) {
-    content = (
-      <a
-        className="btn btn--primary btn--block"
-        href={BOOK.amazonUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => trackBuyClicked('sticky-bar')}
-      >
-        Buy the book
-      </a>
-    );
-  } else if (unlocked) {
-    content = (
-      <a className="btn btn--primary btn--block" href="#buy">
-        Get launch news
-      </a>
-    );
-  } else {
-    content = (
-      <a className="btn btn--primary btn--block" href="#read">
-        Read the opening
-      </a>
+    return (
+      <div className="sticky-cta">
+        <a className="btn btn--primary btn--block" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('sticky-bar')}>
+          Buy the book
+        </a>
+      </div>
     );
   }
 
-  return <div className="sticky-cta" ref={barRef}>{content}</div>;
+  const next = !unlocked
+    ? { href: '#read', label: 'Read the opening' }
+    : !benchVisited
+      ? { href: '#wall', label: 'Make your drone' }
+      : { href: '#buy', label: 'Explore the book' };
+
+  return (
+    <div className="sticky-cta">
+      <a className="btn btn--primary btn--block" href={next.href}>{next.label}</a>
+    </div>
+  );
 }
 
 export default function App() {
+  const [benchVisited, setBenchVisited] = useState(() => readFlag(BENCH_VISITED_KEY));
+
   useEffect(() => {
     captureAttribution();
   }, []);
@@ -140,6 +161,7 @@ export default function App() {
   return (
     <>
       <Nav />
+      <ExperienceHub />
       <Hero />
       <IntroContext />
       <ReadSection />
@@ -148,8 +170,9 @@ export default function App() {
       <AuthorSection />
       <ContributeSection />
       <Glossary />
+      <FieldSupply />
       <Footer />
-      <StickyMobileCta />
+      <StickyMobileCta benchVisited={benchVisited} setBenchVisited={setBenchVisited} />
       <Analytics />
       <SpeedInsights />
     </>

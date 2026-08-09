@@ -1,125 +1,40 @@
 .contribute {
   background: var(--paper-deep);
-  padding: 100px 0;
+  padding: 92px 0;
+  scroll-margin-top: 68px;
 }
 
-.contribute__head {
-  max-width: 660px;
-  margin-bottom: 52px;
-}
+.contribute__head { max-width: 680px; margin-bottom: 30px; }
+.contribute__title { font-size: clamp(32px, 5vw, 52px); line-height: 1.03; letter-spacing: -0.02em; margin: 14px 0 16px; }
+.contribute__sub { font-size: 16.5px; line-height: 1.62; color: var(--umber); }
+.contribute__routes { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line-strong); margin-bottom:44px; }
+.contribute__route { min-width:0; padding:28px 30px; text-decoration:none; transition:background .16s ease; }
+.contribute__route + .contribute__route { border-left:1px solid var(--line-strong); }
+.contribute__route:hover { background:rgba(231,214,188,.55); }
+.contribute__route > span,.contribute__route > strong { font-family:var(--font-mono); font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--burnt-ink); }
+.contribute__route h3 { font-size:25px; line-height:1.14; margin:10px 0 9px; }
+.contribute__route p { max-width:480px; font-size:13.5px; line-height:1.52; color:var(--umber); margin-bottom:18px; }
 
-.contribute__title {
-  font-size: clamp(23px, 5vw, 42px);
-  line-height: 1.1;
-  letter-spacing: -0.015em;
-  margin: 14px 0 18px;
-}
+.contribute__grid { list-style:none; margin:0; padding:0; display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:0; border-top:1px solid var(--line); border-left:1px solid var(--line); scroll-margin-top:72px; }
+.contribute__card { border-right:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--paper-deep); transition:background .18s ease; }
+.contribute__card:hover { background:var(--paper); }
+.contribute__card-link { display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:18px; align-items:start; height:100%; padding:30px 28px; text-decoration:none; color:inherit; }
+.contribute__index { font-family:var(--font-mono); font-size:12px; letter-spacing:.1em; color:var(--burnt-ink); padding-top:3px; }
+.contribute__focus { display:inline-block; font-family:var(--font-mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--khaki-ink); margin-bottom:9px; }
+.contribute__name { font-size:21px; line-height:1.22; margin-bottom:10px; }
+.contribute__blurb { font-size:14.5px; line-height:1.6; color:var(--umber); }
+.contribute__arrow { font-size:17px; color:var(--khaki); padding-top:2px; transition:transform .18s ease,color .18s ease; }
+.contribute__card-link:hover .contribute__arrow { color:var(--burnt); transform:translateX(4px); }
+.contribute__disclaimer { max-width:700px; margin-top:34px; font-size:12.5px; line-height:1.65; color:var(--khaki-ink); }
 
-.contribute__sub {
-  font-size: 16.5px;
-  line-height: 1.62;
-  color: var(--umber);
-}
-
-/* The 1px "gap" is really the container colour showing between cards. With five
-   cards in a three-column grid that left one vacant cell rendering as a solid
-   dark block. Drawing the rules as card borders instead means empty cells simply
-   don't exist. */
-.contribute__grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 0;
-  border-top: 1px solid var(--line);
-  border-left: 1px solid var(--line);
-}
-
-.contribute__card {
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.contribute__card {
-  background: var(--paper-deep);
-  transition: background 0.18s ease;
-}
-
-.contribute__card:hover {
-  background: var(--paper);
-}
-
-.contribute__card-link {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 18px;
-  align-items: start;
-  height: 100%;
-  padding: 30px 28px;
-  text-decoration: none;
-  color: inherit;
-}
-
-.contribute__index {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
-  color: var(--burnt-ink);
-  padding-top: 3px;
-}
-
-.contribute__focus {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--khaki-ink);
-  margin-bottom: 9px;
-}
-
-.contribute__name {
-  font-size: 21px;
-  line-height: 1.22;
-  margin-bottom: 10px;
-}
-
-.contribute__blurb {
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--umber);
-}
-
-.contribute__arrow {
-  font-size: 17px;
-  color: var(--khaki);
-  padding-top: 2px;
-  transition: transform 0.18s ease, color 0.18s ease;
-}
-
-.contribute__card-link:hover .contribute__arrow {
-  color: var(--burnt);
-  transform: translateX(4px);
-}
-
-.contribute__disclaimer {
-  max-width: 700px;
-  margin-top: 34px;
-  font-size: 12.5px;
-  line-height: 1.65;
-  color: var(--khaki-ink);
-}
-
-@media (max-width: 640px) {
-  .contribute {
-    padding: 66px 0;
-  }
-  .contribute__grid {
-    grid-template-columns: 1fr;
-  }
-  .contribute__card-link {
-    padding: 24px 20px;
-    gap: 14px;
-  }
+@media (max-width:640px) {
+  .contribute { padding:58px 0; }
+  .contribute__head { margin-bottom:22px; }
+  .contribute__sub { font-size:14.5px; line-height:1.5; }
+  .contribute__routes { grid-template-columns:1fr; margin-bottom:30px; }
+  .contribute__route { padding:22px 20px; }
+  .contribute__route + .contribute__route { border-left:0; border-top:1px solid var(--line-strong); }
+  .contribute__route h3 { font-size:21px; }
+  .contribute__grid { grid-template-columns:1fr; }
+  .contribute__card-link { padding:24px 20px; gap:14px; }
 }

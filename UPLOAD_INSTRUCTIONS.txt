@@ -1,19 +1,45 @@
-AFL FLIGHT SIMULATOR V2 — GITHUB WEB UPLOAD
+AFL WEBSITE — CUMULATIVE EXPERIENCE + FIELD SUPPLY BATCH
+========================================================
 
-1. Unzip AFL_FLIGHT_SIMULATOR_V2.zip on your computer.
-2. Open the extracted folder.
-3. In the GitHub repository, choose Add file > Upload files.
-4. Drag BOTH the src folder and public folder onto the upload page.
-5. Confirm paths begin exactly with src/ and public/.
-6. Commit directly to main and allow Vercel to redeploy.
+Audited against GitHub main commit:
+7f751bba385ff42cfadcebc7f3edc000a90cde8d
 
-V2 adds:
-- Persistent, prominent Sortie Score
-- Checkpoint score freeze after every trial
-- Recurring THE CIRCUIT // LIVE announcer reactions
-- Original commentary shaped by circuit performance and pass/fail outcome
-- Strong speed, crosswind, signal glitch, night sensor, and recovery effects
-- Sortie Score on the final artifact, shared text, and Build Wall records
+This ZIP is a cumulative OVERLAY, not a replacement repository.
+It contains only files that are new or changed for this batch.
 
-The package is cumulative and also contains the modular drone renderer,
-collapsible sections, MAKE YOUR DRONE CTA, and illustrated footer.
+UPLOAD
+------
+1. Unzip this package.
+2. Open the aflvolunteer.com repository on GitHub and choose Add file -> Upload files.
+3. Upload the contents of these folders while preserving their paths:
+      src/
+      public/
+      scripts/
+   Existing repository files that are not included here should remain untouched.
+4. Commit to main (or a review branch first, if preferred).
+5. Let Vercel deploy the commit.
+
+DO NOT upload the _REFERENCE folder to production unless you want the visual
+mockup kept in the repository. It is included only as a design reference.
+
+POST-DEPLOY SMOKE TEST
+----------------------
+- Open the site at 320–430px wide and confirm the sample email form does not clip.
+- Confirm the new Enter the World landing appears before The Front.
+- Confirm Elena's map is framed on eastern Poland / Ukraine / Baltics / Moldova / Romania.
+- Finish the sample and confirm the page advances naturally instead of jumping backward.
+- Enter Elena's Bench, then Save & Return; confirm the exact prior scroll position is restored.
+- Tap GEAR in the top navigation; it should open AFL Field Supply directly.
+- In Field Supply, filter/search products, open a product, and submit a product waitlist email.
+- Confirm every product is OUT OF STOCK and marked CONCEPT / IN DEVELOPMENT.
+- Confirm Contribute reads “This world is not invented.” and both glossary + real-world action paths work.
+
+REPO QA
+-------
+After dependencies are available:
+    npm run build
+    npm run lint
+    npm run qa
+
+The included scripts/qa-responsive.py has been updated for the new progressive
+sticky CTA and Field Supply experience.

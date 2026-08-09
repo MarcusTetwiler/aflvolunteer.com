@@ -1,5 +1,5 @@
-/* Compact, and iOS-safe: the home-indicator inset is added to the bottom
-   padding so the button is never under the gesture bar. */
+/* Progressive mobile journey CTA. It floats without mutating document height,
+   so appearing/disappearing cannot move the user's scroll position. */
 .sticky-cta {
   position: fixed;
   bottom: 0;
@@ -19,13 +19,5 @@
 }
 
 @media (max-width: 720px) {
-  .sticky-cta {
-    display: flex;
-  }
-  /* Driven by the CTA's measured height (published to --sticky-cta-h by
-     StickyMobileCta) rather than a hard-coded guess that drifted 8px and
-     ignored the safe-area inset entirely. Zero when the bar is hidden. */
-  body {
-    padding-bottom: var(--sticky-cta-h, 0px);
-  }
+  .sticky-cta { display: flex; }
 }
