@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://aflvolunteer-com.vercel.app/sitemap.xml
