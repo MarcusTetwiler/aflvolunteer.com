@@ -3,7 +3,7 @@ import Nav from './components/Nav';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
-import BuildWall from './components/BuildWall';
+import ElenasBench from './components/ElenasBench';
 import Glossary from './components/Glossary';
 import BuySection from './components/BuySection';
 import AuthorSection from './components/AuthorSection';
@@ -143,7 +143,7 @@ export default function App() {
       <Hero />
       <IntroContext />
       <ReadSection />
-      <BuildWall />
+      <ElenasBench />
       <BuySection />
       <AuthorSection />
       <ContributeSection />

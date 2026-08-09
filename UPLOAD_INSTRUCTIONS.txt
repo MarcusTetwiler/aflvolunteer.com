@@ -1,0 +1,42 @@
+ELENA'S BENCH — GITHUB UPLOAD
+================================
+
+This package changes only six source files. The rest of the website remains
+untouched.
+
+FILES
+  src/App.jsx
+  src/components/DroneRender.jsx
+  src/components/DroneRender.css
+  src/components/ElenasBench.jsx
+  src/components/ElenasBench.css
+  src/data/benchCatalog.js
+
+HOW TO UPLOAD
+
+1. Unzip this package on your computer.
+2. Open https://github.com/MarcusTetwiler/aflvolunteer.com
+3. Choose Add file -> Upload files.
+4. Drag the "src" folder from this package into the GitHub upload area.
+5. Confirm GitHub shows the six paths listed above.
+6. Use this commit message:
+
+   Add Elena's Bench playable prototype
+
+7. Commit directly to the main branch only if you want Vercel to update the
+   current site immediately. For a safer preview, choose "Create a new branch
+   for this commit and start a pull request."
+
+RECOMMENDED
+
+Choose the new-branch option. Vercel should attach a preview deployment to the
+pull request if the repository's Vercel integration is active.
+
+VALIDATION COMPLETED
+  npm run lint  — passed
+  npm run build — passed
+
+PROTOTYPE LIMITS
+  - The Build Wall is stored on the visitor's device for this iteration.
+  - TOP view is implemented. FRONT and PROFILE remain launch requirements.
+  - The procedural drone artwork is prototype artwork.

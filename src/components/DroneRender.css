@@ -1,0 +1,10 @@
+.drone-render { position: relative; width: 100%; }
+.drone-render svg { display: block; width: 100%; height: auto; overflow: visible; }
+.drone-render__machine { transform-origin: center; transition: opacity .25s ease, transform .35s ease; }
+.drone-render__rotor path { transform-box: fill-box; transform-origin: center; }
+.drone-render__label { display: block; margin-top: -4px; text-align: center; font-family: var(--font-mono); font-size: 9px; letter-spacing: .16em; color: var(--khaki-ink); }
+.is-printing .drone-render__machine { animation: fabricate 2.5s steps(10) both; }
+.drone-render__scan { animation: scan 2.5s linear both; }
+@keyframes fabricate { from { opacity: .08; clip-path: inset(100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0); } }
+@keyframes scan { from { transform: translateY(270px); opacity: 1; } to { transform: translateY(-5px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .is-printing .drone-render__machine, .drone-render__scan { animation: none; } }
