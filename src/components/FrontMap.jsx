@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from 'react';
-import { ANDREW_CONTRACTS, ANDREW_STATUS_LABEL, ANDREW_CLASS_LABEL } from './andrewContracts';
+import { useState, useRef, useEffect, useId } from 'react';
+import { LEDGER_CONTRACTS, LEDGER_STATUS_LABEL, LEDGER_CLASS_LABEL } from './contractLedger';
 import TheaterBasemap from './TheaterBasemap';
 import { MAP_PINS, MAP_LINES, MAP_AREAS, MAP_LAYERS } from '../data/mapAtlas';
 import {
@@ -52,10 +52,10 @@ const SALIENTS = [
   { kind: 'occupied', d: 'M 797.9,650.1 L 797.1,654.4 L 795.3,658.0 L 792.6,661.0 L 789.2,663.5 L 785.3,665.5 L 781.0,667.1 L 776.5,668.6 L 771.9,669.8 L 767.4,670.9 L 763.1,672.0 L 759.0,672.5 L 755.0,672.3 L 751.1,670.8 L 747.3,667.9 L 744.1,664.0 L 742.3,659.7 L 742.6,656.0 L 745.4,653.4 L 748.7,651.0 L 750.7,648.0 L 751.9,644.4 L 752.8,640.4 L 753.8,636.2 L 755.4,631.9 L 758.3,627.8 L 762.3,624.2 L 766.6,622.0 L 770.3,622.3 L 772.7,625.7 L 774.2,630.0 L 776.6,630.8 L 780.3,628.1 L 784.2,626.7 L 787.9,627.7 L 791.3,630.6 L 794.1,634.8 L 796.3,639.8 L 797.6,645.1 L 797.9,650.1 Z' },
 ];
 
-// Andrew's filter set, mirroring Elena's layer bar so the two POVs feel like
+// Contracts's filter set, mirroring Elena's layer bar so the two POVs feel like
 // two views of one instrument rather than two unrelated screens.
-const ANDREW_FILTERS = [
-  { id: 'talon', label: 'Broadcast', note: 'Sponsored, public, scored' },
+const LEDGER_FILTERS = [
+  { id: 'broadcast', label: 'Broadcast', note: 'Sponsored, public, scored' },
   { id: 'private', label: 'Private', note: 'Unbroadcast engagements' },
 ];
 
@@ -74,15 +74,18 @@ const STATUS_LABEL = {
   hostile: 'HOSTILE CAPITAL',
 };
 
-export default function FrontMap() {
-  const [pov, setPov] = useState('elena'); // 'elena' | 'andrew'
+export default function FrontMap({ journey = false, revealStep = 3 }) {
+  const uid = useId().replace(/:/g,'');
+  const overview = journey && revealStep === 0;
+  const [savedPov, setPov] = useState('elena');
+  const pov = journey ? (revealStep >= 2 ? 'ledger' : 'elena') : savedPov; // 'elena' | 'ledger'
   const [activeId, setActiveId] = useState(null);
   const [pinned, setPinned] = useState(false); // true once tapped on touch devices
   // All layers start visible; the map is meant to read as a finished artifact
   // on arrival, not as an empty frame the reader has to assemble.
   const [layers, setLayers] = useState(() => new Set(MAP_LAYERS.map((l) => l.id)));
   const [contractFilters, setContractFilters] = useState(
-    () => new Set(ANDREW_FILTERS.map((f) => f.id))
+    () => new Set(LEDGER_FILTERS.map((f) => f.id))
   );
   const containerRef = useRef(null);
   const hoverCapable = useRef(true);
@@ -95,7 +98,7 @@ export default function FrontMap() {
     return () => mq.removeEventListener('change', apply);
   }, []);
 
-  const shown = (layer) => layers.has(layer);
+  const shown = (layer) => !overview && layers.has(layer);
 
   function toggleContractFilter(id) {
     trackMapLayerToggled(`contract:${id}`, !contractFilters.has(id));
@@ -125,10 +128,10 @@ export default function FrontMap() {
 
   const visiblePins = MAP_PINS.filter((p) => shown(p.layer));
 
-  // Andrew's equivalent of layers. The distinction his ledger actually encodes
+  // Contracts's equivalent of layers. The distinction his ledger actually encodes
   // is broadcast versus private — which is the character, not decoration.
-  const visibleContracts = ANDREW_CONTRACTS.filter(
-    (c) => contractFilters.has(c.classification)
+  const visibleContracts = LEDGER_CONTRACTS.filter(
+    (c) => journey ? c.classification === 'private' : contractFilters.has(c.classification)
   );
   const visibleLines = MAP_LINES.filter((l) => shown(l.layer));
   const visibleAreas = MAP_AREAS.filter((a) => shown(a.layer));
@@ -188,8 +191,8 @@ export default function FrontMap() {
   }
 
   return (
-    <div className="front-map" ref={containerRef}>
-      <div className="front-map__pov-toggle" role="group" aria-label="Map perspective">
+    <div className={`front-map ${journey ? "ns-journey-map" : ""} ${overview ? "ns-map-overview" : ""}`} ref={containerRef}>
+      {!journey && <div className="front-map__pov-toggle" role="group" aria-label="Map perspective">
         <button
           type="button"
           className={pov === 'elena' ? 'is-active' : ''}
@@ -200,13 +203,13 @@ export default function FrontMap() {
         </button>
         <button
           type="button"
-          className={pov === 'andrew' ? 'is-active' : ''}
-          onClick={() => switchPov('andrew')}
-          aria-pressed={pov === 'andrew'}
+          className={pov === 'ledger' ? 'is-active' : ''}
+          onClick={() => switchPov('ledger')}
+          aria-pressed={pov === 'ledger'}
         >
-          Andrew
+          Contracts
         </button>
-      </div>
+      </div>}
 
       <div className={`front-map__frame front-map__frame--${pov}`}>
         {pov === 'elena' ? (
@@ -244,13 +247,13 @@ export default function FrontMap() {
             <div className="front-map__body">
               <svg
                 className="front-map__svg"
-                viewBox="0 0 1000 880"
+                viewBox={journey && revealStep === 2 ? "380 180 620 620" : "0 0 1000 880"}
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="Map of Europe and western Russia. A contested, irregular front line runs from the Baltic to the Black Sea with salients and pockets on both sides. Cities, a Chinese-administered reconstruction rail corridor entering from the east, the Dnipro, the Black Sea, the Suwalki Corridor, and shaded regional overlays are marked. Layer toggles above the map control what is shown."
+                aria-label={overview ? "Geographic overview of Europe and western Russia." : "Fictional story geography of Europe and western Russia, with contested territory, infrastructure and locations."}
               >
                 <defs>
-                  <clipPath id="occupiedClip">
+                  <clipPath id={uid+"occupiedClip"}>
                     <path d={`M 1000,0 L 600,0 L 600,20 C ${FRONT_BOUNDARY_BODY} L 1000,880 Z`} />
                   </clipPath>
                 </defs>
@@ -258,7 +261,7 @@ export default function FrontMap() {
                 <TheaterBasemap variant="light" />
 
                 {/* territory tint: held = bare basemap, occupied = warm rust wash */}
-                <rect x="0" y="0" width="1000" height="880" className="front-map__occupied-fill" clipPath="url(#occupiedClip)" />
+                {!overview && <rect x="0" y="0" width="1000" height="880" className="front-map__occupied-fill" clipPath={`url(#${uid}occupiedClip)`} />}
 
                 {/* regional overlays sit under the front line so the boundary
                     always reads clearly on top of them */}
@@ -291,13 +294,13 @@ export default function FrontMap() {
                 ))}
 
                 {/* decorative salients/pockets — fluid, bubbling front texture */}
-                {SALIENTS.map((s, i) => (
+                {!overview && SALIENTS.map((s, i) => (
                   <path key={i} d={s.d} className={`front-map__salient front-map__salient--${s.kind}`} />
                 ))}
 
                 {/* the main boundary, inked double-stroke for a hand-drawn feel */}
-                <path d={FRONT_BOUNDARY} className="front-map__frontline-shadow" />
-                <path d={FRONT_BOUNDARY} className="front-map__frontline" />
+                {!overview && <path d={FRONT_BOUNDARY} className="front-map__frontline-shadow" />}
+                {!overview && <path d={FRONT_BOUNDARY} className="front-map__frontline" />}
 
                 {/* linear features: rail, air route, river, corridor */}
                 {visibleLines.map((ln) => (
@@ -322,7 +325,7 @@ export default function FrontMap() {
                 ))}
 
                 {/* focus ring around the dense Lublin/Rzeszów/Medyka/Lviv cluster */}
-                <circle
+                {!overview && <g><circle
                   cx={FOCUS_CLUSTER.cx} cy={FOCUS_CLUSTER.cy} r={FOCUS_CLUSTER.r}
                   className="front-map__focus-ring"
                 />
@@ -338,7 +341,7 @@ export default function FrontMap() {
                   className="front-map__focus-label"
                 >
                   VOLUNTEER CORRIDOR
-                </text>
+                </text></g>}
 
                 {/* location pins (no always-on text labels for the focus-cluster four —
                     those are reachable via hover/click only, to avoid crowding) */}
@@ -468,13 +471,13 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
           </>
         ) : (
           <>
-            <div className="front-map__header front-map__header--andrew">
+            <div className="front-map__header front-map__header--ledger">
               <div className="front-map__header-text">
                 <h2>Contract Ledger — Pre-Deployment Record</h2>
-                <p>Talon Broadcast &amp; Private Engagements — Andrew</p>
+                <p>Talon Broadcast &amp; Private Engagements — Contracts</p>
               </div>
               <div className="front-map__header-logo">
-                <span className="front-map__header-logo-mark front-map__header-logo-mark--andrew">⬡</span>
+                <span className="front-map__header-logo-mark front-map__header-logo-mark--ledger">⬡</span>
                 <div>
                   <strong>TALON</strong>
                   <span>Performance Interface</span>
@@ -482,9 +485,9 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
               </div>
             </div>
 
-            <div className="front-map__layers front-map__layers--andrew" role="group" aria-label="Contract filters">
+            <div className="front-map__layers front-map__layers--ledger" role="group" aria-label="Contract filters">
               <span className="front-map__layers-label">Contracts</span>
-              {ANDREW_FILTERS.map((f) => (
+              {LEDGER_FILTERS.map((f) => (
                 <button
                   key={f.id}
                   type="button"
@@ -500,11 +503,11 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
 
             <div className="front-map__body">
               <svg
-                className="front-map__svg front-map__svg--andrew"
-                viewBox="0 0 1000 880"
+                className="front-map__svg front-map__svg--ledger"
+                viewBox={journey && revealStep === 2 ? "380 180 620 620" : "0 0 1000 880"}
                 xmlns="http://www.w3.org/2000/svg"
                 role="img"
-                aria-label="The same map as Elena's view, rendered as a dark interface, with Andrew's contract ledger marked across it instead of named locations."
+                aria-label="Fictional Europe map with anonymous illustrative contract sectors."
               >
                 <defs>
                   <radialGradient id="andrewGlow" cx="50%" cy="38%" r="85%">
@@ -512,7 +515,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                     <stop offset="65%" stopColor="#14110D" stopOpacity="1" />
                     <stop offset="100%" stopColor="#080705" stopOpacity="1" />
                   </radialGradient>
-                  <pattern id="scanlines" width="3" height="3" patternUnits="userSpaceOnUse">
+                  <pattern id={uid+"scanlines"} width="3" height="3" patternUnits="userSpaceOnUse">
                     <path d="M 0 0 L 3 0" stroke="rgba(0,0,0,0.2)" strokeWidth="1" />
                   </pattern>
                 </defs>
@@ -521,7 +524,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
 
                 <TheaterBasemap variant="dark" />
 
-                <rect x="0" y="0" width="1000" height="880" fill="url(#scanlines)" opacity="0.35" />
+                <rect x="0" y="0" width="1000" height="880" fill={`url(#${uid}scanlines)`} opacity="0.35" />
 
                 {visibleContracts.map((c) => (
                   <g
@@ -533,7 +536,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                     onClick={() => handleClick(c.id)}
                     tabIndex={0}
                     role="button"
-                    aria-label={`Contract ${c.code}. ${ANDREW_CLASS_LABEL[c.classification]}. Status: ${ANDREW_STATUS_LABEL[c.status]}`}
+                    aria-label={`Contract ${c.code}. ${LEDGER_CLASS_LABEL[c.classification]}. Status: ${LEDGER_STATUS_LABEL[c.status]}`}
                     onFocus={() => handleEnter(c.id)}
                     onBlur={handleLeave}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(c.id); } }}
@@ -546,7 +549,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
 
               {activeContract && (
                 <div
-                  className="front-map__brief front-map__brief--andrew"
+                  className="front-map__brief front-map__brief--ledger"
                   style={{
                     left: `${(activeContract.x / 1000) * 100}%`,
                     top: `${(activeContract.y / 880) * 100}%`,
@@ -556,12 +559,12 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                     <p className="andrew-brief-label">Contract</p>
                     <h3 className="andrew-brief-code">{activeContract.code}</h3>
                     <p className={`andrew-brief-class andrew-brief-class--${activeContract.classification}`}>
-                      {ANDREW_CLASS_LABEL[activeContract.classification]}
+                      {LEDGER_CLASS_LABEL[activeContract.classification]}
                     </p>
                     <div className="andrew-brief-row">
                       <span>Status</span>
                       <span className={`andrew-brief-status andrew-brief-status--${activeContract.status}`}>
-                        {ANDREW_STATUS_LABEL[activeContract.status]}
+                        {LEDGER_STATUS_LABEL[activeContract.status]}
                       </span>
                     </div>
                     <div className="andrew-brief-row">
@@ -601,6 +604,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
           </>
         )}
       </div>
+      {journey && !overview && <details className="ns-map-list"><summary>Locations and records</summary>{(pov === 'ledger' ? visibleContracts : visiblePins).map(p => <button type="button" key={p.id} onClick={() => handleClick(p.id)}>{p.name || p.code}</button>)}</details>}
     </div>
   );
 }

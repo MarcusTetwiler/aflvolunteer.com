@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="footer__brand">
           <div className="footer__brand-name">{BOOK.title}</div>
           <div className="footer__stats">
-            Available now · {BOOK.formats}
+            {BOOK.available ? 'Available now' : 'Coming soon'} · {BOOK.formats}
           </div>
         </div>
 

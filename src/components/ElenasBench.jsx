@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { BENCH_STEPS, STAT_KEYS, TRIALS } from '../data/benchCatalog';
 import DroneRender from './DroneRender';
+import { spec, compatibility } from '../engineering';
 import './ElenasBench.css';
 
 const WALL_KEY = 'afl:bench-wall';
@@ -9,9 +10,11 @@ const COLLAPSED_KEY = 'afl:bench-collapsed-v2';
 const PAGE_SIZE = 4;
 const FINISH = {
   finish: [
+    ...BENCH_STEPS.find(s=>s.id === "finish").options.filter(o=>!["bone","rust","field","charcoal"].includes(o.id)).map(o=>({id:o.id,name:o.name})),
     { id: 'bone', name: 'BONE' }, { id: 'rust', name: 'RUST' },
     { id: 'field', name: 'FIELD GREEN' }, { id: 'charcoal', name: 'CHARCOAL' },
   ],
+  illumination: [{id:'none',name:'NO LIGHTS'},{id:'edge',name:'EDGE LIGHTS'}],
   condition: [
     { id: 'clean', name: 'CLEAN PRINT' }, { id: 'exposed', name: 'EXPOSED' },
     { id: 'repaired', name: 'FIELD-REPAIRED' }, { id: 'gyroid', name: 'GYROID / OPEN' },
@@ -29,6 +32,7 @@ const NAME_FAMILIES = {
 };
 
 const baseBuild = {
+  engineeringVersion: '2.2-reconstructed',
   ...Object.fromEntries(BENCH_STEPS.map((s) => [s.id, null])),
   condition: 'clean', markings: 'stencil',
 };
@@ -36,6 +40,8 @@ const initialState = { phase: 'intro', resumePhase: null, step: 0, build: baseBu
 
 function reducer(state, action) {
   switch (action.type) {
+    case 'race-start': return { ...initialState, phase: 'build', build: { ...baseBuild, ...action.build } };
+    case 'inspection': return { ...state, phase: 'inspection' };
     case 'start': return { ...state, phase: state.resumePhase || 'build', resumePhase: null };
     case 'select': return { ...state, build: { ...state.build, [action.category]: action.value } };
     case 'next': return state.step < BENCH_STEPS.length - 1 ? { ...state, step: state.step + 1 } : { ...state, phase: 'commit' };
@@ -134,16 +140,19 @@ function encode(payload) { try { return btoa(encodeURIComponent(JSON.stringify(p
 function decode(value) { try { return JSON.parse(decodeURIComponent(atob(value))); } catch { return null; } }
 function stored(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || '') || fallback; } catch { return fallback; } }
 
-export default function ElenasBench() {
+export default function ElenasBench({ raceRequest, onRaceReady, onRaceCancel, journeyHidden = false }) {
+  const [raceEntry, setRaceEntry] = useState(false);
+  const [previousBuild, setPreviousBuild] = useState(null);
   const [state, dispatch] = useReducer(reducer, initialState, (value) => stored(SESSION_KEY, value));
   const [wall, setWall] = useState(() => stored(WALL_KEY, []));
   const [published, setPublished] = useState(false);
   const [shared, setShared] = useState(false);
   const [optionPage, setOptionPage] = useState(0);
   const [wallFilter, setWallFilter] = useState('recent');
-  const [view, setView] = useState('top');
+  const [view, setView] = useState('garage');
   const [highlight, setHighlight] = useState(null);
   const [collapsed, setCollapsed] = useState(() => stored(COLLAPSED_KEY, true));
+  const dialogRef=useRef(null);
   const touchStart = useRef(null);
   const installTimer = useRef(null);
   const fullScreen = state.phase !== 'intro';
@@ -159,6 +168,8 @@ export default function ElenasBench() {
   const options = current?.options.slice(optionPage * PAGE_SIZE, optionPage * PAGE_SIZE + PAGE_SIZE) || [];
   const selected = current ? state.build[current.id] : null;
 
+  useEffect(() => { const begin = e => { setRaceEntry(true); setCollapsed(false); setOptionPage(0); dispatch({type:'race-start',build:e.detail.build}); }; window.addEventListener('afl-build-request',begin); return ()=>window.removeEventListener('afl-build-request',begin); }, []);
+  useEffect(()=>{if(!fullScreen)return;const old=document.activeElement;dialogRef.current?.focus();const key=e=>{if(e.key==='Escape'){dispatch({type:'return'});onRaceCancel?.();return;}if(e.key!=='Tab')return;const list=[...dialogRef.current.querySelectorAll('button:not(:disabled),input,select,summary')].filter(n=>n.getClientRects().length);if(!list.length)return;const first=list[0],last=list.at(-1);if(e.shiftKey&&(document.activeElement===first||!dialogRef.current.contains(document.activeElement))){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}};document.addEventListener('keydown',key);return()=>{document.removeEventListener('keydown',key);old?.focus();};},[fullScreen,onRaceCancel]);
   useEffect(() => {
     const sharedMachine = decode(new URLSearchParams(window.location.search).get('bench') || '');
     if (sharedMachine?.build && sharedMachine?.seed) dispatch({ type: 'load', payload: sharedMachine });
@@ -172,9 +183,9 @@ export default function ElenasBench() {
   }, [fullScreen]);
   useEffect(() => {
     if (state.phase !== 'printing') return undefined;
-    const timer = setTimeout(() => dispatch({ type: 'trials' }), 2700);
+    const timer = setTimeout(() => dispatch({ type: raceEntry ? 'inspection' : 'trials' }), 2700);
     return () => clearTimeout(timer);
-  }, [state.phase]);
+  }, [state.phase, raceEntry]);
   useEffect(() => () => clearTimeout(installTimer.current), []);
 
   function publish() {
@@ -190,7 +201,9 @@ export default function ElenasBench() {
     try { if (navigator.share) await navigator.share(data); else await navigator.clipboard.writeText(data.url); setShared(true); setTimeout(() => setShared(false), 2000); } catch { /* dismissed */ }
   }
   function movePage(delta) { setOptionPage((page) => Math.max(0, Math.min(pages - 1, page + delta))); }
+  function changeAdvanced(e) { choose(e.target.name,e.target.value); }
   function choose(category, value) {
+    setPreviousBuild(state.build); if(category==='chassis')setView('garage');
     dispatch({ type: 'select', category, value });
     setHighlight(category);
     clearTimeout(installTimer.current);
@@ -211,7 +224,7 @@ export default function ElenasBench() {
   }
 
   return (
-    <section className={`bench${collapsed ? ' is-collapsed' : ''}`} id="wall">
+    <section className={`bench${collapsed ? ' is-collapsed' : ''}${journeyHidden ? ' ns-bench-journey' : ''}`} id="wall">
       <div className="container">
         <button
           className="section-toggle"
@@ -226,16 +239,16 @@ export default function ElenasBench() {
         {!collapsed && <div id="bench-content">
         <div className="bench__entry" id="bench">
           <DroneRender build={{ chassis: 'scout', material: 'gyroid', power: 'endurance', sensor: 'thermal', system: 'relay', finish: 'bone' }} />
-          <div><p className="bench__status">PRINTER 03 // AVAILABLE</p><h3>Six decisions.<br />Five field trials.</h3><p>No account. Approximately two minutes.</p><button className="btn btn--primary" type="button" onClick={() => dispatch({ type: 'start' })}>{state.resumePhase || state.step || state.seed ? 'Resume fabrication' : 'Begin fabrication'}</button></div>
+          <div><p className="bench__status">PRINTER 03 // AVAILABLE</p><h3>Six decisions.<br />Five field trials.</h3><p>No account. Approximately two minutes.</p><button className="btn btn--primary" type="button" onClick={() => { setRaceEntry(false); dispatch({ type: 'start' }); }}>{state.resumePhase || state.step || state.seed ? 'Resume fabrication' : 'Begin fabrication'}</button></div>
         </div>
 
         {fullScreen && (
-          <div className="bench-system" role="dialog" aria-modal="true" aria-label="Elena's Bench fabrication system">
-            <header className="bench-system__header"><span>ELENA&rsquo;S BENCH // PRINTER 03</span><button type="button" onClick={() => dispatch({ type: 'return' })}>Save &amp; return</button></header>
+          <div className="bench-system" ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-label="Elena's Bench fabrication system">
+            <header className="bench-system__header"><span>ELENA&rsquo;S BENCH // PRINTER 03</span><button type="button" onClick={() => { dispatch({ type: 'return' }); if (raceEntry) onRaceCancel?.(); }}>Save &amp; return</button></header>
             <main className="bench-system__main">
               {state.phase === 'build' && (
                 <div className="bench__builder">
-                  <div className="bench__visual"><DroneRender build={state.build} view={view} highlight={highlight} /><div className="bench__view-switch">{['top','front','profile'].map((item) => <button key={item} type="button" className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div></div>
+                  <div className="bench__visual"><DroneRender build={state.build} view={view} highlight={highlight} /><div className="bench__view-switch">{(['scout','carrier','ducted','wing'].includes(state.build.chassis) ? ['garage','top','front','profile'] : ['garage']).map((item) => <button key={item} type="button" className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div></div>
                   <div className="bench__choice">
                     <div className="bench__progress">{BENCH_STEPS.map((step, i) => <span key={step.id} className={i <= state.step ? 'is-on' : ''} />)}</div>
                     <p className="bench__step">{String(state.step + 1).padStart(2, '0')} / 06 &nbsp; {current.label}</p><h3>{current.prompt}</h3>
@@ -247,12 +260,13 @@ export default function ElenasBench() {
                         <div className="bench__paging"><button disabled={optionPage === 0} onClick={() => movePage(-1)}>← Previous</button><span>{String(optionPage + 1).padStart(2, '0')} / {String(pages).padStart(2, '0')} &nbsp; {Array.from({ length: pages }, (_, i) => i === optionPage ? '●' : '○').join(' ')}</span><button disabled={optionPage === pages - 1} onClick={() => movePage(1)}>Next →</button></div>
                       </>
                     )}
-                    <div className="bench__nav"><button className="btn btn--secondary" disabled={state.step === 0} onClick={() => { setOptionPage(0); dispatch({ type: 'back' }); }}>Back</button><button className="btn btn--primary" disabled={!selected} onClick={() => { setOptionPage(0); dispatch({ type: 'next' }); }}>{isFinish ? 'Finish build' : 'Continue'}</button></div>
+                    <div className="ns-build-metrics">{[['PACE', 'speed', 'm/s'],['RESPONSE','response',''],['RESERVE','drain','draw/s']].map(([label,key,unit])=><span key={key}>{label}<b>{spec(state.build)[key].toFixed(1)} {unit}</b>{previousBuild && <small>{(spec(state.build)[key]-spec(previousBuild)[key]).toFixed(1)} change</small>}</span>)}</div><details className="ns-engineering"><summary>Engineering details</summary><p>Mass {Math.round(spec(state.build).mass)} g · durability {spec(state.build).durability.toFixed(2)} · wind {spec(state.build).wind.toFixed(2)}</p>{state.step === 2 && [['motor',['torque','sprint','efficient']],['propeller',['balanced','grip','low-drag']],['battery',['standard','light','long','discharge']]].map(([key,values])=><label key={key}>{key}<select value={state.build[key] || (key === 'motor' ? 'torque' : key === 'propeller' ? 'balanced' : state.build.power === 'endurance' ? 'long' : 'standard')} name={key} onChange={changeAdvanced}>{values.map(v=><option key={v}>{v}</option>)}</select></label>)}</details><p role="status">{compatibility(state.build)}</p><div className="bench__nav"><button className="btn btn--secondary" disabled={state.step === 0} onClick={() => { setOptionPage(0); dispatch({ type: 'back' }); }}>Back</button><button className="btn btn--primary" disabled={!selected || Boolean(compatibility(state.build))} onClick={() => { setOptionPage(0); dispatch({ type: 'next' }); }}>{isFinish ? 'Finish build' : 'Continue'}</button></div>
                   </div>
                 </div>
               )}
               {state.phase === 'commit' && <Moment className="bench__commit" status="FABRICATION QUEUE READY" build={state.build}><h3>DESIGNATION PENDING</h3><p>Selections cannot be changed after the queue is locked.</p><button className="btn btn--primary" onClick={() => dispatch({ type: 'print', seed: makeSeed() })}>Send to printer</button></Moment>}
               {state.phase === 'printing' && <Moment className="bench__printing" status="FABRICATION QUEUE LOCKED" build={state.build} printing><p>PRINTING // SERIAL SEED FIXED</p></Moment>}
+              {state.phase === 'inspection' && <Moment className="bench__inspection" status="LAUNCH INSPECTION" build={state.build}><h3>Aircraft ready.</h3><p>Airframe · power · sensors · control · systems checked.</p><button type="button" className="btn btn--primary" onClick={() => { onRaceReady?.({build:state.build, seed:state.seed, hangarId:raceRequest?.hangarId}); dispatch({type:'return'}); }}>ARM AIRCRAFT →</button><button type="button" className="btn btn--secondary" onClick={() => { setRaceEntry(false); dispatch({type:'trials'}); }}>Workshop field trials</button></Moment>}
               {state.phase === 'trials' && <FlightSimulator trials={trials} revealed={state.revealed} build={state.build} next={() => dispatch({ type: 'reveal' })} finish={() => dispatch({ type: 'result' })} />}
               {state.phase === 'result' && <Result build={state.build} machine={machine} stats={stats} passed={passed} flag={flag} sortieScore={sortieScore} specialty={specialty(stats)} published={published} shared={shared} publish={publish} share={share} restart={() => dispatch({ type: 'restart' })} close={() => dispatch({ type: 'return' })} />}
             </main>
@@ -271,7 +285,7 @@ export default function ElenasBench() {
 }
 
 function FinishControls({ build, choose }) {
-  return <div className="bench__finish">{Object.entries(FINISH).map(([category, options]) => <fieldset key={category}><legend>{category === 'finish' ? 'Resin' : category}</legend><div>{options.map((option) => <button type="button" key={option.id} className={build[category] === option.id ? 'is-selected' : ''} onClick={() => choose(category, option.id)}>{option.name}</button>)}</div></fieldset>)}</div>;
+  return <div className="bench__finish"><label>Accent <input type="color" value={build.accent || '#b5b5b5'} onChange={e=>choose('accent',e.target.value)}/></label><label>Livery <select value={build.livery || ''} onChange={e=>choose('livery',e.target.value)}><option value="">Unmarked</option>{['061','063','064','067'].map(v=><option key={v}>{v}</option>)}</select></label>{Object.entries(FINISH).map(([category, options]) => <fieldset key={category}><legend>{category === 'finish' ? 'Resin' : category}</legend><div>{options.map((option) => <button type="button" key={option.id} className={build[category] === option.id ? 'is-selected' : ''} onClick={() => choose(category, option.id)}>{option.name}</button>)}</div></fieldset>)}</div>;
 }
 function Moment({ className, status, build, printing, children }) { return <div className={className}><p className="bench__status">{status}</p><DroneRender build={build} printing={printing} />{children}</div>; }
 function FlightSimulator({ trials, revealed, build, next, finish }) {

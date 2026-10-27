@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Nav from './components/Nav';
+import NationsSeries from './components/NationsSeries';
+import LaunchSignup from './components/LaunchSignup';
 import ExperienceHub from './components/ExperienceHub';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
@@ -152,6 +154,10 @@ function StickyMobileCta({ benchVisited, setBenchVisited }) {
 }
 
 export default function App() {
+  const [bookOpen,setBookOpen]=useState(()=>Boolean(location.hash && location.hash !== '#home'));
+  const [raceRequest,setRaceRequest]=useState(null);
+  useEffect(()=>{const sync=()=>setBookOpen(location.hash !== '#home' && Boolean(location.hash));window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync);},[]);
+  function showBook(id){setBookOpen(true);window.history.replaceState(null,'','#'+id);requestAnimationFrame(()=>{const target=document.getElementById(id);if(id==='launch-list')target?.querySelector('details')?.setAttribute('open','');target?.scrollIntoView({block:'start'});});}
   const [benchVisited, setBenchVisited] = useState(() => readFlag(BENCH_VISITED_KEY));
 
   useEffect(() => {
@@ -160,19 +166,17 @@ export default function App() {
 
   return (
     <>
-      <Nav />
-      <ExperienceHub />
-      <Hero />
-      <IntroContext />
-      <ReadSection />
-      <ElenasBench />
-      <BuySection />
+      <div hidden={bookOpen}><NationsSeries onBuild={req=>{setRaceRequest(req);window.dispatchEvent(new CustomEvent('afl-build-request',{detail:req}));}} onBook={showBook}/></div>
+      <div hidden={!bookOpen}><Nav /><BuySection /><LaunchSignup /><ReadSection /><ExperienceHub />{bookOpen && <Hero />}<IntroContext /></div>
+      <ElenasBench journeyHidden={!bookOpen} raceRequest={raceRequest} onRaceReady={a=>window.dispatchEvent(new CustomEvent('afl-aircraft-ready',{detail:a}))} onRaceCancel={()=>setRaceRequest(null)}/>
+      <div hidden={!bookOpen}>
       <AuthorSection />
       <ContributeSection />
       <Glossary />
       <FieldSupply />
       <Footer />
-      <StickyMobileCta benchVisited={benchVisited} setBenchVisited={setBenchVisited} />
+      <button type="button" onClick={()=>{setBookOpen(false);window.history.replaceState(null,'','#home');}}>Return to the broadcast</button></div>
+      {bookOpen && <StickyMobileCta benchVisited={benchVisited} setBenchVisited={setBenchVisited} />}
       <Analytics />
       <SpeedInsights />
     </>

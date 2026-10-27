@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { SAMPLE, BOOK } from '../site.config';
 import { attribution } from '../attribution';
-import { SAMPLE_UNLOCK_KEY, markSampleUnlocked } from '../sampleState';
-import { CHAPTERS } from '../data/chapters';
+import { markSampleUnlocked } from '../sampleState';
+import { CHAPTERS } from '../data/sampleLive';
 import {
   trackSampleUnlocked,
   trackChapterViewed,
@@ -14,10 +14,7 @@ import './ReadSection.css';
 const SAMPLE_FINISHED_KEY = 'afl:sample-finished';
 
 export default function ReadSection() {
-  const [unlocked, setUnlocked] = useState(() => {
-    try { return window.localStorage.getItem(SAMPLE_UNLOCK_KEY) === '1'; }
-    catch { return false; }
-  });
+  const [unlocked, setUnlocked] = useState(true);
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle');
   const [errors, setErrors] = useState({});
@@ -117,7 +114,7 @@ export default function ReadSection() {
       <div className="container read__inner">
         {collapsed ? (
           <button className="section-toggle" type="button" aria-expanded="false" aria-controls="sample-content" onClick={() => setCollapsed(false)}>
-            <span><small>Sample</small><strong>Prologue + Chapter One</strong></span>
+            <span><small>Sample</small><strong>Interlude I + Childhood</strong></span>
             <span>Read again&nbsp; +</span>
           </button>
         ) : (
@@ -190,7 +187,7 @@ export default function ReadSection() {
                     <>
                       <p className="read__end-copy">Continue the opening.</p>
                       <button className="read__end-cta btn btn--primary" type="button" onClick={() => { selectChapter(CHAPTERS[1].id); readerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}>
-                        Read Chapter One
+                        Read Childhood
                       </button>
                     </>
                   ) : BOOK.available ? (
@@ -199,7 +196,7 @@ export default function ReadSection() {
                       <a className="read__end-cta btn btn--primary" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('end-of-sample')}>Keep reading</a>
                     </>
                   ) : (
-                    <p className="read__end-copy">That&rsquo;s the opening. We&rsquo;ll email you when the full book is available.</p>
+                    <p className="read__end-copy">That&rsquo;s the opening. Join the launch list for book news.</p>
                   )}
                   {isLastChapter && (
                     <button className="read__finish btn btn--secondary" type="button" onClick={finishReading}>Finish sample</button>

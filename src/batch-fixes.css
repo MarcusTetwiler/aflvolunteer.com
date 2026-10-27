@@ -65,14 +65,14 @@ img, svg { max-width: 100%; }
 /* The Front is a feature, not a continent-sized product. Elena's theater is
    reframed around eastern Poland + Ukraine + Baltics + Moldova + Romania.
    The underlying real coordinate system is unchanged; the frame simply crops
-   the continental atlas to the operating theater. Andrew's ledger preserves
+   the continental atlas to the operating theater. the contract ledger preserves
    its wider continental extent. */
 .front-map__frame--elena .front-map__body {
   height: min(74vw, 800px);
   min-height: 420px;
   overflow: hidden;
 }
-.front-map__frame--elena .front-map__svg:not(.front-map__svg--andrew) {
+.front-map__frame--elena .front-map__svg:not(.front-map__svg--ledger) {
   position: absolute;
   left: 0;
   top: 0;
@@ -100,7 +100,7 @@ img, svg { max-width: 100%; }
     height: clamp(270px, 74vw, 360px);
     min-height: 0;
   }
-  .front-map__frame--elena .front-map__svg:not(.front-map__svg--andrew) {
+  .front-map__frame--elena .front-map__svg:not(.front-map__svg--ledger) {
     width: 190%;
   }
   .front-map__layers { padding: 10px 14px 12px; gap: 5px; margin-bottom: 8px; }

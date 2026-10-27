@@ -1,4 +1,4 @@
-export const BENCH_STEPS = [
+export const LEGACY_BENCH_STEPS = [
   {
     id: 'chassis', label: 'Chassis', prompt: 'Choose the airframe.',
     options: [
@@ -66,3 +66,13 @@ export const TRIALS = [
 ];
 
 export const CALLSIGNS = ['MOTH', 'TALON', 'WREN', 'EMBER', 'ROOK', 'LANTERN', 'KITE', 'SABLE', 'ORBIT', 'CINDER'];
+
+const extra = {
+ chassis: [['speed','STREAMLINER','Long body. Straight-line speed.',-1,-2,0],['skeletal','SKELETAL','Low mass. Fragile structure.',-1,3,-3],['offset','OFFSET X','Balanced rotors. Offset service spine.',0,1,1],['hybrid','MODULAR HYBRID','Twin rails. Adaptable structure.',1,1,1]],
+ material:[['weave','WOVEN CARBON','Low mass. Limited impact tolerance.',2,2,-1],['titanium','TITANIUM BRACES','Stiff and durable. Added mass.',-2,-1,3],['sandwich','COMPOSITE PANELS','Aerodynamic. More complex repairs.',1,1,0],['mixed','MIXED INDUSTRIAL','Repairable. Uneven mass.',0,-1,2]],
+ power:[['torque','TORQUE PACKAGE','Fast acceleration. High draw.',-2,3,0],['balanced','BALANCED PACKAGE','Moderate output and reserve.',1,1,0],['highrpm','HIGH-RPM PACKAGE','High pace. Heat and consumption.',-3,2,-1],['discharge','HIGH-DISCHARGE','Boost reserve. Heavy pack.',0,1,1]],
+ sensor:[['wide','WIDE OPTICS','More gate preview. Added optics.',-1,0,0,2],['lowlight','LOW-LIGHT','Guidance range. Extra draw.',-1,0,0,2],['flow','OPTICAL FLOW','Damped feedback. More mass.',-1,-1,1,2],['minimal','MINIMAL RACING','Low draw. Shorter guidance.',2,1,-1,-2]],
+ system:[['precision','PRECISION','More damping. Deliberate response.',0,-1,1],['wind','WIND COMPENSATION','Lower drift. Reserve cost.',-1,0,1],['energy','ENERGY MANAGEMENT','Lower draw. Restrained response.',3,-1,0],['aggressive','AGGRESSIVE','Fast response. Higher demand.',-2,2,-1]],
+ finish:[['charcoal','MATTE CARBON','Dark racing shell.'],['metal','POLISHED METAL','Metallic identity.'],['hi-vis','HIGH VISIBILITY','Bright competition markings.'],['pro','PRO MOTORSPORT','Restrained team scheme.']]
+};
+export const BENCH_STEPS = LEGACY_BENCH_STEPS.map(s=>({...s,options:[...s.options,...extra[s.id].map(([id,name,detail,endurance=0,agility=0,durability=0,sensing=0])=>({id,name,detail,...(s.cosmetic?{}:{stats:{endurance,agility,durability,sensing,signal:0}})}))]}));

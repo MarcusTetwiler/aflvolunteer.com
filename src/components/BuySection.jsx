@@ -51,12 +51,12 @@ export default function BuySection() {
               </>
             ) : onLaunchList ? (
               <>
-                <span className="buy__primary buy__primary--pending btn" aria-disabled="true">Launch updates included</span>
+                <a className="buy__primary btn" href="#read">Read the sample</a>
                 <a className="buy__secondary" href="#glossary">Explore fact + future</a>
               </>
             ) : (
               <>
-                <a className="buy__primary buy__primary--pending btn" href="#read" onClick={() => trackBuyClicked('notify-me')}>Read + join launch list</a>
+                <a className="buy__primary buy__primary--pending btn" href="#read" onClick={() => trackBuyClicked('notify-me')}>Read the sample</a>
                 <a className="buy__secondary" href="#glossary">Explore fact + future</a>
               </>
             )}

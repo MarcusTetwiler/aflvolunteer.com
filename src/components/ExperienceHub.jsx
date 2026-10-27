@@ -3,7 +3,7 @@ import './ExperienceHub.css';
 const EXPERIENCES = [
   { href: '#front', index: '01', title: 'The Front', copy: 'Explore the operating geography of the novel.', cta: 'Open map' },
   { href: '#wall', index: '02', title: 'Elena’s Bench', copy: 'Design, fabricate, and flight-test your own drone.', cta: 'Make your drone' },
-  { href: '#read', index: '03', title: 'Read', copy: 'Read the Prologue and Chapter One free.', cta: 'Read the opening' },
+  { href: '#read', index: '03', title: 'Read', copy: 'Read Interlude I and Childhood free.', cta: 'Read the opening' },
   { href: '#glossary', index: '04', title: 'Fact + Future', copy: 'Find out how much of this world already exists.', cta: 'Explore glossary' },
   { href: '#contribute', index: '05', title: 'Contribute', copy: 'Meet organizations doing the real-world work now.', cta: 'Ways to help' },
 ];

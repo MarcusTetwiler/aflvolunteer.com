@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import './DroneRender.css';
+import ModularAircraft from './ModularAircraft';
 
 const finishes = {
   bone: { body: '#d6c5a7', light: '#eee0c7', dark: '#76654e', accent: '#9d693e' },
@@ -121,7 +122,7 @@ function FinishLayer({ view, build, paint }) {
   </g>;
 }
 
-export default function DroneRender({ build = {}, printing = false, label = true, view = 'top', highlight = null }) {
+function LegacyDroneRender({ build = {}, printing = false, label = true, view = 'top', highlight = null }) {
   const rawId = useId().replace(/:/g, '');
   const ids = { body: `${rawId}-body`, arm: `${rawId}-arm`, carbon: `${rawId}-carbon`, metal: `${rawId}-metal`, gyroid: `${rawId}-gyroid`, shadow: `${rawId}-shadow` };
   const paint = finishes[build.finish] || finishes.bone;
@@ -153,3 +154,5 @@ export default function DroneRender({ build = {}, printing = false, label = true
     {label && <span className="drone-render__label">{view.toUpperCase()} VIEW // FABRICATION MODEL // NOT TO SCALE</span>}
   </div>;
 }
+
+export default function DroneRender(props) {return (props.build?.engineeringVersion && (!props.view || props.view==='garage')) || ['speed','skeletal','offset','hybrid'].includes(props.build?.chassis) ? <ModularAircraft {...props}/> : <LegacyDroneRender {...props}/>;}

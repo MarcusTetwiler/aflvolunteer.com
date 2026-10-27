@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "images": "python3 scripts/generate-images.py",
     "atlas": "python3 scripts/generate-map-atlas.py",
-    "qa": "python3 scripts/qa-responsive.py"
+    "qa": "python3 scripts/qa-responsive.py",
+    "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

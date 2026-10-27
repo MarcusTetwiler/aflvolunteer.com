@@ -1,0 +1,73 @@
+// Author-approved public sample. Verbatim current Live, fetched 2026-10-25.
+// Sample alone is exempt from the interactive spoiler boundary.
+export const CHAPTERS = [
+  {
+    "id": "interlude-i",
+    "label": "Interlude I",
+    "heading": "Interlude I",
+    "kicker": null,
+    "paragraphs": [
+      "Emergency broadcasts cut into scheduled programming while American bombers returned from southern Iran. Washington confirmed strikes on facilities belonging to the Islamic Revolutionary Guard Corps. Saudi aircraft also participated in the operation. Explosions were reported on Qeshm Island near the Strait of Hormuz while full damage assessments remained unavailable.",
+      "During the same broadcasts, successive Russian missile waves crossed western Ukraine as radar operators tracked an unidentified object crossing into Polish airspace. The object continued west and vanished from military displays. A crater replaced a warehouse nearly ninety kilometers inside Poland.",
+      "Futures markets priced higher shipping risk while European exchanges remained closed. American defense officials acknowledged interceptor inventories had declined faster than expected during Middle East operations. At roughly the same hour, Taiwanese agencies responded to a wave of millions of hostile cyber probes as government servers crashed.",
+      "Contemporary reporting still treated the developments as separate events."
+    ]
+  },
+  {
+    "id": "childhood",
+    "label": "Childhood",
+    "heading": "Childhood",
+    "kicker": null,
+    "paragraphs": [
+      "Some years later a printer clicked on Elena Morales’s desk beside a tray of amber resin. A ruler lay across hand-drawn blueprints among three broken pencil tips, two stripped screws, and a towel marked with resin thumbprints. Small bottles crowded the lamp base in yellow, smoke, green, and milk-white rows.",
+      "The kitchen clock ticked above the doorway, oversized for the room and plain for the house. Black industrial numerals circled a brushed-metal face. Each heavy tick crossed the room more slowly than the child’s hands worked below.",
+      "She loosened the build plate and lifted the fresh piece from the vat. In the violet cure light, the liquid resin pooled in a slow amber glow. The resin streamed from the piece and pooled back into the vat. She drained the excess, then bathed the part in isopropyl until the tackiness surrendered.",
+      "One peg seated while the second caught against the rim. Elena set the bad piece beside four rejects: one split, one bubbled, one bowed, one bitten by the cutter. None of the five reached the trash. Broken pieces went back into the hopper as regrind and were printed again until the resin held. Everything on the desk got another use.",
+      "A clear rotor blade rolled toward the desk edge until her elbow stopped it against the towel. Three screws stood ranked by height beside the cold cup. A black magnet beneath the chair caught any metal that escaped the table.",
+      "Elena lifted the silver lighter from the pencil tray and rolled the wheel, holding the flame beneath the resin. A sharp chemical smell rose from the softened plastic and joined the acrid haze embedded in the curtains and carpet. She pressed the softened piece back into the chain.",
+      "Resin occupied the far left of the desk while tools crowded the right edge. Elena positioned the last corner into the empty socket. The connector resisted. She rotated the frame, slid the corner beneath a wire loop, and pressed again. Four clear rotor blades framed the black core and homemade battery. With the final module in place, Elena carried the assembly out the back door.",
+      "Cold air greeted her in the yard. Both controllers were fastened around her wrist. One switch sent a flat chirp through the battery. A second woke the blades in sequence: one corner, then two, then all four chopping in the porch light.",
+      "The clear rotors blurred around the black center as the small frame climbed above Elena’s house and passed beyond the neighborhood. Below, every mailbox carried the Northrop Grumman logo.",
+      "That night, Elena’s agent reported that the other children on her street were wearing headsets and waiting online. Capture and Delay opened across a simulation grid of roads, overpasses, and modeled wind. Two teams spawned at opposite ends of the city. Andrew began with a system test, holding low before swinging north to measure the simulated resistance.",
+      "“Andrew’s doing it again,” another friend on their squad said.",
+      "Andrew held his line and took manual control while the system correction lagged behind him. Elena climbed high on her own to follow him, filling the lane he had left open.",
+      "The next match opened inside an urban canyon of glass, scaffolds, rail platforms, and twin overpasses narrowing the sky into strips. An armored van moved through the center lane, its autonomous pilot choosing the safest path for every visible condition except Andrew. He approached low from the south while Elena held the roofline, her marker steady above the van’s eastern corner.",
+      "“Heading eastbound,” Elena called. “Here’s where they always slip by.”",
+      "Andrew cut the throttle before the system could model his move. “Not this time.”",
+      "He drifted sideways and positioned himself so the vehicle would veer away from him. The van skidded into his line and stalled against the curb, its route collapsing around a decision absent from the model. TARGET NEUTRALIZED flashed across his display beneath the squad noise.",
+      "“Andrew, did you manually write that path?” Elena asked.\r\n“Yeah, I did,” Andrew said.",
+      "The others all celebrated except for Elena.",
+      "***",
+      "Across the street from Elena’s house, the others logged off while a Tier 3 Referral Flag flashed in the corner of his display, the first the neighborhood had seen.",
+      "Andrew kept the referral flag from his friends. The last games blurred together after that, each city resolving into roads, retreat lanes, and points where the system might fail. The climate system ticked once, and the house around him went still. Elena remained online, her avatar idle on the rooftop where his next route would normally begin.",
+      "“You were flying new lines tonight,” she said.",
+      "“I know I was,” Andrew said.",
+      "“You cut us out,” Elena said. She didn’t continue the conversation, but didn’t log off, either. After a long pause at the menu, Andrew quit first.",
+      "The next morning, soft ceiling lights and rotating quarterly banners framed the classroom assessment. Half the desks bore the same institutional sticker: REFURBISHED / DISTRICT ASSET. The category was pattern anticipation. Vehicle formations crossed each screen as overhead feeds shifted between convoy roads, industrial yards, and half-ruined intersections. The assistant issued prompts while Andrew entered his answers. After each correct response, his desk chimed with a bright reward tone.",
+      "At the back, Elena raised her hand.",
+      "“Something’s wrong,” she said. “My agent is misreporting answers.”",
+      "“Reassessment advised,” the desk replied.",
+      "“I know the answer,” Elena said, her voice sharper at the same volume.",
+      "Another boy leaned over his flickering screen. “Maybe your agent’s glitched?”",
+      "Elena wadded a piece of paper and threw the wad across the room. “Maybe the agent only likes boys,” she said.",
+      "The paper wad struck the far wall and dropped beside a charging cart. A gray-uniformed teacher, one of the few still assigned there, entered with a stiff collar and hollow eyes.\r\n“Everything alright back here?”\r\nElena pivoted toward him. “I’m being scored differently for the same answers.”\r\n“Sometimes the system needs you to follow instructions.”\r\n“That is not an answer.” Elena set her pencil down across the unfinished diagram.\r\n“Let’s not have a problem here,” the teacher replied. “Answer how they want you to, Elena.”\r\nThe door was still moving when the second man entered. He ignored the students and fixed his attention on Andrew. His stiff contractor jacket, black slacks, and polished military lace-ups set him apart from the teacher.\r\nElena faced Andrew before anyone else reacted.",
+      "“Andrew Raines,” the new man said.",
+      "Andrew stood with his bag still tangled in the metal frame while the new man watched him. The new man walked past the teacher’s empty desk, past Elena, and through the door.",
+      "A banner above the administration office declared VICTORY BEGINS IN THE CLASSROOM in blue letters trimmed with silver. The man kept a hand on Andrew’s arm while escorting him from the school.",
+      "A black convoy rover idled at the curb. Andrew climbed into the back seat, and the door shut behind him with a hard seal. The street slid past as he pressed the window switch, but the glass stayed fixed.",
+      "The rover left town and continued through open country until the road narrowed beside a fenced compound. A single rectangular building stood inside the perimeter, without windows, signs, or markings. Two technicians in lab suits waited near the entrance, speaking through whisper pins.",
+      "One technician reached inside and seized Andrew’s left wrist. A scanner chirped against his skin before the elevator carried Andrew and the rover underground.",
+      "A basement corridor ended at a room containing one metal chair and a headset. The technicians asked whether Andrew had ever completed a neural sync, and Andrew answered that he had not. When the headset sealed, the leaderboard vanished. Gray terrain filled his view as the airborne drone followed a narrowing road.",
+      "A voice in Andrew’s earpiece ordered the strike. The vehicle swerved before the drone reached firing position, but the crew failed to escape. Andrew hammered the target without waiting for the familiar desk chime that usually marked a correct response. The military drone continued circling as the gray terrain passed below.",
+      "“Candidate Raines, you are confirmed,” the voice said, while the empty upper lane stayed open. They kept him in a room with rounded gray walls, one bed, a monitor displaying his tests, and no windows for three weeks. Meals came through a slot in the wall. Daytime tests became nightly replays of his own performance.",
+      "On the morning of his last day, the room itself chimed.",
+      "“Good morning, Talon.”",
+      "Back home, his parents discussed neighborhood schedules and corporate shuttle routes over plates of untouched dinner. Autonomous lawn drones cut identical strips of green between the residential driveways. High school teachers marked attendance across classroom screens. Bored classmates traded projected weapon skins beneath wooden desks. Public network servers filled each evening with drone combat tournaments. Colorful explosions covered the monitors in his parents’ living room.",
+      "After the assessment, Andrew gained access to a secondary market hidden inside the public servers under his new alias. Some contracts were harmless reconnaissance; the higher-paying ones came as blind bids attached to numbered targets, each payout listed in yuan. He accepted another contract before the previous replay finished, his pulse steady as each route collapsed into braking point, apex, and exit. For weeks, normal school life layered itself over the private work until Elena blocked him between classes and refused to move.",
+      "Elena’s gaze dropped from the Northrop Grumman insignia to the frayed calibrator patch where the logo was pulling loose from his sleeve. “Nice jacket.”",
+      "Andrew fixed his attention on the door beyond her shoulder.",
+      "“Andrew,” Elena said. “How you’re acting doesn’t work for me.” He hitched the recovered bag higher on his shoulder. Walking past Elena, Andrew pulled on his noise-canceling headphones.",
+      "That night, he lost his first two runs without her. On the third attempt, he covered the blind side himself. The upper lane remained empty through the end of the round. The replay saved automatically; his global rank jumped and a new invitation opened beneath the score."
+    ]
+  }
+];

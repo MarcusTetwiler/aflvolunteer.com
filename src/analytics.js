@@ -46,7 +46,7 @@ export const trackBuildSubmitIntent = (location) =>
 export const trackGlossaryFilter = (filterId) =>
   safeTrack('glossary_filter', { filter: filterId });
 
-/** POV switch on the front map — tells you whether Andrew's view gets used at all. */
+/** POV switch on the front map — tells you whether the contracts view gets used at all. */
 export const trackMapPovChanged = (pov) => safeTrack('map_pov_changed', { pov });
 
 /** Layer toggled on/off. Reveals which map layers readers actually care about. */
@@ -71,3 +71,5 @@ export const trackBuildViewed = (buildId) => safeTrack('build_viewed', { build: 
 
 /** An inbound build submission completed. */
 export const trackBuildSubmitSuccess = () => safeTrack('build_submit_success');
+
+export const trackJourney=(event,props={})=>safeTrack(event,props);

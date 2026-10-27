@@ -47,10 +47,9 @@ export const BOOK = {
 export const SAMPLE = {
   headline: 'Read the opening',
   sub:
-    'Read the prologue and Chapter One free in your browser. Enter ' +
-      'your email and the sample opens immediately below.',
+    'Read Interlude I and Childhood free in your browser. No email required.',
   // Text of the unlock button.
-  cta: 'Read the prologue and Chapter One',
+  cta: 'Read Interlude I and Childhood',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
