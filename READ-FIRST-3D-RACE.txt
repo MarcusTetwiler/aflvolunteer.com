@@ -1,0 +1,23 @@
+Nations Series v24: 3D World Final race. READ FIRST
+
+Replaces the canvas mini game with a true 3D course. Same props and result
+contract, so the dossier, grid countdown, World Final standings, Talon profile
+and private offer flow are unchanged.
+
+UPLOAD (GitHub web, "Add files via upload"), preserving exact paths:
+  package.json                          (adds three@0.160.0)
+  package-lock.json
+  src/raceCourse3d.js                   NEW  course, flight model, rivals
+  src/components/FPVRace.jsx            REPLACED  3D race
+  src/components/FPVRaceClassic.jsx     NEW  the old 2D race, kept as WebGL fallback
+  src/components/NationsSeries.jsx      race now lazy-loaded (one import changed)
+  src/components/NationsSeries.css      small additions at the end
+  tests/race3d.test.mjs                 NEW  8 tests
+
+Tip: upload to a new branch (e.g. nations-3d-race) first. Vercel builds a
+preview URL for the branch without touching the live site.
+
+Checks run on a clean clone of main 7eb3df9: npm test 46/46 pass, eslint clean
+on changed files, npm run build OK (race is its own 134 KB gzipped chunk,
+loaded only when someone races), full races completed in headless Chrome at
+1280x800 and 390x844. Not yet tested on a real phone.
