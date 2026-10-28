@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import Nav from './components/Nav';
 import NationsSeries from './components/NationsSeries';
 import LaunchSignup from './components/LaunchSignup';
-import ExperienceHub from './components/ExperienceHub';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
@@ -85,7 +84,7 @@ function useOverlayScrollState(onBenchVisited) {
 function StickyMobileCta({ benchVisited, setBenchVisited }) {
   const [unlocked, setUnlocked] = useState(() => readFlag(SAMPLE_UNLOCK_KEY));
   const [typing, setTyping] = useState(false);
-  const [pageState, setPageState] = useState({ pastHero: false, lowerSite: false, destinationVisible: false });
+  const [pageState, setPageState] = useState({ pastHero: false, lowerSite: false, destinationVisible: false, pastRead: false });
 
   useOverlayScrollState(setBenchVisited);
 
@@ -110,13 +109,16 @@ function StickyMobileCta({ benchVisited, setBenchVisited }) {
   useEffect(() => {
     const update = () => {
       const lower = document.getElementById('contribute');
-      const targetId = BOOK.available ? 'buy' : !unlocked ? 'read' : !benchVisited ? 'wall' : 'buy';
+      const readEl = document.getElementById('read');
+      const pastRead = Boolean(readEl && readEl.getBoundingClientRect().bottom < 0);
+      const targetId = BOOK.available ? 'buy' : !unlocked && !pastRead ? 'read' : 'buy';
       const target = document.getElementById(targetId);
       const targetRect = target?.getBoundingClientRect();
       setPageState({
         pastHero: window.scrollY > Math.min(480, window.innerHeight * 0.55),
         lowerSite: Boolean(lower && lower.getBoundingClientRect().top < window.innerHeight * 0.78),
         destinationVisible: Boolean(targetRect && targetRect.bottom > 80 && targetRect.top < window.innerHeight * 0.82),
+        pastRead,
       });
     };
     update();
@@ -140,11 +142,9 @@ function StickyMobileCta({ benchVisited, setBenchVisited }) {
     );
   }
 
-  const next = !unlocked
+  const next = !unlocked && !pageState.pastRead
     ? { href: '#read', label: 'Read the opening' }
-    : !benchVisited
-      ? { href: '#wall', label: 'Make your drone' }
-      : { href: '#buy', label: 'Explore the book' };
+    : { href: '#buy', label: 'See the book' };
 
   return (
     <div className="sticky-cta">
@@ -167,15 +167,15 @@ export default function App() {
   return (
     <>
       <div hidden={bookOpen}><NationsSeries onBuild={req=>{setRaceRequest(req);window.dispatchEvent(new CustomEvent('afl-build-request',{detail:req}));}} onBook={showBook}/></div>
-      <div hidden={!bookOpen}><Nav /><BuySection /><LaunchSignup /><ReadSection /><ExperienceHub />{bookOpen && <Hero />}<IntroContext /></div>
+      <div hidden={!bookOpen}><Nav /><ReadSection /><BuySection /><LaunchSignup />{bookOpen && <Hero />}<IntroContext /></div>
       <ElenasBench journeyHidden={!bookOpen} raceRequest={raceRequest} onRaceReady={a=>window.dispatchEvent(new CustomEvent('afl-aircraft-ready',{detail:a}))} onRaceCancel={()=>setRaceRequest(null)}/>
       <div hidden={!bookOpen}>
       <AuthorSection />
-      <ContributeSection />
       <Glossary />
+      <ContributeSection />
       <FieldSupply />
       <Footer />
-      <button type="button" onClick={()=>{setBookOpen(false);window.history.replaceState(null,'','#home');}}>Return to the broadcast</button></div>
+      <div className="broadcast-return"><button type="button" className="btn btn--secondary" onClick={()=>{setBookOpen(false);window.history.replaceState(null,'','#home');window.scrollTo(0,0);}}>← Return to the Nations Series</button></div></div>
       {bookOpen && <StickyMobileCta benchVisited={benchVisited} setBenchVisited={setBenchVisited} />}
       <Analytics />
       <SpeedInsights />

@@ -147,3 +147,11 @@ body.supply-open .nav, body.supply-open .sticky-cta { display:none; }
   .supply-waitlist input { border-right:1px solid #8d8578; border-bottom:0; }
   .supply-detail__specs div { grid-template-columns:110px minmax(0,1fr); gap:10px; }
 }
+/* v24: waitlist teaser and 2:1 product photography */
+.field-supply__teaser{grid-template-columns:minmax(0,1fr) minmax(280px,380px)}
+.field-supply__teaser-waitlist{display:grid;gap:10px;padding:16px 0 4px 24px;border-left:1px solid rgba(231,214,188,.22)}
+.field-supply__teaser-kicker{font-family:var(--font-mono);font-size:10px;letter-spacing:.16em;color:#d09a5c;margin:0}
+.field-supply__teaser-waitlist .supply-waitlist{margin:0}
+.field-supply__browse{justify-self:start;background:none;border:0;padding:6px 0;color:#eee7da;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.field-supply__rail img,.supply-card__media img{aspect-ratio:2/1}
+@media(max-width:900px){.field-supply__teaser{grid-template-columns:1fr}.field-supply__teaser-waitlist{border-left:0;border-top:1px solid rgba(231,214,188,.22);padding:16px 0 0}}

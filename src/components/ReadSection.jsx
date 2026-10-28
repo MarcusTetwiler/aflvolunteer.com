@@ -98,7 +98,7 @@ export default function ReadSection() {
     // not jump backward to the top of the sample afterwards. Let the browser
     // hold position when it can; otherwise advance to the next experience.
     requestAnimationFrame(() => {
-      const next = document.getElementById('wall');
+      const next = document.getElementById('buy');
       if (!next) return;
       const rect = next.getBoundingClientRect();
       const naturallyVisible = rect.top >= 64 && rect.top <= window.innerHeight * 0.72;
@@ -123,6 +123,7 @@ export default function ReadSection() {
               <p className="eyebrow">Sample</p>
               <h2 className="read__title">{SAMPLE.headline}</h2>
               <p className="read__sub">{SAMPLE.sub}</p>
+              <a className="read__skip" href="#buy">Skip to the book &rarr;</a>
             </header>
 
             {!unlocked ? (
@@ -196,7 +197,10 @@ export default function ReadSection() {
                       <a className="read__end-cta btn btn--primary" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('end-of-sample')}>Keep reading</a>
                     </>
                   ) : (
-                    <p className="read__end-copy">That&rsquo;s the opening. Join the launch list for book news.</p>
+                    <>
+                      <p className="read__end-copy">That&rsquo;s the opening. The rest of the story arrives at launch.</p>
+                      <a className="read__end-cta btn btn--primary" href="#buy">See the book</a>
+                    </>
                   )}
                   {isLastChapter && (
                     <button className="read__finish btn btn--secondary" type="button" onClick={finishReading}>Finish sample</button>

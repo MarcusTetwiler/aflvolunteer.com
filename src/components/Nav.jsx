@@ -6,7 +6,7 @@ import './Nav.css';
 export default function Nav() {
   const links = useMemo(() => {
     const withoutGear = NAV_LINKS.filter((link) => link.href !== '#gear');
-    const gear = { href: '#gear-store', label: 'Gear' };
+    const gear = { href: '#gear-store', label: 'Field Supply' };
     return [...withoutGear, gear];
   }, []);
 

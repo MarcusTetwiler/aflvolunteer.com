@@ -7,13 +7,13 @@ import {GATES,GATE_COUNT,OBSTACLES,PATH_SAMPLES,CORRIDOR,SECTORS,FIELD,START_S,F
 import {classify} from '../raceModel';
 import {countryFlag,countryColors} from '../countries';
 import {SPONSORS} from '../sporting';
-import {spec} from '../engineering';
+import {spec,EXAMPLES} from '../engineering';
+import {buildAircraft} from '../aircraft3d';
 import {readLocal,writeLocal} from '../localGarage';
 
 const TRAINING_GATES=3;
 const STEP=1/120;
-const FINISH_COLORS={bone:'#cbbb91',rust:'#c8713c',field:'#628a62',repaired:'#a58ba0',charcoal:'#b1ae9f',metal:'#c4d4d3','hi-vis':'#dfae38',pro:'#d37d66'};
-const accentOf=b=>b?.accent||FINISH_COLORS[b?.finish]||'#d09a5c';
+const TALON_BUILD={chassis:'speed',material:'carbon',power:'highrpm',sensor:'minimal',system:'aggressive',finish:'charcoal',accent:'#c3c8cc',motor:'sprint',propeller:'low-drag',illumination:'edge'};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 function webglAvailable(){try{const c=document.createElement('canvas');return Boolean(window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')));}catch{return false;}}
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -28,26 +28,6 @@ function textSprite(lines,{color='#ded4b9',bg='rgba(8,14,22,.8)',bar,w=256,h=96,
  const s=new THREE.Sprite(new THREE.SpriteMaterial({map:tex,transparent:true,depthWrite:false}));s.scale.set(scale,scale*h/w,1);return s;
 }
 function boardTexture(name,mark){const c=document.createElement('canvas');c.width=512;c.height=80;const x=c.getContext('2d');x.fillStyle='#0d161d';x.fillRect(0,0,512,80);x.fillStyle='#d09a5c';x.fillRect(0,74,512,6);x.fillStyle='#ded4b9';x.font='700 38px ui-monospace, Menlo, monospace';x.textBaseline='middle';x.fillText(mark,22,40);x.font='600 26px ui-monospace, Menlo, monospace';x.fillText(name,140,42);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;}
-
-function makeDrone({accent,body='#20282e',chassis='scout',glow='#e8f1e4',opacity=1}){
- const g=new THREE.Group(),props=[];const t=opacity<1;
- const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.55,metalness:.35,transparent:t,opacity,depthWrite:!t});
- const dark=mat(body),acc=mat(accent);
- const hull=new THREE.Mesh(new THREE.BoxGeometry(.8,.24,1.15),dark),shell=new THREE.Mesh(new THREE.BoxGeometry(.52,.16,.66),acc);shell.position.set(0,.19,.06);
- const cam=new THREE.Mesh(new THREE.BoxGeometry(.24,.22,.18),dark);cam.position.set(0,.12,-.62);
- const led=new THREE.Mesh(new THREE.SphereGeometry(.07,8,8),new THREE.MeshBasicMaterial({color:glow,transparent:t,opacity}));led.position.set(0,.06,-.74);
- g.add(hull,shell,cam,led);
- if(chassis==='wing'){const wing=new THREE.Mesh(new THREE.BoxGeometry(3.2,.06,.7),acc);wing.position.y=.02;g.add(wing);}
- const hubs=chassis==='carrier'?[[1.1,.55],[.45,1.1],[-.45,1.1],[-1.1,.55],[1.1,-.55],[.45,-1.1],[-.45,-1.1],[-1.1,-.55]]:chassis==='speed'?[[.7,-.95],[-.7,-.95],[.95,.85],[-.95,.85]]:[[.82,.82],[.82,-.82],[-.82,.82],[-.82,-.82]];
- const motorGeo=new THREE.CylinderGeometry(.13,.13,.18,10),propGeo=new THREE.BoxGeometry(chassis==='carrier'?.7:.95,.02,.1),ductGeo=new THREE.TorusGeometry(.52,.07,6,24);ductGeo.rotateX(Math.PI/2);
- for(const [x,z] of hubs){
-  const len=Math.hypot(x,z),arm=new THREE.Mesh(new THREE.BoxGeometry(.13,.08,len),dark);arm.position.set(x/2,0,z/2);arm.rotation.y=Math.atan2(x,z);g.add(arm);
-  const motor=new THREE.Mesh(motorGeo,dark);motor.position.set(x,.08,z);
-  const prop=new THREE.Mesh(propGeo,mat(z<0?accent:'#cfd6d4'));prop.position.set(x,.19,z);g.add(motor,prop);props.push(prop);
-  if(chassis==='ducted'){const d=new THREE.Mesh(ductGeo,acc);d.position.set(x,.15,z);g.add(d);}
- }
- g.rotation.order='YXZ';return {group:g,props};
-}
 
 function buildWorld(scene,{build,pilot,training}){
  const rnd=mulberry(24),dummy=new THREE.Object3D(),col=new THREE.Color();
@@ -110,10 +90,10 @@ function buildWorld(scene,{build,pilot,training}){
  {const f=frameAt(START_S-2),gantry=textSprite(['NATIONS SERIES','WORLD FINAL / GRID'],{bar:countryColors(pilot?.country),w:512,h:120,scale:12});gantry.position.set(f.pos[0],f.pos[1]+9,f.pos[2]);scene.add(gantry);}
 
  // Aircraft: yours from the bench, the rival field, and your personal-best ghost.
- const you=makeDrone({accent:accentOf(build),chassis:build?.chassis,glow:'#bfe6c4'});scene.add(you.group);
+ const you=buildAircraft(build);scene.add(you.group);
  const shadow=new THREE.Mesh(new THREE.CircleGeometry(1.25,20),new THREE.MeshBasicMaterial({color:'#000',transparent:true,opacity:.35,depthWrite:false}));shadow.rotation.x=-Math.PI/2;scene.add(shadow);
- const rivals=training?[]:FIELD.map((r,i)=>{const talon=r.name==='TALON',c=countryColors(r.country),d=makeDrone({accent:talon?'#c3c8cc':c[0],body:talon?'#0a0c0e':'#252e35',glow:talon?'#ffffff':c[1]});const tag=textSprite([r.name],{bar:c,w:192,h:64,scale:2.4});tag.position.y=1.5;d.group.add(tag);scene.add(d.group);return {...d,tag,rival:r,slot:i};});
- const ghost=makeDrone({accent:'#d9e8db',body:'#9fb1a6',chassis:build?.chassis,opacity:.3});ghost.group.visible=false;scene.add(ghost.group);
+ const rivals=training?[]:FIELD.map((r,i)=>{const talon=r.name==='TALON',c=countryColors(r.country),d=buildAircraft(talon?TALON_BUILD:{...EXAMPLES[(i*3)%EXAMPLES.length].build,accent:c[0],livery:['061','063','064','067'][i%4]});const tag=textSprite([r.name],{bar:c,w:192,h:64,scale:1.8});tag.position.y=1.4;d.group.add(tag);scene.add(d.group);return {...d,tag,rival:r,slot:i};});
+ const ghost=buildAircraft(build,{opacity:.3});ghost.group.visible=false;scene.add(ghost.group);
  return {you,shadow,rivals,ghost,gates,railMats};
 }
 
@@ -169,7 +149,7 @@ function FPVRace3D({build,onFinish,training=false,pilot}){
    // Gates: next amber, lookahead steel, resolved dim.
    const look=Math.max(1,Math.round(handlingLook(build)));world.gates.forEach((g,i)=>{const st=i<s.gate?(s.splits[i]?.clear?'done':'missed'):i===s.gate?'next':i<=s.gate+look?'ahead':'idle';if(st!==g.state){g.state=st;g.rails.forEach(m=>m.material=world.railMats[st]);}});
    // Rival field and PB ghost.
-   let ahead=0;for(const r of world.rivals){const a=rivalAt(r.rival,s.time,r.slot);r.group.position.set(...a.pos);r.group.rotation.set(-.18,-a.yaw,0);r.props.forEach((p,i)=>p.rotation.y+=i%2?spin:-spin);r.tag.visible=camera.position.distanceTo(r.group.position)>9;const rs=START_S-6+Math.min(1,s.time/r.rival.time)*(FINISH_S-START_S+6);if(rs>s.s||a.done)ahead++;}
+   let ahead=0;for(const r of world.rivals){const a=rivalAt(r.rival,s.time,r.slot);r.group.position.set(...a.pos);r.group.rotation.set(-.18,-a.yaw,0);r.props.forEach((p,i)=>p.rotation.y+=i%2?spin:-spin);{const d=camera.position.distanceTo(r.group.position);r.tag.visible=s.time>1.8&&d>9&&d<90;}const rs=START_S-6+Math.min(1,s.time/r.rival.time)*(FINISH_S-START_S+6);if(rs>s.s||a.done)ahead++;}
    if(best?.trace?.length){const i=Math.min(best.trace.length-1,Math.floor(s.time*20)),gp=best.trace[i];world.ghost.group.visible=Boolean(gp)&&s.time<best.elapsed;if(gp){world.ghost.group.position.set(...gp.p);world.ghost.group.rotation.set(-.15,-gp.y,0);}}
    // Camera.
    if(camRef.current==='chase'){v.set(s.pos[0]-f[0]*7.5,s.pos[1]+2.8,s.pos[2]-f[2]*7.5);v.y=Math.max(v.y,1);w.set(s.pos[0]+f[0]*6,s.pos[1]+.5,s.pos[2]+f[2]*6);camPos.lerp(v,1-Math.exp(-7*dt));camLook.lerp(w,1-Math.exp(-10*dt));camera.position.copy(camPos);camera.lookAt(camLook);camera.fov=still?70:70+s.speed*.28;}

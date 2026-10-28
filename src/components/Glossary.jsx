@@ -56,7 +56,7 @@ export default function Glossary() {
           aria-controls="glossary-content"
           onClick={() => setExpanded((value) => !value)}
         >
-          <span><small>Glossary</small><strong>50 spoiler-free terms</strong></span>
+          <span><small>Fact + Future</small><strong>50 spoiler-free terms</strong></span>
           <span>{expanded ? 'Collapse −' : 'Explore +'}</span>
         </button>
 

@@ -21,3 +21,6 @@
 @media (max-width: 720px) {
   .sticky-cta { display: flex; }
 }
+/* v24 book side */
+.broadcast-return{background:#151a17;display:flex;justify-content:center;padding:18px 16px 28px}.broadcast-return .btn{min-height:48px}
+.read__skip{display:inline-block;margin-top:14px;font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:inherit;opacity:.8;text-underline-offset:4px}.read__skip:hover{opacity:1}

@@ -10,3 +10,8 @@
 /* v24 3D sprint */
 .ns-flight--3d{overflow:hidden;background:#0d1823}.ns-flight--3d canvas{touch-action:none}.ns-flight__speed{margin-left:auto}.ns-flight--3d .ns-flight__hud button{min-height:40px;padding:8px 12px}
 @media(max-width:600px){.ns-flight__speed{margin-left:0}.ns-flight--3d .ns-flight__hud button{min-height:36px;padding:6px 9px;font-size:10px}}
+/* v24: book-side bench content never shows under the Nations Series; community buttons readable */
+.ns-bench-journey #bench-content>:not(.bench-system){display:none!important}
+.ns-community-grid .btn{color:#e4d9c4!important;border-color:#e4d9c47a!important;background:transparent!important}
+.ns-community-grid .btn:hover{border-color:#d09a5c!important;color:#f2e5cb!important}
+.ns-community-grid .drone3d{margin:0 0 12px}

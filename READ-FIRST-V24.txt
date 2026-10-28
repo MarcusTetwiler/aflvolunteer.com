@@ -1,0 +1,56 @@
+Nations Series v24: READ FIRST
+
+This ZIP is cumulative against GitHub main 7eb3df9. It includes the 3D race
+from the previous ZIP. If you already uploaded that one, uploading this one
+over it is still correct.
+
+UPLOAD (GitHub web, "Add files via upload")
+- Extract first. Upload the extracted files, preserving exact folder paths.
+  Don't upload the ZIP itself, and don't flatten src/, public/ or tests/.
+- Upload to a new branch first (for example nations-v24). Vercel builds a
+  preview link for the branch without touching the live site. Merge when happy.
+- .gitignore starts with a dot and may be hidden when you extract. Show
+  hidden files to include it (it keeps dist/ and node_modules/ out of the repo).
+- Nothing needs deleting. ExperienceHub.jsx is no longer used, but it's
+  harmless to leave in place.
+
+WHAT CHANGED
+1. Fiction no longer announced: footer line and hidden "fictional championship"
+   label removed, plus the in-flow "fictional" captions (map, sponsors,
+   community, race feedback). Fact + Future and the map legend still mark
+   invented terms after the reveal.
+2. Race tightened: strong builds with boost ~18 s, typical ~21-24 s.
+   New roster: TALON 11.0, VECTOR 18.8, KESTREL 20.6, ROOK 22.4, WREN 24.5.
+   Second place still has to be earned; Talon stays out of reach.
+3. 3D aircraft everywhere. Every bench option changes the model (a test checks
+   all 48). Live and draggable on the bench, printer, result, inspection and
+   grid. Still renders in the hangar and community builds. The aircraft you
+   build is the one you fly; Talon flies a black-and-silver streamliner.
+   SVG art is the fallback while 3D loads or without WebGL.
+4. Book side: sample first (Interlude I, then Childhood), with
+   "Skip to the book", then Buy and the launch list, The Front, Elena's Bench
+   community builds, Author, Fact + Future, Contribute, Field Supply. The
+   mid-page "Enter the world..." hub is removed.
+5. Naming consolidated: nav reads Read / Buy / The Front / Elena's Bench /
+   Fact + Future / Contribute / Field Supply.
+6. Feedback doc: "Six decisions" card removed. Nations Series community builds
+   (16 pilots, 16 countries) are shown by default. Footer artwork now displays
+   in full instead of a dark crop.
+7. Field Supply is a merch waitlist. The teaser signup saves to the
+   "field-supply" list. Product photos were re-cropped to remove baked-in
+   frames and badges. Waitlist forms now report a failed save instead of
+   always saying "recorded".
+8. Cleanup: styled "Return to the Nations Series" button, phone sticky bar
+   points to the book once you're past the sample, README refreshed,
+   .gitignore added.
+
+CHECKS (clean clone of 7eb3df9 + these files)
+npm test: 51/51 pass. eslint: clean. npm run build: OK. The homepage bundle is
+unchanged; the 3D engine loads only on the bench or the race. Full journey
+completed in headless Chrome at 1366x860 and 390x844: bench, pilot, race,
+result, Talon, book reveal, book side, waitlist. No console errors.
+
+NOT YET CHECKED
+Real iPhone (touch steering, frame rate, safe areas), live /api/volunteer
+saves on Vercel, and a scored (non-assisted) run through the offer on a
+real device.

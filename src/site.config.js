@@ -59,7 +59,7 @@ export const SAMPLE = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const WALL = {
-  eyebrow: 'The Build Wall',
+  eyebrow: 'Elena’s Bench',
   headline: 'Built on real benches.',
   sub:
     'The novel opens with a girl building a drone at her kitchen ' +
@@ -86,7 +86,7 @@ export const WALL = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const GLOSSARY_INTRO = {
-  eyebrow: 'Glossary',
+  eyebrow: 'Fact + Future',
   headline: 'How much of this world already exists?',
   sub:
     'Fifty spoiler-free terms from the novel, marked so you can ' +
@@ -220,12 +220,12 @@ export const CAUSES = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const NAV_LINKS = [
-  { href: '#front', label: 'The Front' },
   { href: '#read', label: 'Read' },
-  { href: '#wall', label: 'Builds' },
   { href: '#buy', label: 'Buy' },
+  { href: '#front', label: 'The Front' },
+  { href: '#wall', label: 'Elena’s Bench' },
+  { href: '#glossary', label: 'Fact + Future' },
   { href: '#contribute', label: 'Contribute' },
-  { href: '#glossary', label: 'Glossary' },
 ];
 
 export const CONTACT_EMAILS = [

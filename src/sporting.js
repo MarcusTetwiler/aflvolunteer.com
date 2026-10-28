@@ -7,7 +7,7 @@ export const SPONSORS=[
 export const defaultSponsors=()=>Object.fromEntries(SPONSORS.map(s=>[s.id,s.brands[0].id]));
 export function validSponsors(s){return Boolean(s&&SPONSORS.every(c=>c.brands.some(b=>b.id===s[c.id])));}
 export function pilotEntry(p={}){return {callsign:typeof p.callsign==='string'?p.callsign.slice(0,24):'',country:typeof p.country==='string'?p.country:'United States',sponsors:validSponsors(p.sponsors)?p.sponsors:defaultSponsors()};}
-export const RIVALS=[{name:'TALON',country:'United States',time:12.0},{name:'VECTOR',country:'Japan',time:22},{name:'KESTREL',country:'United Kingdom',time:25},{name:'ROOK',country:'Germany',time:28},{name:'WREN',country:'Brazil',time:31}];
+export const RIVALS=[{name:'TALON',country:'United States',time:11.0},{name:'VECTOR',country:'Japan',time:18.8},{name:'KESTREL',country:'United Kingdom',time:20.6},{name:'ROOK',country:'Germany',time:22.4},{name:'WREN',country:'Brazil',time:24.5}];
 const names=['KITE','SABLE','APEX','MONSOON','ORBIT','CIRRUS','EMBER','VOLT','DRIFT','NOVA','ECHO','SOL','FLINT','GHOST','RIFT','TIDAL'];
 const countries=['Japan','France','United States','India','Brazil','United Kingdom','Canada','Germany','Australia','South Korea','Italy','Spain','South Africa','Poland','Mexico','New Zealand'];
 const accents=['#d14757','#d8c49b','#719fba','#e6ac3d','#66a47f','#a68fbb','#dd7843','#e0c950'];

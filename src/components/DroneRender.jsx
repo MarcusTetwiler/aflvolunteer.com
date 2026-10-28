@@ -1,4 +1,5 @@
-import { useId } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { spec } from '../engineering';
 import './DroneRender.css';
 import ModularAircraft from './ModularAircraft';
 
@@ -155,4 +156,35 @@ function LegacyDroneRender({ build = {}, printing = false, label = true, view = 
   </div>;
 }
 
-export default function DroneRender(props) {return (props.build?.engineeringVersion && (!props.view || props.view==='garage')) || ['speed','skeletal','offset','hybrid'].includes(props.build?.chassis) ? <ModularAircraft {...props}/> : <LegacyDroneRender {...props}/>;}
+export function DroneRenderSvg(props) {return (props.build?.engineeringVersion && (!props.view || props.view==='garage')) || ['speed','skeletal','offset','hybrid'].includes(props.build?.chassis) ? <ModularAircraft {...props}/> : <LegacyDroneRender {...props}/>;}
+
+// v24: realistic 3D aircraft. The SVG renders first and stays as the fallback.
+let engine=null,engineFailed=false;
+const hasWebGL=()=>{try{const c=document.createElement('canvas');return Boolean(c.getContext('webgl2')||c.getContext('webgl'));}catch{return false;}};
+function useEngine(){const[mod,setMod]=useState(engine);useEffect(()=>{if(engine||engineFailed)return;if(!hasWebGL()){engineFailed=true;return;}let live=true;import('../aircraft3d').then(m=>{engine=m;if(live)setMod(m);}).catch(()=>{engineFailed=true;});return()=>{live=false;};},[]);return mod;}
+const label3d=b=>`${(b?.chassis||'scout').toUpperCase()} / ${Math.round(spec(b||{}).mass)} g`;
+const alt3d=b=>`3D render of ${b?.chassis||'scout'} aircraft: ${b?.material||'standard'} frame, ${b?.power||'standard'} power, ${b?.sensor||'standard'} sensor, ${b?.finish||'standard'} finish`;
+
+function LiveAircraft({mod,build,view='garage',highlight,printing,label}){
+ const canvas=useRef(null),ctrl=useRef(null),first=useRef(build);
+ useEffect(()=>{ctrl.current=mod.mountViewer(canvas.current,first.current,{view:'garage'});return()=>{ctrl.current?.dispose();ctrl.current=null;};},[mod]);
+ useEffect(()=>{ctrl.current?.setBuild(build);},[build]);
+ useEffect(()=>{ctrl.current?.setView(view);},[view]);
+ useEffect(()=>{if(highlight)ctrl.current?.setHighlight(highlight);},[highlight,build]);
+ useEffect(()=>{ctrl.current?.setPrinting(printing);},[printing]);
+ return <div className={`drone3d drone3d--live${printing?' is-printing':''}`}><canvas ref={canvas} role="img" aria-label={alt3d(build)}/>{highlight&&<span className="drone-render__install-label">{String(highlight).toUpperCase()} INSTALLED</span>}{label&&<span className="drone3d__label">{label3d(build)} · DRAG TO TURN</span>}</div>;
+}
+function StillAircraft({mod,build,view='garage',label}){
+ const host=useRef(null),[url,setUrl]=useState(null),key=JSON.stringify(build)+view;
+ useEffect(()=>{let live=true;const go=()=>mod.snapshot(build,view).then(u=>{if(live)setUrl(u);});if(!('IntersectionObserver' in window)){go();return()=>{live=false;};}
+  const io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)){io.disconnect();go();}},{rootMargin:'300px'});io.observe(host.current);return()=>{live=false;io.disconnect();};
+ // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[mod,key]);
+ return <div className="drone3d" ref={host}>{url?<img src={url} alt={alt3d(build)} width="600" height="340"/>:<DroneRenderSvg build={build} view={view} label={false}/>}{label&&<span className="drone3d__label">{label3d(build)}</span>}</div>;
+}
+export default function DroneRender({live=false,...props}){
+ const mod=useEngine();
+ if(!mod)return <DroneRenderSvg {...props}/>;
+ const view=props.view&&props.view!=='garage'?props.view:'garage';
+ return live?<LiveAircraft mod={mod} {...props} view={view}/>:<StillAircraft mod={mod} build={props.build} view={view} label={props.label!==false}/>;
+}

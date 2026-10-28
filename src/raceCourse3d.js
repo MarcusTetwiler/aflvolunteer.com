@@ -9,7 +9,7 @@ export const GATE_COUNT=24;
 export const SECTORS=['ARTIFICIAL CANYON','RIVER CROSSING','THE LAST LINE'];
 export const CORRIDOR=24;            // metres either side of the racing line before the walls bite
 export const CEILING=42;
-export const SCALE=1.12;             // stretches the layout so even a perfect run cannot reach Talon's 12.0 s
+export const SCALE=0.98;           // tuned so strong runs finish near 18 s and average runs near 21-23 s
 
 // Racing line (x east, y up, z south). Start faces -z out of the stadium.
 const RAW=[[0,6,40],[0,6,0],[0,7,-45],[18,5,-85],[-12,6,-125],[16,9,-165],[-10,5,-205],[8,4,-240],[40,3,-270],[85,2.5,-280],[128,3,-262],[160,2.5,-228],[172,5,-185],[165,4,-140],[150,8,-100],[118,6,-70],[85,10,-55],[55,6,-35],[40,8,0],[50,6,35],[80,7,55]];

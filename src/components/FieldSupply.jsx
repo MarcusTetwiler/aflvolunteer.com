@@ -3,7 +3,7 @@ import { attribution } from '../attribution';
 import { FIELD_SUPPLY_CATEGORIES, FIELD_SUPPLY_PRODUCTS } from '../data/fieldSupply';
 import './FieldSupply.css';
 
-function AllocationForm({ product }) {
+function AllocationForm({ product, list, label = 'Email for allocation notice', success = 'We’ll email you if this concept moves toward a civilian production run.' }) {
   const [email, setEmail] = useState('');
   const [state, setState] = useState('idle');
   const [error, setError] = useState('');
@@ -18,18 +18,21 @@ function AllocationForm({ product }) {
     setState('sending');
     setError('');
     try {
-      await fetch('/api/volunteer', {
+      const res = await fetch('/api/volunteer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: clean,
-          list: product.waitlistList,
+          list: list || product?.waitlistList || 'field-supply',
           ...attribution(),
         }),
       });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.persisted === false) throw new Error('not saved');
       setState('done');
     } catch {
-      setState('done');
+      setState('idle');
+      setError('The request didn’t go through. Please try again in a moment.');
     }
   }
 
@@ -37,17 +40,17 @@ function AllocationForm({ product }) {
     return (
       <div className="supply-waitlist__success" role="status">
         <strong>ALLOCATION REQUEST RECORDED</strong>
-        <span>We’ll email you if this concept moves toward a civilian production run.</span>
+        <span>{success}</span>
       </div>
     );
   }
 
   return (
     <form className="supply-waitlist" onSubmit={submit} noValidate>
-      <label htmlFor={`waitlist-${product.id}`}>Email for allocation notice</label>
+      <label htmlFor={`waitlist-${product?.id || list}`}>{label}</label>
       <div>
         <input
-          id={`waitlist-${product.id}`}
+          id={`waitlist-${product?.id || list}`}
           type="email"
           autoComplete="email"
           placeholder="you@example.com"
@@ -162,21 +165,22 @@ export default function FieldSupply() {
     <section className="field-supply" id="gear">
       <div className="container field-supply__teaser">
         <div>
-          <p className="eyebrow">AFL Gear</p>
+          <p className="eyebrow">AFL Field Supply</p>
           <h2>Field Supply.</h2>
           <p>Objects, tools, and artifacts from a future that feels uncomfortably close.</p>
         </div>
-        <div className="field-supply__teaser-status">
-          <span>CURRENT INVENTORY</span><strong>0</strong><small>Civilian allocation unavailable.</small>
+        <div className="field-supply__teaser-waitlist">
+          <p className="field-supply__teaser-kicker">ALLOCATION WAITLIST OPEN</p>
+          <AllocationForm list="field-supply" label="Email for the first civilian allocation" success="You’re on the Field Supply waitlist. We’ll write when the first items can ship." />
+          <button className="field-supply__browse" type="button" onClick={enterStore}>Browse the catalog &rarr;</button>
         </div>
-        <button className="btn btn--primary" type="button" onClick={enterStore}>Enter Field Supply</button>
       </div>
 
       <div className="field-supply__rail container" aria-label="Featured Field Supply concepts">
         {FIELD_SUPPLY_PRODUCTS.slice(0, 4).map((product) => (
           <button key={product.id} type="button" onClick={() => { enterStore(); setSelected(product); }}>
             <img src={product.image} alt="" />
-            <span>{product.status}</span>
+            <span>JOIN WAITLIST</span>
             <strong>{product.name}</strong>
           </button>
         ))}

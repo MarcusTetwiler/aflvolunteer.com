@@ -1,12 +1,31 @@
 # AFL Site
 
-Front door for *The American Foreign Legion*. The book is published: visitors
-explore The Front, read the first two chapters free behind a light email gate,
-buy on Amazon, and can click through to a set of philanthropic organizations.
+Front door for *The American Foreign Legion*.
 
-> The early-reader / Redline program is **retired**. The `CtaSection` and
-> `FeatureStory` components that drove it have been removed. Existing signups
-> are still in Redis under `volunteers:all`.
+## The experience
+
+Visitors land in the **Nations Series**, a drone-racing championship broadcast.
+They build an aircraft on Elena's Bench, register a pilot (country + three
+partner brands), race the World Final in 3D against Talon and the field, meet
+Talon in his champion profile, and receive a private $25,000 offer. Accepting
+or declining opens the map, and then the book.
+
+The guiding rule: **don't advertise the fiction.** The site never labels the
+Nations Series as fictional; the visitor discovers it belongs to the novel when
+they open the free chapters and meet Talon again.
+
+After the reveal, the book side runs: free sample (Interlude I, then Childhood;
+no email required, skippable) → Buy + launch list → The Front map → Elena's
+Bench community builds → Author → Fact + Future glossary → Contribute →
+Field Supply waitlist.
+
+### 3D
+
+`src/aircraft3d.js` builds every aircraft from its bench choices (three.js,
+loaded on demand). `src/raceCourse3d.js` is the race course and flight model;
+`src/components/FPVRace.jsx` renders it. Devices without WebGL fall back to the
+SVG aircraft and the classic 2D race (`FPVRaceClassic.jsx`). Rival benchmark
+times live in `src/sporting.js` (`RIVALS`).
 
 ## Before launch: `BOOK.available`
 
@@ -48,7 +67,7 @@ src/
     Hero.jsx             The Front — the map
     FrontMap.jsx         interactive briefing map (Elena/Andrew POV toggle)
     IntroContext.jsx     Article 5 / occupation copy + field art
-    ReadSection.jsx      email gate -> in-browser sample reader
+    ReadSection.jsx      in-browser sample reader (no email required)
     BuildWall.jsx        homemade-drone builds, permission-gated
     Glossary.jsx         50 terms, live search + Real/invented filters
     BuySection.jsx       cover, blurb, Amazon CTA
