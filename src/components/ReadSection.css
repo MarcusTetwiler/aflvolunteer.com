@@ -313,3 +313,9 @@
   .read.is-collapsed { padding: 18px 0; }
   .read.is-collapsed > .container > .section-toggle { margin: 0; }
 }
+/* v25: the reading page begins with prose */
+.read__bookhead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;max-width:680px;margin:0 auto 18px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.read__bookhead .eyebrow{margin:0}
+.read__bookhead .read__skip{margin:0;white-space:nowrap}
+.read--book .read__prose+.read__prose{margin-top:56px}
+@media(max-width:600px){.read__bookhead{flex-direction:column;gap:6px}}

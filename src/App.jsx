@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import Nav from './components/Nav';
 import NationsSeries from './components/NationsSeries';
-import LaunchSignup from './components/LaunchSignup';
 import Hero from './components/Hero';
 import IntroContext from './components/IntroContext';
 import ReadSection from './components/ReadSection';
 import ElenasBench from './components/ElenasBench';
-import Glossary from './components/Glossary';
 import BuySection from './components/BuySection';
 import AuthorSection from './components/AuthorSection';
-import ContributeSection from './components/ContributeSection';
-import FieldSupply from './components/FieldSupply';
+import Community from './components/Community';
+import { BookEnding, ExploreMore } from './components/BookEnding';
 import Footer from './components/Footer';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/react';
@@ -108,16 +106,14 @@ function StickyMobileCta({ benchVisited, setBenchVisited }) {
 
   useEffect(() => {
     const update = () => {
-      const lower = document.getElementById('contribute');
       const readEl = document.getElementById('read');
-      const pastRead = Boolean(readEl && readEl.getBoundingClientRect().bottom < 0);
-      const targetId = BOOK.available ? 'buy' : !unlocked && !pastRead ? 'read' : 'buy';
-      const target = document.getElementById(targetId);
-      const targetRect = target?.getBoundingClientRect();
+      const ending = document.getElementById('ending');
+      const pastRead = Boolean(readEl && readEl.getBoundingClientRect().bottom < window.innerHeight * 0.4);
+      const endRect = ending?.getBoundingClientRect();
       setPageState({
         pastHero: window.scrollY > Math.min(480, window.innerHeight * 0.55),
-        lowerSite: Boolean(lower && lower.getBoundingClientRect().top < window.innerHeight * 0.78),
-        destinationVisible: Boolean(targetRect && targetRect.bottom > 80 && targetRect.top < window.innerHeight * 0.82),
+        lowerSite: Boolean(endRect && endRect.top < window.innerHeight * 0.95),
+        destinationVisible: false,
         pastRead,
       });
     };
@@ -130,27 +126,19 @@ function StickyMobileCta({ benchVisited, setBenchVisited }) {
     };
   }, [unlocked, benchVisited]);
 
-  if (typing || !pageState.pastHero || pageState.lowerSite || pageState.destinationVisible) return null;
+  if (typing || !pageState.pastHero || pageState.lowerSite) return null;
 
+  if (!pageState.pastRead) {
+    return <div className="sticky-cta"><a className="btn btn--secondary btn--block" href="#buy">Skip to the book</a></div>;
+  }
   if (BOOK.available) {
     return (
       <div className="sticky-cta">
-        <a className="btn btn--primary btn--block" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('sticky-bar')}>
-          Buy the book
-        </a>
+        <a className="btn btn--primary btn--block" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('sticky-bar')}>Buy the book</a>
       </div>
     );
   }
-
-  const next = !unlocked && !pageState.pastRead
-    ? { href: '#read', label: 'Read the opening' }
-    : { href: '#buy', label: 'See the book' };
-
-  return (
-    <div className="sticky-cta">
-      <a className="btn btn--primary btn--block" href={next.href}>{next.label}</a>
-    </div>
-  );
+  return <div className="sticky-cta"><a className="btn btn--primary btn--block" href="#ending">Buy the book</a></div>;
 }
 
 export default function App() {
@@ -159,6 +147,8 @@ export default function App() {
   useEffect(()=>{const sync=()=>setBookOpen(location.hash !== '#home' && Boolean(location.hash));window.addEventListener('hashchange',sync);return()=>window.removeEventListener('hashchange',sync);},[]);
   function showBook(id){setBookOpen(true);window.history.replaceState(null,'','#'+id);requestAnimationFrame(()=>{const target=document.getElementById(id);if(id==='launch-list')target?.querySelector('details')?.setAttribute('open','');target?.scrollIntoView({block:'start'});});}
   const [benchVisited, setBenchVisited] = useState(() => readFlag(BENCH_VISITED_KEY));
+  function returnToBroadcast(){setBookOpen(false);window.history.replaceState(null,'','#home');window.scrollTo(0,0);}
+  useEffect(()=>{const back=()=>returnToBroadcast();window.addEventListener('afl-return-broadcast',back);return()=>window.removeEventListener('afl-return-broadcast',back);},[]);
 
   useEffect(() => {
     captureAttribution();
@@ -167,15 +157,20 @@ export default function App() {
   return (
     <>
       <div hidden={bookOpen}><NationsSeries onBuild={req=>{setRaceRequest(req);window.dispatchEvent(new CustomEvent('afl-build-request',{detail:req}));}} onBook={showBook}/></div>
-      <div hidden={!bookOpen}><Nav /><ReadSection /><BuySection /><LaunchSignup />{bookOpen && <Hero />}<IntroContext /></div>
-      <ElenasBench journeyHidden={!bookOpen} raceRequest={raceRequest} onRaceReady={a=>window.dispatchEvent(new CustomEvent('afl-aircraft-ready',{detail:a}))} onRaceCancel={()=>setRaceRequest(null)}/>
+      <ElenasBench raceRequest={raceRequest} onRaceReady={a=>window.dispatchEvent(new CustomEvent('afl-aircraft-ready',{detail:a}))} onRaceCancel={()=>setRaceRequest(null)}/>
       <div hidden={!bookOpen}>
-      <AuthorSection />
-      <Glossary />
-      <ContributeSection />
-      <FieldSupply />
-      <Footer />
-      <div className="broadcast-return"><button type="button" className="btn btn--secondary" onClick={()=>{setBookOpen(false);window.history.replaceState(null,'','#home');window.scrollTo(0,0);}}>← Return to the Nations Series</button></div></div>
+        <Nav />
+        <ReadSection />
+        <BuySection />
+        {bookOpen && <Hero />}
+        <IntroContext />
+        <Community />
+        <AuthorSection />
+        <BookEnding />
+        <ExploreMore />
+        <Footer />
+        <div className="broadcast-return"><button type="button" className="btn btn--secondary" onClick={returnToBroadcast}>← Back to the Nations Series</button></div>
+      </div>
       {bookOpen && <StickyMobileCta benchVisited={benchVisited} setBenchVisited={setBenchVisited} />}
       <Analytics />
       <SpeedInsights />

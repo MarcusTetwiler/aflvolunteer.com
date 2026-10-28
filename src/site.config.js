@@ -220,12 +220,9 @@ export const CAUSES = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const NAV_LINKS = [
-  { href: '#read', label: 'Read' },
-  { href: '#buy', label: 'Buy' },
-  { href: '#front', label: 'The Front' },
-  { href: '#wall', label: 'Elena’s Bench' },
-  { href: '#glossary', label: 'Fact + Future' },
-  { href: '#contribute', label: 'Contribute' },
+  { href: '#buy', label: 'Buy Book' },
+  { href: '#front', label: 'Book Map' },
+  { href: '#contribute', label: 'Real World' },
 ];
 
 export const CONTACT_EMAILS = [

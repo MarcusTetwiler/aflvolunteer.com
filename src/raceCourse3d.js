@@ -46,16 +46,33 @@ export function handling(build){const p=spec(build);return {...p,turn:1.05+p.res
 
 export function freshFlight3d(){const f=frameAt(START_S-8);return {time:0,pos:[...f.pos],yaw:heading(f.fwd),yawRate:0,vy:0,slip:0,speed:0,s:START_S-8,z:0,battery:100,hull:100,heat:0,gate:0,cleared:0,penalty:0,splits:[],done:false,recovery:0,boosting:false};}
 
+// Flight assist (v25). The race UI defaults to 1 (angle mode); 0 = pro handling (acro mode).
+// The model itself defaults to 0 so physics tests describe unassisted flight.
+// Steering moves you around a preferred line instead of anywhere at once: a dead zone and
+// softened response on input, a pull back toward the racing line that grows the further you
+// drift ("bumper rails", not walls), altitude hold toward the next gate, approach alignment,
+// a scoring volume larger than the visible gate, and an angle-mode speed cap that boost
+// still exceeds, so pace comes from boost timing rather than frame choice alone.
+export const ASSIST={deadZone:.1,gain:.55,lineFree:2.5,lineSoft:3,steerYield:.2,railStart:6,railHard:4,scrub:3,alignYaw:2.2,turnScrub:.1,holdAlt:.9,approach:28,approachPull:1.8,capture:1.5,missDamage:.3,angleCap:40,cruiseCut:0,boostBonus:0,cornerLook:28,cornerGrip:1.15,cornerFloor:16};
+const shape=(v,a)=>{if(!a)return v;const m=Math.abs(v);if(m<ASSIST.deadZone*a)return 0;const k=(m-ASSIST.deadZone*a)/(1-ASSIST.deadZone*a);return Math.sign(v)*k*(1-a*(1-ASSIST.gain))*(.55+.45*k);};
+
 // input: x -1..1 (left/right turn), y -1..1 (dive/climb), boost, brake. Fixed-step friendly.
-export function stepFlight3d(s,input,build,dt=1/120){
- if(s.done)return s;const p=handling(build);dt=clamp(dt,0,1/30);
- const x=clamp(Number(input.x)||0,-1,1),y=clamp(Number(input.y)||0,-1,1);
+export function stepFlight3d(s,input,build,dt=1/120,opts={}){
+ if(s.done)return s;const p=handling(build);dt=clamp(dt,0,1/30);const A=clamp(opts.assist??0,0,1);
+ const x=shape(clamp(Number(input.x)||0,-1,1),A),y=shape(clamp(Number(input.y)||0,-1,1),A);
  const boost=Boolean(input.boost)&&s.battery>2&&s.heat<90,brake=Boolean(input.brake);
- const yawRate=s.yawRate+(x*p.turn-s.yawRate)*Math.min(1,dt*(6+p.response));
+ // Heading assist: with little steering input, ease the nose toward the line ahead.
+ let want=x*p.turn,assistTurn=0;
+ if(A){const ahead=frameAt(s.s+14+s.speed*.35),hErr=wrap(heading(ahead.fwd)-s.yaw),idle=1-Math.min(1,Math.abs(x)/.45);const help=hErr*ASSIST.alignYaw*A*idle;want+=help;want=clamp(want,-p.turn*1.25,p.turn*1.25);assistTurn=Math.abs(help);}
+ const yawRate=s.yawRate+(want-s.yawRate)*Math.min(1,dt*(6+p.response));
  const yaw=wrap(s.yaw+yawRate*dt);
- const target=p.speed*(boost?p.boost:brake?.55:1)*(1-.2*Math.abs(yawRate)/p.turn);
+ const cruise=A?Math.min(p.speed,p.speed+(ASSIST.angleCap-p.speed)*A):p.speed;
+ let target=cruise*(1-ASSIST.cruiseCut*A)*(boost?p.boost+ASSIST.boostBonus*A:brake?.55:1)*(1-.2*Math.abs(yawRate)/p.turn)*(1-ASSIST.turnScrub*Math.min(1,assistTurn/p.turn));
+ // Corner speed: with assist, the aircraft brakes itself to the speed its frame can actually turn at.
+ if(A){const h0=heading(frameAt(s.s+4).fwd),h1=heading(frameAt(s.s+4+ASSIST.cornerLook).fwd),kappa=Math.abs(wrap(h1-h0))/ASSIST.cornerLook;if(kappa>1e-4){const vC=Math.max(ASSIST.cornerFloor,p.turn*ASSIST.cornerGrip/kappa);target=Math.min(target,target+(vC-target)*A*(vC<target?1:0));}}
  const speed=s.speed+(target-s.speed)*Math.min(1,p.accel/30*dt*3);
- const vy=s.vy+(y*p.climb-s.vy)*Math.min(1,dt*(3+p.damping));
+ const gN=GATES[s.gate],holdY=A&&gN?(gN.pos[1]-s.pos[1])*ASSIST.holdAlt*A*(1-Math.min(1,Math.abs(y)/.4)):0;
+ const vy=s.vy+(y*p.climb+holdY-s.vy)*Math.min(1,dt*(3+p.damping));
  const river=s.gate>=8&&s.gate<16;
  const gust=(river?Math.sin(s.time*2)*.9+Math.sin(s.time*.7)*.5:Math.sin(s.time)*.2)*p.wind;
  const slip=s.slip+(gust*6-s.slip*p.damping)*dt;
@@ -66,7 +83,13 @@ export function stepFlight3d(s,input,build,dt=1/120){
  if(pos[1]<1.1){if(s.vy<-7&&n.recovery===0){n.hull-=6/p.durability;n.recovery=.4;}pos[1]=1.1;n.vy=Math.max(0,n.vy);}
  if(pos[1]>CEILING){pos[1]=CEILING;n.vy=Math.min(0,n.vy);}
  // Course walls: canyon faces, river banks, stadium boards.
- n.s=nearestS(pos,s.s);const c=frameAt(n.s),lat=(pos[0]-c.pos[0])*c.right[0]+(pos[2]-c.pos[2])*c.right[2];
+ n.s=nearestS(pos,s.s);const c=frameAt(n.s);let lat=(pos[0]-c.pos[0])*c.right[0]+(pos[2]-c.pos[2])*c.right[2];
+ if(A){// Bumper rails: free near the line, a soft pull beyond, and a firm one near the walls.
+  const m=Math.abs(lat),soft=Math.max(0,m-ASSIST.lineFree)*ASSIST.lineSoft,hard=Math.max(0,m-ASSIST.railStart)*ASSIST.railHard,steer=Math.abs(x),softPull=soft*(1-ASSIST.steerYield*steer)*A*dt,hardPull=hard*A*dt;
+  const k=-Math.sign(lat)*Math.min(m,softPull+hardPull);pos[0]+=c.right[0]*k;pos[2]+=c.right[2]*k;lat+=k;n.speed=Math.max(0,n.speed-Math.min(m,hardPull)*ASSIST.scrub);
+  // Approach alignment: close to the next gate and roughly on line, slide toward its centre.
+  const g=GATES[s.gate];if(g){const along=(g.pos[0]-pos[0])*g.fwd[0]+(g.pos[2]-pos[2])*g.fwd[2];if(along>0&&along<ASSIST.approach){const gx=(pos[0]-g.pos[0])*g.right[0]+(pos[2]-g.pos[2])*g.right[2],gy=pos[1]-g.pos[1],reach=g.half*2.4;if(Math.abs(gx)<reach&&Math.abs(gy)<reach){const w=ASSIST.approachPull*A*dt*(1-along/ASSIST.approach);pos[0]-=g.right[0]*gx*w;pos[2]-=g.right[2]*gx*w;pos[1]-=gy*w;}}}
+ }
  if(Math.abs(lat)>CORRIDOR){const k=Math.sign(lat)*CORRIDOR-lat;pos[0]+=c.right[0]*k;pos[2]+=c.right[2]*k;n.slip=0;n.speed*=.7;if(n.recovery===0){n.hull-=8/p.durability;n.recovery=.5;}}
  // Bridge.
  if(OBSTACLES.some(o=>insideBox(pos,o))){n.pos=[...s.pos];n.speed*=.45;n.yawRate=0;n.vy=0;if(n.recovery===0){n.hull-=12/p.durability;n.recovery=.6;}}
@@ -74,9 +97,10 @@ export function stepFlight3d(s,input,build,dt=1/120){
  const g=GATES[s.gate];
  if(g){const d0=(s.pos[0]-g.pos[0])*g.fwd[0]+(s.pos[2]-g.pos[2])*g.fwd[2],d1=(n.pos[0]-g.pos[0])*g.fwd[0]+(n.pos[2]-g.pos[2])*g.fwd[2];
   if(d0<0&&d1>=0){const f=d0/(d0-d1),ix=s.pos[0]+(n.pos[0]-s.pos[0])*f,iy=s.pos[1]+(n.pos[1]-s.pos[1])*f,iz=s.pos[2]+(n.pos[2]-s.pos[2])*f;
-   const lx=(ix-g.pos[0])*g.right[0]+(iz-g.pos[2])*g.right[2],ly=iy-g.pos[1],clear=Math.abs(lx)<=g.half&&Math.abs(ly)<=g.half;
-   n.gate=s.gate+1;n.cleared=s.cleared+(clear?1:0);n.penalty=s.penalty+(clear?0:2.5);if(!clear){n.hull=Math.max(0,n.hull-17/p.durability);n.recovery=.5;}
-   n.splits=[...s.splits,{gate:n.gate,time:n.time+n.penalty,clear}];}}
+   const lx=(ix-g.pos[0])*g.right[0]+(iz-g.pos[2])*g.right[2],ly=iy-g.pos[1],cap=g.half*(1+(ASSIST.capture-1)*A),clear=Math.abs(lx)<=cap&&Math.abs(ly)<=cap;
+   n.gate=s.gate+1;n.cleared=s.cleared+(clear?1:0);n.penalty=s.penalty+(clear?0:2.5);if(!clear){n.hull=Math.max(0,n.hull-17*(1-A*(1-ASSIST.missDamage))/p.durability);n.recovery=.5;}
+   const miss=clear?null:Math.abs(lx)/cap>=Math.abs(ly)/cap?(lx>0?'right':'left'):(ly>0?'high':'low');
+   n.splits=[...s.splits,{gate:n.gate,time:n.time+n.penalty,clear,miss}];}}
  const finished=n.gate>=GATE_COUNT;n.z=finished?FINISH:clamp((n.s-START_S)/(FINISH_S-START_S),0,.999)*FINISH;
  n.done=finished||n.hull<=0||n.battery<=0;return n;
 }

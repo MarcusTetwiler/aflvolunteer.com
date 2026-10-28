@@ -6,14 +6,13 @@ import FPVRaceClassic from './FPVRaceClassic';
 import {GATES,GATE_COUNT,OBSTACLES,PATH_SAMPLES,CORRIDOR,SECTORS,FIELD,START_S,FINISH_S,COURSE3D_VERSION,freshFlight3d,stepFlight3d,autopilot,rivalAt,frameAt,heading,ghostKey3d} from '../raceCourse3d';
 import {classify} from '../raceModel';
 import {countryFlag,countryColors} from '../countries';
-import {SPONSORS} from '../sporting';
+import {SPONSORS,TALON_BUILD} from '../sporting';
 import {spec,EXAMPLES} from '../engineering';
 import {buildAircraft} from '../aircraft3d';
 import {readLocal,writeLocal} from '../localGarage';
 
 const TRAINING_GATES=3;
 const STEP=1/120;
-const TALON_BUILD={chassis:'speed',material:'carbon',power:'highrpm',sensor:'minimal',system:'aggressive',finish:'charcoal',accent:'#c3c8cc',motor:'sprint',propeller:'low-drag',illumination:'edge'};
 const reducedMotion=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 function webglAvailable(){try{const c=document.createElement('canvas');return Boolean(window.WebGLRenderingContext&&(c.getContext('webgl2')||c.getContext('webgl')));}catch{return false;}}
 function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
@@ -104,8 +103,8 @@ export default function FPVRace(props){const[ok]=useState(webglAvailable);return
 
 function FPVRace3D({build,onFinish,training=false,pilot}){
  const canvas=useRef(null),host=useRef(null),state=useRef(freshFlight3d()),input=useRef({x:0,y:0,boost:false,brake:false}),keys=useRef(new Set()),pointer=useRef(null);
- const pausedRef=useRef(false),assistRef=useRef(false),assistedSeen=useRef(false),completed=useRef(false),trace=useRef([]),trainingBoost=useRef(false),camRef=useRef('chase'),finishRef=useRef(onFinish);
- const [hud,setHud]=useState(()=>({...freshFlight3d(),place:FIELD.length+1})),[help,setHelp]=useState(false),[paused,setPaused]=useState(false),[assist,setAssist]=useState(false),[cam,setCam]=useState('chase'),[message,setMessage]=useState(''),[failed,setFailed]=useState(false),[best]=useState(()=>readLocal(ghostKey3d(build),null));
+ const pausedRef=useRef(false),proRef=useRef(false),assistRef=useRef(false),assistedSeen=useRef(false),completed=useRef(false),trace=useRef([]),trainingBoost=useRef(false),camRef=useRef('chase'),finishRef=useRef(onFinish);
+ const [hud,setHud]=useState(()=>({...freshFlight3d(),place:FIELD.length+1})),[help,setHelp]=useState(false),[paused,setPaused]=useState(false),[assist,setAssist]=useState(false),[cam,setCam]=useState('chase'),[pro,setPro]=useState(false),[message,setMessage]=useState(''),[failed,setFailed]=useState(false),[best]=useState(()=>readLocal(ghostKey3d(build),null));
  useEffect(()=>{finishRef.current=onFinish;},[onFinish]);
  useEffect(()=>{assistRef.current=assist;},[assist]);
  useEffect(()=>{camRef.current=cam;},[cam]);
@@ -114,7 +113,7 @@ function FPVRace3D({build,onFinish,training=false,pilot}){
   let renderer;try{renderer=new THREE.WebGLRenderer({canvas:canvas.current,antialias:true,powerPreference:'high-performance'});}catch{queueMicrotask(()=>setFailed(true));return;}
   renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.75));renderer.outputColorSpace=THREE.SRGBColorSpace;
   const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(70,1,.1,1400),world=buildWorld(scene,{build,pilot,training});
-  const resize=()=>{const w=canvas.current.clientWidth||960,h=canvas.current.clientHeight||720;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};
+  const el=canvas.current,resize=()=>{if(!el.isConnected)return;const w=el.clientWidth||960,h=el.clientHeight||720;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};
   resize();const ro=new ResizeObserver(resize);ro.observe(host.current);
   const still=reducedMotion();let lastSector=-1,talonNoted=false,flashUntil=0,hudAt=0,last=0,acc=0,frame=0;
   const say=(t,ms=1600)=>{setMessage(t);flashUntil=performance.now()+ms;};
@@ -126,10 +125,10 @@ function FPVRace3D({build,onFinish,training=false,pilot}){
   const reset=()=>{if(completed.current)return;const s=state.current;state.current=placeBefore(s,Math.min(s.gate,(training?TRAINING_GATES:GATE_COUNT)-1));snap();say('RESET TO GATE '+String(state.current.gate+1).padStart(2,'0'));};
   const tick=t=>{frame=requestAnimationFrame(tick);const dt=Math.min(.05,(t-(last||t))/1000);last=t;readKeys();
    if(!pausedRef.current&&!completed.current){acc+=dt;while(acc>=STEP){acc-=STEP;const s=state.current;const control=assistRef.current?autopilot(s):input.current;if(s.gate===1&&control.boost)trainingBoost.current=true;
-     let n=stepFlight3d(s,control,build,STEP);
+     let n=stepFlight3d(s,control,build,STEP,{assist:assistRef.current?0:(proRef.current?0:1)});
      if(n.gate>s.gate){const sp=n.splits.at(-1);
       if(training&&(!sp.clear||(s.gate===1&&!trainingBoost.current))){n=placeBefore(s,s.gate);say(s.gate===1?'HOLD BOOST THROUGH THIS GATE.':'LINE UP AND TRY AGAIN.',2200);}
-      else say(sp.clear?'GATE CLEAR':'MISSED GATE / +2.50 s',900);}
+      else say(sp.clear?'GATE CLEAR':`MISSED GATE ${String(sp.gate).padStart(2,'0')} · ${{left:'TOO FAR LEFT',right:'TOO FAR RIGHT',high:'TOO HIGH',low:'TOO LOW'}[sp.miss]||'OFF LINE'} · +2.50 s`,sp.clear?900:1800);}
      if(training){n.hull=100;n.battery=100;if(n.gate>=TRAINING_GATES)n.done=true;}
      state.current=n;
      if(Math.floor(n.time*20)!==Math.floor(s.time*20))trace.current.push({t:n.time,p:n.pos.map(x=>+x.toFixed(2)),y:+n.yaw.toFixed(3)});
@@ -176,11 +175,11 @@ function FPVRace3D({build,onFinish,training=false,pilot}){
   <canvas ref={canvas} aria-label="Three-dimensional Nations Series course: artificial canyon, river crossing and stadium final"/>
   <div className="ns-flight__hud"><strong>{training?'TRAINING':hud.time.toFixed(2)+' s'}</strong><span>{countryFlag(pilot?.country)} {pilot?.callsign}</span><span><span className="sr-only">Gate</span> {Math.min(hud.gate+1,total)} / {total}</span><span>RESERVE {hud.battery.toFixed(0)}%</span><span>AIRFRAME {hud.hull.toFixed(0)}%</span><span>HEAT {hud.heat.toFixed(0)}%</span>{!training&&<span>POS {String(hud.place).padStart(2,'0')} / {String(FIELD.length+1).padStart(2,'0')}</span>}{hud.splits.length>0&&<span>{pb!==null?'VS PB '+(pb>0?'+':'')+pb.toFixed(2)+' s':'SPLIT '+hud.splits.at(-1).time.toFixed(2)+' s'}</span>}<span className="ns-flight__speed">{Math.round(hud.speed*3.6)} KM/H</span><button type="button" onClick={()=>setCam(c=>c==='chase'?'fpv':'chase')}>{cam==='chase'?'FPV view':'Chase view'}</button><button type="button" onClick={()=>{pausedRef.current=!pausedRef.current;setPaused(pausedRef.current);release();}}>{paused?'Resume':'Pause'}</button></div>
   <div className="ns-flight__controls">
-   <div className="ns-stick" role="group" aria-label="Drag to steer and climb" onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);pointer.current={x:e.clientX,y:e.clientY};}} onPointerMove={e=>{if(pointer.current){input.current.x=Math.max(-1,Math.min(1,(e.clientX-pointer.current.x)/60));input.current.y=Math.max(-1,Math.min(1,-(e.clientY-pointer.current.y)/60));}}} onPointerUp={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}} onPointerCancel={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}} onLostPointerCapture={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}}><span>STEER</span></div>
+   <div className="ns-stick" role="group" aria-label="Drag to steer and climb" onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);pointer.current={x:e.clientX,y:e.clientY};}} onPointerMove={e=>{if(pointer.current){input.current.x=Math.max(-1,Math.min(1,(e.clientX-pointer.current.x)/85));input.current.y=Math.max(-1,Math.min(1,-(e.clientY-pointer.current.y)/85));}}} onPointerUp={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}} onPointerCancel={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}} onLostPointerCapture={()=>{pointer.current=null;input.current.x=0;input.current.y=0;}}><span>STEER</span></div>
    <div>{['boost','brake'].map(k=><button key={k} type="button" onPointerDown={e=>{e.currentTarget.setPointerCapture(e.pointerId);input.current[k+'Touch']=true;}} onPointerUp={()=>input.current[k+'Touch']=false} onPointerCancel={()=>input.current[k+'Touch']=false} onLostPointerCapture={()=>input.current[k+'Touch']=false} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.current[k+'Touch']=true;}}} onKeyUp={()=>input.current[k+'Touch']=false}>{k.toUpperCase()}</button>)}</div>
   </div>
   <button className="ns-flight-help" aria-expanded={help} onClick={()=>{setHelp(!help);pausedRef.current=true;setPaused(true);release();}}>?</button>
-  {help&&<div className="ns-flight__settings" role="region" aria-label="Paused flight controls"><button onClick={()=>{setHelp(false);pausedRef.current=false;setPaused(false);}}>Resume flight</button><h3>Flight controls</h3><p>Your aircraft flies forward on its own. Arrows or WASD steer and climb; ArrowLeft/ArrowRight turn, ArrowUp/ArrowDown climb and dive. Space boosts, Shift brakes for tight lines. C switches chase and FPV view; R returns you to the last gate. On touch, drag the steering zone. Missed gates add 2.5 seconds.</p><label>Horizontal<input type="range" min="-1" max="1" step=".02" defaultValue="0" onChange={e=>input.current.sliderX=+e.target.value}/></label><label>Vertical<input type="range" min="-1" max="1" step=".02" defaultValue="0" onChange={e=>input.current.sliderY=+e.target.value}/></label><label><input type="checkbox" checked={assist} onChange={e=>{if(e.target.checked)assistedSeen.current=true;setAssist(e.target.checked);}}/>Untimed guided practice (unranked)</label><button type="button" onClick={()=>window.dispatchEvent(new Event('afl-race-reset'))}>Return to last gate</button></div>}
+  {help&&<div className="ns-flight__settings" role="region" aria-label="Paused flight controls"><button onClick={()=>{setHelp(false);pausedRef.current=false;setPaused(false);}}>Resume flight</button><h3>Flight controls</h3><p>Your aircraft flies forward on its own. Arrows or WASD steer and climb; ArrowLeft/ArrowRight turn, ArrowUp/ArrowDown climb and dive. Flight assist keeps you near the racing line; boost on the straights for pace. Space boosts, Shift brakes for tight lines. C switches chase and FPV view; R returns you to the last gate. On touch, drag the steering zone. Missed gates add 2.5 seconds.</p><label>Horizontal<input type="range" min="-1" max="1" step=".02" defaultValue="0" onChange={e=>input.current.sliderX=+e.target.value}/></label><label>Vertical<input type="range" min="-1" max="1" step=".02" defaultValue="0" onChange={e=>input.current.sliderY=+e.target.value}/></label><label><input type="checkbox" checked={pro} onChange={e=>{proRef.current=e.target.checked;setPro(e.target.checked);}}/>Pro handling: flight assist off (full speed, no line help)</label><label><input type="checkbox" checked={assist} onChange={e=>{if(e.target.checked)assistedSeen.current=true;setAssist(e.target.checked);}}/>Untimed guided practice (unranked)</label><button type="button" onClick={()=>window.dispatchEvent(new Event('afl-race-reset'))}>Return to last gate</button></div>}
   <p className="ns-flight__message" role="status">{message||idle}</p>
   {training&&<button type="button" className="ns-skip-training" onClick={()=>{completed.current=true;onFinish({practice:true});}}>Skip training →</button>}
   <span className="sr-only">Course length {Math.round(FINISH_S-START_S)} metres, {GATE_COUNT} gates in three sectors.</span>

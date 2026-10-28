@@ -291,3 +291,50 @@ body.bench-open .nav, body.bench-open .sticky-cta { display: none; }
   .flight-sim__route-list span, .flight-sim__route-list i { font-size: 6px; }
   .flight-sim__control > .btn { width: 100%; }
 }
+/* v25 garage: fits a phone viewport, compact finish, merged build beat */
+.bench__footer{margin-top:auto;padding-top:14px;display:grid;gap:10px}
+.bench__footer .ns-build-metrics{display:flex;gap:10px;margin:0;padding:10px 0;border-top:1px solid rgba(231,214,188,.14)}
+.bench__footer .ns-build-metrics span{flex:1;font:9px/1.2 var(--font-mono);letter-spacing:.12em;color:#bca98a}
+.bench__footer .ns-build-metrics b{display:flex;gap:6px;align-items:baseline;margin-top:4px;font-size:13px;color:#efe2c9;letter-spacing:.02em}
+.bench__footer .ns-build-metrics small{font-size:10px}.ns-build-metrics .is-up{color:#9fd39a}.ns-build-metrics .is-down{color:#e39a7c}
+.bench__footer .bench__nav{margin:0;padding:0}.bench__warning{margin:0;font-size:12px;color:#e3b07c}
+.bench__paging{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.bench__paging button{background:none;border:0;color:#d9a878;font:11px var(--font-mono);letter-spacing:.1em;padding:8px 2px;cursor:pointer}.bench__paging button:disabled{opacity:.3}
+.bench__paging span{font:10px var(--font-mono);color:#8f8170;letter-spacing:.2em}
+.bench__finish--compact{gap:10px}.bench__finish--compact legend{margin-bottom:5px}
+.bench__finish--compact fieldset>div{gap:5px}
+.bench__finish--compact button{min-height:38px;font-size:9px;letter-spacing:.08em}
+.bench__finish--compact .ns-colors>div{grid-template-columns:repeat(8,1fr)!important}
+.bench__finish--compact .ns-colors button{min-height:38px;padding:4px;display:grid;place-items:center}
+.bench__finish--compact .ns-colors button span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.bench__finish--compact .ns-colors i{width:24px;height:24px;border-radius:50%}
+.bench__finish--compact .ns-stripes>div{grid-template-columns:repeat(5,1fr)}
+.bench__finish--compact .ns-stripes button{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bench__finish--compact .ns-stripes i{display:block;width:22px;height:5px;background:var(--swatch);border:1px solid rgba(231,214,188,.35)}
+.bench__complete{display:grid;justify-items:center;text-align:center;gap:14px;max-width:760px;margin:auto;padding:28px 18px 40px}
+.bench__complete h3{font-size:clamp(26px,4vw,40px);margin:0;color:#efe2c9}
+.bench__complete .drone3d,.bench__complete .drone-render{width:100%}
+.bench__complete.is-done .btn{min-width:min(320px,100%);min-height:54px}
+@media (max-width: 760px){
+  .bench-system .bench__builder{min-height:calc(100dvh - 48px)}
+  .bench__visual{min-height:0!important;padding:8px var(--gutter) 4px!important}
+  .bench__visual .drone3d{aspect-ratio:16/8}
+  .bench__view-switch{margin-top:6px}.bench__view-switch button{padding:6px 10px;min-height:34px}
+  .bench__choice{padding:12px var(--gutter) 14px!important}
+  .bench__choice h3{font-size:22px;margin:6px 0 10px!important}
+  .bench-system .bench__options{gap:6px}.bench-system .bench__options button{padding:9px 11px;min-height:0}
+  .bench-system .bench__options small{font-size:12px;margin-top:3px}
+  .bench__progress{margin-bottom:6px}
+}
+/* v25: finish step fits one phone screen */
+.bench-system .bench__finish--compact fieldset>div{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.bench-system .bench__finish--compact .ns-colors>div{grid-template-columns:repeat(8,minmax(0,1fr))!important}
+.bench-system .bench__finish--compact .ns-stripes>div{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.bench-system .bench__finish--compact button{min-height:34px!important;padding:4px 3px!important;font-size:8.5px!important;line-height:1.15}
+@media (max-width:760px){
+ .bench-system .bench__builder .bench__visual .drone3d{aspect-ratio:16/7}
+ .bench__finish--compact{gap:7px!important}.bench__finish--compact legend{margin-bottom:3px!important;font-size:8.5px!important}
+ .bench-system .bench__footer{padding-top:8px;gap:6px}.bench-system .bench__footer .ns-build-metrics{padding:6px 0}
+ .bench-system .bench__nav .btn{min-height:44px}
+}
+@media (max-width:760px){.bench-system .bench__builder{min-height:calc(100dvh - 56px)}}

@@ -1,0 +1,19 @@
+.community{background:#e8dcc5;color:#1d1a16;padding:64px 0}
+.community h2{font:800 clamp(28px,4.6vw,46px)/1.06 var(--font-body);letter-spacing:-.03em;margin:8px 0 28px}
+.community__layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:start}
+.community__board{list-style:none;margin:0;padding:0;background:#17221f;color:#eadbc2}
+.community__board li{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:11px 14px;border-bottom:1px solid #a6ae8b33;font:13px var(--font-mono)}
+.community__board li b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.community__board li em{font-style:normal;font-size:10px;letter-spacing:.08em;color:#a9b4b0;white-space:nowrap}
+.community__board li.is-talon{background:#0b0f12}.community__board li.is-talon em{color:#101a17;background:#c3c8cc;padding:2px 6px}
+.community__board li.is-you{background:#d09a5c2e;box-shadow:inset 3px 0 #d09a5c}.community__board li.is-you em{color:#ffd18a}
+.community__you{background:#17221f;color:#eadbc2;padding:22px}
+.community__label{margin:0;font:11px var(--font-mono);letter-spacing:.16em;color:#d4ac78}
+.community__time{margin:6px 0 4px;font:800 54px/1 var(--font-mono);letter-spacing:-.04em;color:#f2e5cb}.community__time small{font-size:18px}
+.community__ask{margin:6px 0 16px;color:#cfc3a8}.community__note{min-height:1.2em;color:#9fd39a;font-size:13px;margin:10px 0 0}
+.community__grid{margin-top:28px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.community__grid article{background:#17221f;color:#e4d9c4;padding:12px}
+.community__grid h3{font:700 18px var(--font-body);margin:6px 0 2px;color:#f2e5cb}
+.community__grid p{margin:4px 0 0;font:11px var(--font-mono);color:#cfd3c5}
+@media(max-width:900px){.community__layout{grid-template-columns:1fr}.community__grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.community{padding:44px 0}.community__board li{grid-template-columns:28px minmax(0,1fr) auto;font-size:12px}.community__board li em{display:none}.community__board li.is-talon em,.community__board li.is-you em{display:none}}

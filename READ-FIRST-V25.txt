@@ -1,0 +1,83 @@
+Nations Series v25 (Round 2): READ FIRST
+
+Cumulative against GitHub main 7eb3df9: it includes everything from the v24 and
+3D-race ZIPs. Safe to upload whether or not you uploaded those.
+
+UPLOAD (GitHub web, "Add files via upload")
+- Extract first. Upload the extracted files with their folder paths intact.
+- Use a new branch (for example nations-v25). Vercel builds a preview link
+  without touching the live site. Merge when happy.
+- .gitignore starts with a dot and may be hidden after extracting. Show hidden
+  files so it uploads too.
+- Nothing needs deleting.
+
+ROUND 2 CHECKLIST (from your doc)
+P0
+[x] "Elena's Bench" removed from the garage, navigation and map. The garage
+    reads "NATIONS SERIES // GARAGE".
+[x] Four-beat agenda between Enter and the garage.
+[x] Custom accent removed. Finish step is now Color / Stripe / Finish / Lights.
+[x] Airframe and finish steps fit a phone screen. Engineering details are gone;
+    Pace / Response / Reserve sit as a compact footer.
+[x] Printer + inspection merged into one beat: "Building..." then
+    "Your aircraft is ready" and CREATE YOUR PILOT.
+[x] Create your pilot: callsign, country, three partners. No email. The helmet
+    takes the aircraft paint, stripe and national colours.
+[x] Race Ready is one screen: name + country, helmet + aircraft, partners,
+    READY TO RACE. The checklist is removed.
+[x] Mobile flight assist (on by default): softened steering with a dead zone,
+    pull toward the racing line, bumper rails, altitude hold, approach
+    alignment, 1.5x gate scoring volume. Misses cost time, not the aircraft,
+    and say why ("too far left"). "Pro handling" in race settings turns it off.
+[x] Results: YOUR TIME, leaderboard with flags, Talon marked UNBEATEN,
+    "NOBODY HAS BEATEN TALON.", MEET TALON, Share your race.
+[x] Meet Talon / The world's best: helmet + his aircraft, short bio, before
+    any book content.
+[x] Bridge: "You've met Talon. Now enter his world." One button:
+    READ THE BEGINNING.
+P1
+[x] Reader: "The American Foreign Legion - Book 1" header, then straight into
+    "Emergency broadcasts...". Tabs and email gate removed; skip link kept.
+[x] Nav: Buy Book / Book Map / Real World.
+[x] Map tabs: The Front / Contracts. Layers label and duplicate headers
+    removed. The Front cinematic panel unchanged.
+[x] Community: board of 16 racers from 16 nations with times and machines.
+    Your time slots in, with Share your race.
+[x] Sticky bar: "Skip to the book" while reading, then "Buy the book".
+P2
+[x] Ending: About the author -> Buy the book (launch list until Amazon is
+    live) + Share your race -> Explore more, collapsed (Fact + Future,
+    Real World, Field Supply, Drone workshop, Contributors + Credits,
+    Contact). Rows render only when opened.
+[x] Launch list moved to the ending; removed from race setup.
+P3 - needs you
+[ ] Sponsors are still fictional (aerospace / performance / life sciences).
+    Real brands go in src/sporting.js after legal clearance.
+[ ] Talon hero art: the reveal renders his helmet and aircraft. Final artwork
+    goes in src/media.config.js (MEDIA.talon).
+[ ] Talon bio is a draft: "Found as a teenager in a corporate pilot assessment.
+    Black and silver, first through the gate. When the field goes wide, he
+    drops below it and takes the line no one else will."
+[ ] Contributors + Credits holds "Written by Marcus Tetwiler" and the Build
+    Wall. Add anyone else you want credited.
+
+KEPT ON PURPOSE
+- The $25,000 offer still appears for 2nd-place finishers, between Meet Talon
+  and the bridge. Everyone else goes straight from Talon to the bridge.
+
+RACE BALANCE (simulated, 40 runs per style)
+- Shaky first-timer: about 2/24 gates and always crashing without assist ->
+  22.9/24 gates and no crashes with assist.
+- Hands-off flying finishes but never places 2nd.
+- Boosting on the straights with a nimble frame earns 2nd (about 18.7 s).
+- New field: TALON 11.0, VECTOR 19.2, KESTREL 20.8, ROOK 22.6, WREN 24.8.
+
+CHECKS
+npm test 61/61, eslint clean, build OK. Full journey run in headless Chrome on
+phone (390x844) and desktop (1366x860), including a hands-off assisted race
+(24/24 gates, 4th), share link, launch-list signup and Explore rows. No console
+errors. Setup screens fit without scrolling on phone and desktop. On a
+1280x720 laptop, Race Ready is 5 px over, with the button visible.
+
+NOT YET CHECKED
+Real iPhone feel (steering, frame rate), live /api/volunteer saves on Vercel.

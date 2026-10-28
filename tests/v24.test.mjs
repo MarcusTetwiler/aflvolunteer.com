@@ -34,10 +34,8 @@ test('book side opens on the skippable sample, then buy; mid-page hub removed',(
  assert.ok(src('components/ReadSection.jsx').includes('Skip to the book'));
 });
 
-test('naming is consolidated and Field Supply is a working waitlist',()=>{
- const cfg=src('site.config.js'),fs=src('components/FieldSupply.jsx');
- assert.ok(cfg.includes("label: 'Elena’s Bench'")&&cfg.includes("label: 'Fact + Future'"));
- assert.ok(!/label: 'Builds'|label: 'Glossary'/.test(cfg));
+test('Field Supply is a working waitlist',()=>{
+ const fs=src('components/FieldSupply.jsx');
  assert.ok(fs.includes('list="field-supply"'));assert.ok(!fs.includes('<strong>0</strong>'));
  assert.ok(fs.includes("data.persisted === false"),'waitlist must not claim success on a failed save');
 });

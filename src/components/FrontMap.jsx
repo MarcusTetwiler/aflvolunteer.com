@@ -52,7 +52,7 @@ const SALIENTS = [
   { kind: 'occupied', d: 'M 797.9,650.1 L 797.1,654.4 L 795.3,658.0 L 792.6,661.0 L 789.2,663.5 L 785.3,665.5 L 781.0,667.1 L 776.5,668.6 L 771.9,669.8 L 767.4,670.9 L 763.1,672.0 L 759.0,672.5 L 755.0,672.3 L 751.1,670.8 L 747.3,667.9 L 744.1,664.0 L 742.3,659.7 L 742.6,656.0 L 745.4,653.4 L 748.7,651.0 L 750.7,648.0 L 751.9,644.4 L 752.8,640.4 L 753.8,636.2 L 755.4,631.9 L 758.3,627.8 L 762.3,624.2 L 766.6,622.0 L 770.3,622.3 L 772.7,625.7 L 774.2,630.0 L 776.6,630.8 L 780.3,628.1 L 784.2,626.7 L 787.9,627.7 L 791.3,630.6 L 794.1,634.8 L 796.3,639.8 L 797.6,645.1 L 797.9,650.1 Z' },
 ];
 
-// Contracts's filter set, mirroring Elena's layer bar so the two POVs feel like
+// Contracts filter set, mirroring The Front's layer bar so the two POVs feel like
 // two views of one instrument rather than two unrelated screens.
 const LEDGER_FILTERS = [
   { id: 'broadcast', label: 'Broadcast', note: 'Sponsored, public, scored' },
@@ -199,7 +199,7 @@ export default function FrontMap({ journey = false, revealStep = 3 }) {
           onClick={() => switchPov('elena')}
           aria-pressed={pov === 'elena'}
         >
-          Elena
+          The Front
         </button>
         <button
           type="button"
@@ -214,22 +214,7 @@ export default function FrontMap({ journey = false, revealStep = 3 }) {
       <div className={`front-map__frame front-map__frame--${pov}`}>
         {pov === 'elena' ? (
           <>
-            <div className="front-map__header">
-              <div className="front-map__header-text">
-                <h2>The Eastern Front</h2>
-                <p>Terrain, control, infrastructure, and the routes that still function.</p>
-              </div>
-              <div className="front-map__header-logo">
-                <span className="front-map__header-logo-mark">⚑</span>
-                <div>
-                  <strong>AFL</strong>
-                  <span>Eastern Theater Archive</span>
-                </div>
-              </div>
-            </div>
-
             <div className="front-map__layers" role="group" aria-label="Map layers">
-              <span className="front-map__layers-label">Layers</span>
               {MAP_LAYERS.map((layer) => (
                 <button
                   key={layer.id}
@@ -471,22 +456,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
           </>
         ) : (
           <>
-            <div className="front-map__header front-map__header--ledger">
-              <div className="front-map__header-text">
-                <h2>Contract Ledger — Pre-Deployment Record</h2>
-                <p>Anonymous engagement records</p>
-              </div>
-              <div className="front-map__header-logo">
-                <span className="front-map__header-logo-mark front-map__header-logo-mark--ledger">⬡</span>
-                <div>
-                  <strong>PRIVATE LEDGER</strong>
-                  <span>Performance Interface</span>
-                </div>
-              </div>
-            </div>
-
             <div className="front-map__layers front-map__layers--ledger" role="group" aria-label="Contract filters">
-              <span className="front-map__layers-label">Contracts</span>
               {LEDGER_FILTERS.map((f) => (
                 <button
                   key={f.id}

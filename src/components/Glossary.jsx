@@ -3,10 +3,10 @@ import { GLOSSARY, GLOSSARY_GROUPS } from '../data/glossary';
 import { trackGlossaryFilter, trackGlossarySearch } from '../analytics';
 import './Glossary.css';
 
-export default function Glossary() {
+export default function Glossary({ defaultExpanded = false }) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState('all');
-  const [expanded, setExpanded] = useState(() => window.location.hash.startsWith('#g-'));
+  const [expanded, setExpanded] = useState(() => defaultExpanded || window.location.hash.startsWith('#g-'));
 
   useEffect(() => {
     const openDeepLink = () => {

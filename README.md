@@ -4,20 +4,35 @@ Front door for *The American Foreign Legion*.
 
 ## The experience
 
-Visitors land in the **Nations Series**, a drone-racing championship broadcast.
-They build an aircraft on Elena's Bench, register a pilot (country + three
-partner brands), race the World Final in 3D against Talon and the field, meet
-Talon in his champion profile, and receive a private $25,000 offer. Accepting
-or declining opens the map, and then the book.
+A first-time visitor never needs to know the book to find their way. The journey (Round 2):
 
-The guiding rule: **don't advertise the fiction.** The site never labels the
-Nations Series as fictional; the visitor discovers it belongs to the novel when
-they open the free chapters and meet Talon again.
+1. **Enter the Nations Series**: a four-beat agenda (build your drone / become a pilot /
+   represent your country / race the world's best), then the garage.
+2. **Garage**: six choices, compact enough to fit a phone, then one "aircraft complete" beat.
+3. **Create your pilot**: callsign, country, three partners. The helmet takes the aircraft's
+   paint and the country's colours. No email here.
+4. **Race Ready** (one screen), **race**, **results** ("Your time", "Nobody has beaten Talon",
+   share your race), **Meet Talon**, then (2nd place only) the private $25,000 offer and the map.
+5. **Bridge**: "You've met Talon. Now enter his world." One action: Read the beginning.
+6. **Book side**: the opening (prose first, skippable) → the book → The Front map →
+   Nations Series community → About the author → Buy the book / Share your race →
+   **Explore more** (collapsed: Fact + Future, Real World, Field Supply, Drone workshop,
+   Contributors + Credits, Contact).
 
-After the reveal, the book side runs: free sample (Interlude I, then Childhood;
-no email required, skippable) → Buy + launch list → The Front map → Elena's
-Bench community builds → Author → Fact + Future glossary → Contribute →
-Field Supply waitlist.
+The guiding rule: don't advertise the fiction. The race and Talon come first; the novel is the
+payoff.
+
+### Flight assist
+
+`ASSIST` in `src/raceCourse3d.js` is on by default (angle mode): softened steering, a pull back
+toward the racing line, bumper rails before the walls, altitude hold, approach alignment and a
+forgiving gate volume. A miss costs time, not the aircraft. Assisted cruising is capped, so pace comes
+from boost timing; "Pro handling" in the race settings turns assist off for full speed.
+
+### Sponsors
+
+`SPONSORS` in `src/sporting.js` are fictional marks grouped as aerospace / performance / life
+sciences. Real brands need trademark and licensing clearance before they go there.
 
 ### 3D
 

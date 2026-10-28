@@ -1,26 +1,13 @@
-import { useEffect, useState } from 'react';
 import { BOOK } from '../site.config';
 import { trackBuyClicked } from '../analytics';
-import { SAMPLE_UNLOCK_EVENT, SAMPLE_UNLOCK_KEY } from '../sampleState';
 import './BuySection.css';
 
 const COVER_SIZES = '(max-width: 860px) 230px, 300px';
 const srcSet = (ext) => (BOOK.coverWidths || []).map((w) => `/images/cover-${w}.${ext} ${w}w`).join(', ');
 
-function sampleUnlocked() {
-  try { return window.localStorage.getItem(SAMPLE_UNLOCK_KEY) === '1'; } catch { return false; }
-}
-
 export default function BuySection() {
-  const [onLaunchList, setOnLaunchList] = useState(sampleUnlocked);
   const hasRetailers = BOOK.available && BOOK.otherRetailers && BOOK.otherRetailers.length > 0;
   const meta = [BOOK.formats, BOOK.pageCount ? `${BOOK.pageCount} pages` : null].filter(Boolean).join(' · ');
-
-  useEffect(() => {
-    const sync = () => setOnLaunchList(sampleUnlocked());
-    window.addEventListener(SAMPLE_UNLOCK_EVENT, sync);
-    return () => window.removeEventListener(SAMPLE_UNLOCK_EVENT, sync);
-  }, []);
 
   return (
     <section className="buy" id="buy">
@@ -43,24 +30,11 @@ export default function BuySection() {
           <p className="buy__blurb">{BOOK.blurb}</p>
           {meta && <p className="buy__meta">{meta}</p>}
 
-          <div className="buy__actions">
-            {BOOK.available ? (
-              <>
-                <a className="buy__primary btn btn--primary" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('buy-section')}>Buy on Amazon</a>
-                <a className="buy__secondary" href="#read">Read a sample first</a>
-              </>
-            ) : onLaunchList ? (
-              <>
-                <a className="buy__primary btn" href="#read">Read the sample</a>
-                <a className="buy__secondary" href="#glossary">Explore fact + future</a>
-              </>
-            ) : (
-              <>
-                <a className="buy__primary buy__primary--pending btn" href="#read" onClick={() => trackBuyClicked('notify-me')}>Read the sample</a>
-                <a className="buy__secondary" href="#glossary">Explore fact + future</a>
-              </>
-            )}
-          </div>
+          {BOOK.available && (
+            <div className="buy__actions">
+              <a className="buy__primary btn btn--primary" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('buy-section')}>Buy on Amazon</a>
+            </div>
+          )}
 
           {hasRetailers && <ul className="buy__retailers">{BOOK.otherRetailers.map((r) => <li key={r.label}><a href={r.url} target="_blank" rel="noopener noreferrer">{r.label}</a></li>)}</ul>}
         </div>

@@ -1,14 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { NAV_LINKS, BOOK } from '../site.config';
-import { trackBuyClicked } from '../analytics';
+import { NAV_LINKS } from '../site.config';
 import './Nav.css';
 
 export default function Nav() {
-  const links = useMemo(() => {
-    const withoutGear = NAV_LINKS.filter((link) => link.href !== '#gear');
-    const gear = { href: '#gear-store', label: 'Field Supply' };
-    return [...withoutGear, gear];
-  }, []);
+  const links = useMemo(() => NAV_LINKS, []);
 
   const [active, setActive] = useState('#front');
   const [scrolled, setScrolled] = useState(false);
@@ -23,7 +18,7 @@ export default function Nav() {
 
   useEffect(() => {
     if (!('IntersectionObserver' in window)) return;
-    const sections = links.map((link) => document.getElementById(link.href === '#gear-store' ? 'gear' : link.href.slice(1))).filter(Boolean);
+    const sections = links.map((link) => document.getElementById(link.href.slice(1)) || document.getElementById(`explore-${link.href.slice(1)}`)).filter(Boolean);
     if (!sections.length) return;
     const obs = new IntersectionObserver(
       (entries) => {
@@ -66,28 +61,21 @@ export default function Nav() {
   return (
     <nav className={`nav${scrolled ? ' is-scrolled' : ''}`} aria-label="Primary">
       <div className="container nav__inner">
-        <a href="#home" className="nav__brand">
+        <a href="#read" className="nav__brand">
           <span className="nav__brand-mark" aria-hidden="true">⚑</span>
-          <span className="nav__brand-text">The American Foreign Legion</span>
+          <span className="nav__brand-text">The American Foreign Legion <small>Book 1</small></span>
         </a>
 
         <ul className="nav__links" ref={listRef}>
           {links.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className={`nav__link${active === link.href || (link.href === '#gear-store' && active === '#gear') ? ' is-active' : ''}`} aria-current={active === link.href || (link.href === '#gear-store' && active === '#gear') ? 'true' : undefined}>
+              <a href={link.href} className={`nav__link${active === link.href || active === `#explore-${link.href.slice(1)}` ? ' is-active' : ''}`} aria-current={active === link.href ? 'true' : undefined}>
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
 
-        {BOOK.available ? (
-          <a className="nav__cta btn btn--primary" href={BOOK.amazonUrl} target="_blank" rel="noopener noreferrer" onClick={() => trackBuyClicked('nav')}>
-            Buy the book
-          </a>
-        ) : (
-          <a className="nav__cta btn btn--primary" href="#read">Read the opening</a>
-        )}
       </div>
     </nav>
   );
