@@ -1,0 +1,17 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> afl-volunteer@0.0.0 build
+> vite build && node scripts/inject-schema.mjs
+
+vite v8.0.16 building client environment for production...
+[2Ktransforming...✓ 76 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                      2.14 kB │ gzip:   0.80 kB
+dist/assets/FrontMap-C_ls1xnq.css   14.38 kB │ gzip:   3.15 kB
+dist/assets/index-CcvpmVLj.css      88.32 kB │ gzip:  18.20 kB
+dist/assets/FrontMap-RxMz91TU.js   124.16 kB │ gzip:  40.98 kB
+dist/assets/index-DO8hg0-9.js      359.69 kB │ gzip: 117.20 kB
+
+✓ built in 264ms
+inject-schema: added Book + DefinedTermSet (50 terms) to dist/index.html
