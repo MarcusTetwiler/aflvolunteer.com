@@ -1,5 +1,5 @@
 import { BENCH_STEPS } from './data/benchCatalog.js';
-export const MODEL='fpv-v22-reconstructed-1',COURSE_VERSION='world-final-v22-reconstructed-1';
+export const MODEL='fpv-v22-reconstructed-1',COURSE_VERSION='world-final-v23-sprint-1';
 export const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 export const defaults=()=>Object.fromEntries(BENCH_STEPS.map(s=>[s.id,s.options[0].id]));
 const frames={scout:[.9,1.25,.8],carrier:[1.6,.7,1.5],ducted:[1.35,.85,1.65],wing:[1.05,.78,.85],speed:[1.1,.7,.9],skeletal:[.72,1.45,.6],offset:[1.3,1,1.15],hybrid:[1.2,1.05,1.15]};

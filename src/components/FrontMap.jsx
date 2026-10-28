@@ -474,12 +474,12 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
             <div className="front-map__header front-map__header--ledger">
               <div className="front-map__header-text">
                 <h2>Contract Ledger — Pre-Deployment Record</h2>
-                <p>Talon Broadcast &amp; Private Engagements — Contracts</p>
+                <p>Anonymous engagement records</p>
               </div>
               <div className="front-map__header-logo">
                 <span className="front-map__header-logo-mark front-map__header-logo-mark--ledger">⬡</span>
                 <div>
-                  <strong>TALON</strong>
+                  <strong>PRIVATE LEDGER</strong>
                   <span>Performance Interface</span>
                 </div>
               </div>
@@ -510,7 +510,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                 aria-label="Fictional Europe map with anonymous illustrative contract sectors."
               >
                 <defs>
-                  <radialGradient id="andrewGlow" cx="50%" cy="38%" r="85%">
+                  <radialGradient id={uid+"ledgerGlow"} cx="50%" cy="38%" r="85%">
                     <stop offset="0%" stopColor="#241D15" stopOpacity="0.9" />
                     <stop offset="65%" stopColor="#14110D" stopOpacity="1" />
                     <stop offset="100%" stopColor="#080705" stopOpacity="1" />
@@ -520,7 +520,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                   </pattern>
                 </defs>
 
-                <rect x="0" y="0" width="1000" height="880" fill="url(#andrewGlow)" />
+                <rect x="0" y="0" width="1000" height="880" fill={`url(#${uid}ledgerGlow)`} />
 
                 <TheaterBasemap variant="dark" />
 
@@ -530,7 +530,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                   <g
                     key={c.id}
                     transform={`translate(${c.x}, ${c.y})`}
-                    className={`andrew-pin andrew-pin--${c.classification} andrew-pin--${c.status} ${activeId === c.id ? 'is-active' : ''}`}
+                    className={`ledger-pin ledger-pin--${c.classification} ledger-pin--${c.status} ${activeId === c.id ? 'is-active' : ''}`}
                     onPointerEnter={() => handleEnter(c.id)}
                     onPointerLeave={handleLeave}
                     onClick={() => handleClick(c.id)}
@@ -541,8 +541,8 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                     onBlur={handleLeave}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleClick(c.id); } }}
                   >
-                    <circle r="7" className="andrew-pin-halo" />
-                    <circle r="2.2" className="andrew-pin-dot" />
+                    <circle r="7" className="ledger-pin-halo" />
+                    <circle r="2.2" className="ledger-pin-dot" />
                   </g>
                 ))}
               </svg>
@@ -555,19 +555,19 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                     top: `${(activeContract.y / 880) * 100}%`,
                   }}
                 >
-                  <div className="andrew-brief-card">
-                    <p className="andrew-brief-label">Contract</p>
-                    <h3 className="andrew-brief-code">{activeContract.code}</h3>
-                    <p className={`andrew-brief-class andrew-brief-class--${activeContract.classification}`}>
+                  <div className="ledger-brief-card">
+                    <p className="ledger-brief-label">Contract</p>
+                    <h3 className="ledger-brief-code">{activeContract.code}</h3>
+                    <p className={`ledger-brief-class ledger-brief-class--${activeContract.classification}`}>
                       {LEDGER_CLASS_LABEL[activeContract.classification]}
                     </p>
-                    <div className="andrew-brief-row">
+                    <div className="ledger-brief-row">
                       <span>Status</span>
-                      <span className={`andrew-brief-status andrew-brief-status--${activeContract.status}`}>
+                      <span className={`ledger-brief-status ledger-brief-status--${activeContract.status}`}>
                         {LEDGER_STATUS_LABEL[activeContract.status]}
                       </span>
                     </div>
-                    <div className="andrew-brief-row">
+                    <div className="ledger-brief-row">
                       <span>Payout</span>
                       <span>{activeContract.payout}</span>
                     </div>
@@ -579,7 +579,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
             <div className="front-map__footer-content">
               <div className="front-map__legend">
                 <div className="front-map__legend-item">
-                  <span className="front-map__legend-dot front-map__legend-dot--talon" />
+                  <span className="front-map__legend-dot front-map__legend-dot--broadcast" />
                   Broadcast contract
                 </div>
                 <div className="front-map__legend-item">
@@ -596,7 +596,7 @@ Cartography: AFL Operations Desk. Base geography reflects real places.
                 </div>
               </div>
               <p className="front-map__credit">
-                Ledger: Talon Performance Interface. Sector codes are abstracted;
+                Ledger: Anonymous contract ledger. Sector codes are abstracted;
                 positions indicate contracted grid only. Contract records,
                 classifications, and payouts are fictional.
               </p>

@@ -446,44 +446,44 @@
   display: block;
 }
 
-.andrew-pin {
+.ledger-pin {
   cursor: pointer;
   outline: none;
 }
 
-.andrew-pin-halo {
+.ledger-pin-halo {
   fill: var(--highlight);
   opacity: 0;
   transition: opacity 0.15s ease;
 }
 
-.andrew-pin-dot {
+.ledger-pin-dot {
   fill: rgba(216, 168, 120, 0.55);
   transition: fill 0.15s ease, transform 0.15s ease;
   transform-box: fill-box;
   transform-origin: center;
 }
 
-/* color encodes classification (talon vs. private) */
-.andrew-pin--talon .andrew-pin-dot { fill: rgba(210, 121, 63, 0.8); }
-.andrew-pin--private .andrew-pin-dot { fill: rgba(216, 168, 120, 0.5); }
+/* color encodes classification (broadcast vs. private) */
+.ledger-pin--broadcast .ledger-pin-dot { fill: rgba(210, 121, 63, 0.8); }
+.ledger-pin--private .ledger-pin-dot { fill: rgba(216, 168, 120, 0.5); }
 
 /* partial/interrupted status shown as a ring around the dot, independent of
    classification color, since a contract is always BOTH a classification
    AND a status — these are two separate axes, not one. */
-.andrew-pin--partial .andrew-pin-dot {
+.ledger-pin--partial .ledger-pin-dot {
   stroke: #B91F1F;
   stroke-width: 1.2;
 }
 
-.andrew-pin:hover .andrew-pin-halo,
-.andrew-pin:focus-visible .andrew-pin-halo,
-.andrew-pin.is-active .andrew-pin-halo {
+.ledger-pin:hover .ledger-pin-halo,
+.ledger-pin:focus-visible .ledger-pin-halo,
+.ledger-pin.is-active .ledger-pin-halo {
   opacity: 0.28;
 }
-.andrew-pin:hover .andrew-pin-dot,
-.andrew-pin:focus-visible .andrew-pin-dot,
-.andrew-pin.is-active .andrew-pin-dot {
+.ledger-pin:hover .ledger-pin-dot,
+.ledger-pin:focus-visible .ledger-pin-dot,
+.ledger-pin.is-active .ledger-pin-dot {
   transform: scale(1.8);
   fill: var(--burnt-bright);
 }
@@ -492,7 +492,7 @@
   width: 200px;
 }
 
-.andrew-brief-card {
+.ledger-brief-card {
   position: relative;
   background: #15110D;
   border: 1px solid rgba(216, 168, 120, 0.22);
@@ -502,7 +502,7 @@
   color: var(--paper);
 }
 
-.andrew-brief-label {
+.ledger-brief-label {
   font-size: 10px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -510,7 +510,7 @@
   margin: 0 0 4px;
 }
 
-.andrew-brief-code {
+.ledger-brief-code {
   font-family: var(--font-mono);
   font-size: 20px;
   font-weight: 500;
@@ -519,7 +519,7 @@
   color: var(--paper);
 }
 
-.andrew-brief-class {
+.ledger-brief-class {
   display: inline-block;
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -527,10 +527,10 @@
   margin-bottom: 10px;
   border: 1px solid currentColor;
 }
-.andrew-brief-class--talon { color: var(--burnt-bright); }
-.andrew-brief-class--private { color: rgba(216, 168, 120, 0.7); }
+.ledger-brief-class--broadcast { color: var(--burnt-bright); }
+.ledger-brief-class--private { color: rgba(216, 168, 120, 0.7); }
 
-.andrew-brief-row {
+.ledger-brief-row {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
@@ -538,11 +538,11 @@
   border-top: 1px solid rgba(216, 168, 120, 0.12);
   color: rgba(231, 214, 188, 0.6);
 }
-.andrew-brief-row span:last-child {
+.ledger-brief-row span:last-child {
   color: var(--paper);
   text-align: right;
 }
-.andrew-brief-status--partial { color: #C2603A !important; }
+.ledger-brief-status--partial { color: #C2603A !important; }
 
 @media (max-width: 720px) {
   .front-map__brief {
@@ -917,7 +917,7 @@
   flex-shrink: 0;
 }
 
-.front-map__legend-dot--talon { background: var(--highlight); }
+.front-map__legend-dot--broadcast { background: var(--highlight); }
 .front-map__legend-dot--private { background: #7A2E1B; }
 .front-map__legend-dot--closed { background: rgba(216, 168, 120, 0.55); }
 .front-map__legend-dot--interrupted {

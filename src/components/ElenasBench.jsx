@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { BENCH_STEPS, STAT_KEYS, TRIALS } from '../data/benchCatalog';
+import {COMMUNITY} from '../sporting';
+import {countryFlag} from '../countries';
 import DroneRender from './DroneRender';
 import { spec, compatibility } from '../engineering';
 import './ElenasBench.css';
@@ -233,11 +235,11 @@ export default function ElenasBench({ raceRequest, onRaceReady, onRaceCancel, jo
           aria-controls="bench-content"
           onClick={toggleCollapsed}
         >
-          <span><small>Elena&rsquo;s Bench</small><strong>Make Your Drone</strong></span>
+          <span><small>Elena&rsquo;s Bench</small><strong>Workshop &amp; community</strong></span>
           <span>{collapsed ? 'Begin +' : 'Collapse −'}</span>
         </button>
         {!collapsed && <div id="bench-content">
-        <div className="bench__entry" id="bench">
+        <div className="bench__entry" id="bench" hidden>
           <DroneRender build={{ chassis: 'scout', material: 'gyroid', power: 'endurance', sensor: 'thermal', system: 'relay', finish: 'bone' }} />
           <div><p className="bench__status">PRINTER 03 // AVAILABLE</p><h3>Six decisions.<br />Five field trials.</h3><p>No account. Approximately two minutes.</p><button className="btn btn--primary" type="button" onClick={() => { setRaceEntry(false); dispatch({ type: 'start' }); }}>{state.resumePhase || state.step || state.seed ? 'Resume fabrication' : 'Begin fabrication'}</button></div>
         </div>
@@ -266,18 +268,18 @@ export default function ElenasBench({ raceRequest, onRaceReady, onRaceCancel, jo
               )}
               {state.phase === 'commit' && <Moment className="bench__commit" status="FABRICATION QUEUE READY" build={state.build}><h3>DESIGNATION PENDING</h3><p>Selections cannot be changed after the queue is locked.</p><button className="btn btn--primary" onClick={() => dispatch({ type: 'print', seed: makeSeed() })}>Send to printer</button></Moment>}
               {state.phase === 'printing' && <Moment className="bench__printing" status="FABRICATION QUEUE LOCKED" build={state.build} printing><p>PRINTING // SERIAL SEED FIXED</p></Moment>}
-              {state.phase === 'inspection' && <Moment className="bench__inspection" status="LAUNCH INSPECTION" build={state.build}><h3>Aircraft ready.</h3><p>Airframe · power · sensors · control · systems checked.</p><button type="button" className="btn btn--primary" onClick={() => { onRaceReady?.({build:state.build, seed:state.seed, hangarId:raceRequest?.hangarId}); dispatch({type:'return'}); }}>ARM AIRCRAFT →</button><button type="button" className="btn btn--secondary" onClick={() => { setRaceEntry(false); dispatch({type:'trials'}); }}>Workshop field trials</button></Moment>}
+              {state.phase === 'inspection' && <Moment className="bench__inspection" status="LAUNCH INSPECTION" build={state.build}><h3>Aircraft ready.</h3><p>Airframe · power · sensors · control · systems checked.</p><button type="button" className="btn btn--primary" onClick={() => { onRaceReady?.({build:state.build, seed:state.seed, hangarId:raceRequest?.hangarId}); dispatch({type:'return'}); }}>YOUR PILOT ENTRY →</button><button type="button" className="btn btn--secondary" onClick={() => { setRaceEntry(false); dispatch({type:'trials'}); }}>Workshop field trials</button></Moment>}
               {state.phase === 'trials' && <FlightSimulator trials={trials} revealed={state.revealed} build={state.build} next={() => dispatch({ type: 'reveal' })} finish={() => dispatch({ type: 'result' })} />}
               {state.phase === 'result' && <Result build={state.build} machine={machine} stats={stats} passed={passed} flag={flag} sortieScore={sortieScore} specialty={specialty(stats)} published={published} shared={shared} publish={publish} share={share} restart={() => dispatch({ type: 'restart' })} close={() => dispatch({ type: 'return' })} />}
             </main>
           </div>
         )}
 
-        <div className="bench-wall">
+        <button className="btn btn--secondary" onClick={()=>{setRaceEntry(false);dispatch({type:'start'});}}>Open workshop / five field trials</button><CommunityBuilds onBuild={build=>{window.dispatchEvent(new CustomEvent('afl-build-request',{detail:{id:Date.now().toString(),build}}));}}/><details className="bench-local-wall"><summary>Your local workshop submissions</summary><div className="bench-wall">
           <div className="bench-wall__head"><div><p className="eyebrow">The Build Wall</p><h3>Recent field configurations.</h3></div><span>{wall.length} LOCAL BUILDS</span></div>
           <div className="bench-wall__filters"><button className={wallFilter === 'recent' ? 'is-on' : ''} onClick={() => setWallFilter('recent')}>Recent</button><button className={wallFilter === 'referred' ? 'is-on' : ''} onClick={() => setWallFilter('referred')}>Referred</button><button className={wallFilter === 'survivors' ? 'is-on' : ''} onClick={() => setWallFilter('survivors')}>5/5 Survivors</button></div>
           {filteredWall.length ? <ul>{filteredWall.map((item) => <li key={`${item.id}-${item.created}`}><DroneRender build={item.build} label={false}/><b>{item.id} &ldquo;{item.callsign}&rdquo;</b><span>{item.passed}/5 TRIALS · {item.sortieScore ? `${item.sortieScore.toLocaleString()} PTS · ` : ''}{item.specialty}</span>{item.flag > 0 && <em>TIER {item.flag} REFERRAL FLAG</em>}</li>)}</ul> : <div className="bench-wall__empty"><span>NO MATCHING FIELD CONFIGURATIONS</span><a href="#bench">BUILD THE FIRST</a></div>}
-        </div>
+        </div></details>
         </div>}
       </div>
     </section>
@@ -285,7 +287,7 @@ export default function ElenasBench({ raceRequest, onRaceReady, onRaceCancel, jo
 }
 
 function FinishControls({ build, choose }) {
-  return <div className="bench__finish"><label>Accent <input type="color" value={build.accent || '#b5b5b5'} onChange={e=>choose('accent',e.target.value)}/></label><label>Livery <select value={build.livery || ''} onChange={e=>choose('livery',e.target.value)}><option value="">Unmarked</option>{['061','063','064','067'].map(v=><option key={v}>{v}</option>)}</select></label>{Object.entries(FINISH).map(([category, options]) => <fieldset key={category}><legend>{category === 'finish' ? 'Resin' : category}</legend><div>{options.map((option) => <button type="button" key={option.id} className={build[category] === option.id ? 'is-selected' : ''} onClick={() => choose(category, option.id)}>{option.name}</button>)}</div></fieldset>)}</div>;
+  return <div className="bench__finish"><fieldset className="ns-colors"><legend>Accent color</legend><div>{[['Carbon silver','#bfc8c8'],['Signal orange','#db8546'],['Racing red','#cd4859'],['Pacific blue','#5385b7'],['Forest green','#5c9472'],['Championship gold','#d6b35a'],['Violet','#9374b5'],['Ivory','#e1d7b9']].map(([name,color])=><button key={color} type="button" style={{'--swatch':color}} aria-label={name} aria-pressed={build.accent===color} onClick={()=>choose('accent',color)}><i/>{name}</button>)}</div><label>Custom accent<input aria-label="Custom accent color" type="color" value={build.accent || '#bfc8c8'} onChange={e=>choose('accent',e.target.value)}/></label></fieldset><fieldset><legend>Racing livery</legend><div>{[['','Unmarked'],['061','061 / Amber circuit'],['063','063 / Rose field'],['064','064 / Redline'],['067','067 / Ochre works']].map(([value,name])=><button type="button" key={value} aria-pressed={(build.livery||'')===value} onClick={()=>choose('livery',value)}>{name}</button>)}</div></fieldset>{Object.entries(FINISH).map(([category, options]) => <fieldset key={category}><legend>{category === 'finish' ? 'Primary finish / cosmetic' : category}</legend><div>{options.map((option) => <button type="button" key={option.id} className={build[category] === option.id ? 'is-selected' : ''} onClick={() => choose(category, option.id)}>{option.name}</button>)}</div></fieldset>)}</div>;
 }
 function Moment({ className, status, build, printing, children }) { return <div className={className}><p className="bench__status">{status}</p><DroneRender build={build} printing={printing} />{children}</div>; }
 function FlightSimulator({ trials, revealed, build, next, finish }) {
@@ -404,3 +406,5 @@ function Result({ build, machine, stats, passed, flag, sortieScore, specialty: e
   const [view, setView] = useState('top');
   return <div className="bench__result"><div className="bench__artifact"><div className="bench__artifact-head"><span>ELENA&rsquo;S BENCH</span><span>FIELD CONFIGURATION</span></div><p className="bench__serial">{machine.serial}</p><h3>{machine.callsign}</h3><DroneRender build={build} label={false} view={view}/><div className="bench__artifact-views">{['top','front','profile'].map((item) => <button key={item} className={view === item ? 'is-on' : ''} onClick={() => setView(item)}>{item.toUpperCase()}</button>)}</div><div className="bench__grade"><strong>{passed}/5</strong><span>TRIALS SURVIVED</span></div><p className="bench__sortie-score">SORTIE SCORE // {sortieScore.toLocaleString()}</p><p className="bench__specialty">{earned}</p>{flag > 0 && <p className={`bench__flag bench__flag--${flag}`}>TIER {flag} REFERRAL FLAG</p>}<div className="bench__result-stats">{STAT_KEYS.slice(0,4).map((key) => <span key={key}>{key.toUpperCase()}<b>{stats[key]}</b></span>)}</div><footer>THE AMERICAN FOREIGN LEGION</footer></div><div className="bench__result-actions"><button className="btn btn--primary" onClick={share}>{shared ? 'Link copied' : 'Share build'}</button><button className="btn btn--secondary" onClick={publish} disabled={published}>{published ? 'Added to wall' : 'Add to build wall'}</button><button className="bench__again" onClick={restart}>Build again</button><button className="bench__again" onClick={close}>Return to site</button></div></div>;
 }
+
+function CommunityBuilds({onBuild}){return <section className="ns-community"><p className="eyebrow">NATIONS SERIES COMMUNITY BUILDS</p><h3>Built for a different line.</h3><p>Fictional showcase pilots and engineering inspiration.</p><div className="ns-community-grid">{COMMUNITY.map(a=><article key={a.id}><DroneRender build={a.build} label={false}/><p><span role="img" aria-label={a.country}>{countryFlag(a.country)}</span> {a.country}</p><h4>{a.callsign}</h4><p>{a.aircraft}</p><button className="btn btn--secondary" onClick={()=>onBuild(a.build)}>Inspect &amp; tune</button></article>)}</div></section>;}
